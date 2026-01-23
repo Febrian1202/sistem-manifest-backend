@@ -13,6 +13,9 @@ return new class extends Migration {
         Schema::create("computers", function (Blueprint $table) {
             $table->id();
             $table->string("hostname")->unique();
+            $table->string('os_info')->nullable();
+            $table->string("os_license_status")->nullable();
+            $table->string("os_partial_key")->nullable();
             $table->string("ip_address")->nullable();
             $table->string("location")->nullable();
             $table->timestamp("last_seen_at")->nullable();

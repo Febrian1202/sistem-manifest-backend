@@ -17,6 +17,9 @@ class ScanController extends Controller
         // Validasi input
         $request->validate([
             'computer_name' => 'required|string',
+            'os_info' => 'nullable|string',
+            'os_license_status' => 'nullable|string',
+            'os_partial_key' => 'nullable|string',
             'installed_software' => 'required|array',
         ]);
 
@@ -28,6 +31,9 @@ class ScanController extends Controller
                 ['hostname' => $request->computer_name],
                 [
                     'ip_address' => $request->ip(),
+                    'os_info' => $request->os_info,
+                    'os_license_status' => $request->os_license_status,
+                    'os_partial_key' => $request->os_partial_key,
                     'last_seen_at' => now(),
                 ]
             );
@@ -68,9 +74,6 @@ class ScanController extends Controller
                         break;
                     }
                 }
-
-
-
 
                 // Logic Filter Sampah
                 if (!$isPriority) {
