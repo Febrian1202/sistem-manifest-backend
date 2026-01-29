@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\SoftwareCatalog;
 use App\Models\SoftwareDiscovery;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class ScanController extends Controller
@@ -14,6 +15,9 @@ class ScanController extends Controller
     //
     public function store(Request $request)
     {
+        // Debugging
+        // Log::info('Data Scan Diterima:', $request->all());
+
         // Validasi input
         $request->validate([
             'computer_name' => 'required|string',
@@ -39,11 +43,11 @@ class ScanController extends Controller
             );
 
             // Hapus data scan lama komputer ini (refresh)
-            // agar kalau software sudah di uninstall, di database juga ikut hilang
             SoftwareDiscovery::where('computer_id', $computer->id)->delete();
 
             // Proses list software
             $rawSoftwares = $request->installed_software;
+
 
 
             foreach ($rawSoftwares as $soft) {
@@ -66,6 +70,7 @@ class ScanController extends Controller
                     'Torrent',
                     'uTorrent',
                     'BitTorrent',
+                    'Daemon Tools'
                 ];
                 $isPriority = false;
                 foreach ($priorityKeywords as $pk) {
@@ -82,19 +87,66 @@ class ScanController extends Controller
                     $ignoredKeywords = [
                         'Redistributable',
                         'Runtime',
-                        'Update',
-                        'Component',
-                        'Library',
                         'Framework',
+                        'Library',
                         'SDK',
-                        'Setup',
-                        'Support',
+                        'API',
+                        'DirectX',
+                        'Vulkan',
+                        'OpenGL',
+                        'Prerequisites',
+
+                        'Driver',
+                        'Chipset',
+                        'PhysX',
+                        'GeForce',
+                        'Radeon',
+                        'Intel(R)',
+                        'Realtek',
+                        'BIOS',
+                        'Firmware',
+
+                        'Update',
+                        'KB',
                         'Patch',
+                        'Service Pack',
+                        'Language Pack',
+                        'Feature Pack',
+                        'Support',
+                        'Bootstrap',
+                        'Test Suite',
+                        'Documentation',
+                        'Help',
+                        'Manual',
+
+                        'Setup',
+                        'Installer',
                         'Launcher',
                         'Helper',
+                        'Agent',
+                        'Updater',
+                        'Assistant',
+                        'Wizard',
                         'Tool',
-                        'Driver',
-                        'KB'
+                        'Bridge',
+                        'Connector',
+                        'Plugin',
+                        'Extension',
+                        'Add-in',
+                        'Addon',
+                        'WebResource',
+
+                        'Click-to-Run',
+                        'Extensibility',
+                        'Localization',
+                        'Licensing Component',
+                        'AppHost',
+                        'Host FX',
+                        'vs_',
+                        'Minshell',
+                        'Redist',
+                        'Client Profile',
+                        'Targeting Pack',
                     ];
 
                     $isJunk = false;

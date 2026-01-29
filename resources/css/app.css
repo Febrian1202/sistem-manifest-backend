@@ -1,11 +1,161 @@
 @import 'tailwindcss';
 
+@import "@fontsource/inter/";
+
+
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+@layer base {
+    :root {
+        --background: 210 20% 98%;
+        --foreground: 215 25% 15%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 215 25% 15%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 215 15% 15%;
+
+        /* Deep Academic Blue */
+        --primary: 217 71% 45%;
+        --primary-foreground: 210 40% 98%;
+
+        --secondary: 215 16% 93%;
+        --secondary-foreground: 215 25% 27%;
+
+        --muted: 210 16% 93%;
+        --muted-foreground: 215 14% 45%;
+
+        /* Accent */
+        --accent: 214 84% 95%;
+        --accent-foreground: 217 71% 35%;
+
+        --destructive: 0 72% 51%;
+        --destructive-foreground: 210 40% 98%;
+
+        /* Status Color */
+        --success: 142 71% 45%;
+        --success-foreground: 0 0% 100%;
+        --warning: 38 92% 50%;
+        --warning-foreground: 0 0% 100%;
+        --danger: 0 72% 51%;
+        --danger-foreground: 0 0% 100%;
+
+        --border: 214 20% 88%;
+        --input: 214 20% 88%;
+        --ring: 217 71% 45%;
+
+        --radius: 0.5rem;
+
+        /* Sidebar */
+        --sidebar-background: 215 25% 15%;
+        --sidebar-foreground: 210 16% 82%;
+        --sidebar-primary: 217 71% 55%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 215 20% 22%;
+        --sidebar-accent-foreground: 210 16% 93%;
+        --sidebar-border: 215 18% 25%;
+        --sidebar-ring: 217 17% 55%;
+
+        /* Chart */
+        --chart-1: 217 71% 45%;
+        --chart-2: 199 89% 48%;
+        --chart-3: 142 71% 45%;
+        --chart-4: 38 92% 50%;
+        --chart-5: 0 72% 51%;
+    }
+
+    .dark {
+        --background: 215 25% 10%;
+        --foreground: 210 16% 93%;
+
+        --card: 215 25% 13%;
+        --card-foreground: 210 16% 93%;
+
+        --popover: 215 25% 13%;
+        --popover-foreground: 210 16% 93%;
+
+        --primary: 217 71% 55%;
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 215 20% 22%;
+        --secondary-foreground: 210 16% 93%;
+
+        --muted: 215 20% 22%;
+        --muted-foreground: 215 14% 55%;
+
+        --accent: 215 25% 20%;
+        --accent-foreground: 217 71% 65%;
+
+        --destructive: 0 62% 45%;
+        --destructive-foreground: 210 71% 65%;
+
+        --border: 215 20% 22%;
+        --input: 215 20% 22%;
+        --ring: 217 71% 55%;
+
+        --sidebar-background: 215 28% 8%;
+        --sidebar-foreground: 210 16% 82%;
+        --sidebar-primary: 217 71% 55%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 215 25% 15%;
+        --sidebar-accent-foreground: 210 16% 93%;
+        --sidebar-border: 215 20% 18%;
+        --sidebar-ring: 217 71% 55%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground font-sans antialiased;
+        font-family: 'Inter', system-ui, sans-serif;
+    }
+}
+
+@layer components {
+    .stat-card {
+        @apply bg-card border border-border rounded-lg p-5 shadow-sm transition-all duration-200 hover:shadow-md;
+    }
+
+    .stat-card-critical {
+        @apply bg-red-50 border-red-200 rounded-lg p-5 shadow-sm;
+    }
+
+    .table-row-warning {
+        @apply bg-red-50/60;
+    }
+
+    .table-row-success {
+        @apply bg-green-50/60;
+    }
+
+    .sidebar-active {
+        @apply bg-sidebar-accent text-sidebar-primary font-medium;
+    }
+
+    .progress-track {
+        @apply h-2 bg-muted rounded-full overflow-hidden;
+    }
+
+    .progress-fill {
+        @apply h-full rounded-full transition-all duration-500 ease-out;
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .animate-pulse-slow {
+        animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
 }

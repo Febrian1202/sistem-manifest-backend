@@ -1,33 +1,23 @@
-# ========================================================
-# 1. Konfigurasi API
-# ========================================================
-# PENTING: Jika dijalankan di komputer lailn (bukan laptop server),
-# Ganti '127.0.0.1' dengan IPI Address laptop/pc server (kalau di jaringan yang sama)
-$apiUrl = "http://localhost:8000/api/scan-result"
-
-# Setup Protokol Keamanan (Biar aman di Windows lama)
+# Konfigurasi API
+$apiUrl = "http://127.0.0.1:8000/api/scan-result"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-# ========================================================
-# 2. Ambil Info Komputer & Lisensi OS (WMI)
-# ========================================================
-Write-Host " [1/3] Mengambil data identitas komputer..." -ForegroundColor Cyan
+$allSoftware = @()
+
+# Ambil Info Komputer & Lisensi (WMI OS)
+Write-Host " [1/5] Mengambil identitas & Lisensi OS..." -ForegroundColor Cyan
 try {
-    # - Info Umum
     $computerSystem = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction Stop
     $osSystem = Get-CimInstance -ClassName Win32_OperatingSystem -ErrorAction Stop
     
     $computerName = $computerSystem.Name
+    # $userName = $computerSystem.UserName
     $osName = $osSystem.Caption
 
-    # - Cek Status Lisensi Windows (SoftwareLicensingProduct)
-    # Filter: Ambil yang punya Product Key (Partial) dan terkait Windows
+    # Cek Lisensi Windows
     $licenseInfo = Get-CimInstance -ClassName SoftwareLicensingProduct -Filter "PartialProductKey IS NOT NULL" | Where-Object { $_.Name -like "*Windows*" } | Select-Object -First 1
-
-    # Terjemahkan Kode Status (LicenseStatus)
-    # 0=Unlicensed, 1=Licensed, 2=00B Grace, 3=OOT Grace, 4=Non-Genuine, 5=Notification
+    
     $osStatus = "Unknown"
-
     if ($licenseInfo) {
         switch ($licenseInfo.LicenseStatus) {
             1 { $osStatus = "Licensed (Original)" }
@@ -35,100 +25,106 @@ try {
             2 { $osStatus = "Grace Period (Trial)" }
             3 { $osStatus = "Grace Period (Trial)" }
             4 { $osStatus = "Non-Genuine (Bajakan)" }
-            5 { $osStatus = "Notification Mode (Activation Failed)" }
+            5 { $osStatus = "Notification Mode" }
             Default { $osStatus = "Check Required" }
         }
         $partialKey = $licenseInfo.PartialProductKey
     }
     else {
-        $osStatus = "Detection Failed"
-        $partialKey = "N/A"
+        $osStatus = "Detection Failed"; $partialKey = "N/A"
     }
-
-    Write-Host "         OS: $osName" -ForegroundColor Gray
-    Write-Host "         Status: $osStatus" -ForegroundColor Gray
 }
 catch {
-    <#Do this if a terminating exception happens#>
-    Write-Host "Error mengambil info WMI. Pastikan dijalankan sebagai Administrator." -ForegroundColor Red
-    $computerName = $env:COMPUTERNAME
-    $osName = "Unknown"
-    $osStatus = "Error"
-    $partialKey = "N/A"
+    Write-Host "Gagal akses WMI System." -ForegroundColor Red
+    $computerName = $env:COMPUTERNAME; $osName = "Unknown"; $osStatus = "Error"; $partialKey = "N/A"
 }
-# ========================================================
-# 3. Scan Software (Registry - Hybrid Method)
-# ========================================================
-Write-Host " [2/3] Memindai Registry Software..." -ForegroundColor Cyan
 
-# Kita scan 3 lokasi registry agar semua tertangkap (32-bit, 64-bit, dan User Apps)
+# Scan Software (METODE 1: REGISTRY)
+Write-Host " [2/5] Memindai Registry (Win32 Apps)..." -ForegroundColor Cyan
+
 $registryPaths = @(
     "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*",
     "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*",
     "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*"
 )
 
-$installedSoftware = @()
-
 foreach ($path in $registryPaths) {
-    # Ambil data registry, abaikan jika path tidak ditemukan
     $keys = Get-ItemProperty $path -ErrorAction SilentlyContinue
     foreach ($key in $keys) {
-        # Ambil yang hanya yang punya "DisplayName" (Nama Software)
         if ($key.DisplayName -and $key.DisplayName -ne "") {
-
-            #buat Object Data
-            $softwareObj = @{
-                Name    = $key.DisplayName
-                Version = if ($key.DisplayVersion) { $key.DisplayVersion } else { "Unknown" }
-                Vendor  = if ($key.Publisher) { $key.Publisher } else { "Unknown" }
+            # PERBAIKAN DI SINI: Tambahkan [PSCustomObject]
+            $allSoftware += [PSCustomObject]@{
+                name    = $key.DisplayName
+                version = if ($key.DisplayVersion) { $key.DisplayVersion } else { "Unknown" }
+                vendor  = if ($key.Publisher) { $key.Publisher } else { "Unknown" }
+                Source  = "Registry" 
             }
-
-            $installedSoftware += $softwareObj
         }
     }
 }
 
-# Hapus Duplikat (Kadang software tercatata ganda di registry)
-$uniqueSoftware = $installedSoftware | Sort-Object -Property Name -Unique
+# Scan Software (METODE 2: APPX / STORE)
+Write-Host " [3/5] Memindai Windows Store (UWP Apps)..." -ForegroundColor Cyan
 
-Write-Host "     Ditemukan $($uniqueSoftware.Count) software terinstall." -ForegroundColor Cyan
-
-# ========================================================
-# 4. Kirim data ke API
-# ========================================================
-Write-Host " [3/3] Mengirim data ke Server ($apiUrl)..." -ForegroundColor Yellow
-
-$payload = @{
-    computer_name     = $computerName
-    os_info           = $osSystem.Caption
-    os_license_status = $osStatus
-    os_partial_key    = $partialKey
-    installedSoftware = $uniqueSoftware
+$storeApps = Get-AppxPackage | Where-Object { $_.NonRemovable -eq $false -and $_.IsFramework -eq $false }
+foreach ($app in $storeApps) {
+    # PERBAIKAN DI SINI: Tambahkan [PSCustomObject]
+    $allSoftware += [PSCustomObject]@{
+        name    = $app.Name
+        version = $app.Version
+        vendor  = $app.Publisher
+        Source  = "Store"
+    }
 }
 
-# Konversi ke JSON
+# Scan Software (METODE 3: WMI)
+Write-Host " [4/5] Memindai WMI Win32_Product..." -ForegroundColor Cyan
+
+try {
+    $wmiApps = Get-CimInstance -ClassName Win32_Product -ErrorAction SilentlyContinue
+    foreach ($app in $wmiApps) {
+        if ($app.Name) {
+            $allSoftware += [PSCustomObject]@{
+                name    = $app.Name
+                version = if ($app.Version) { $app.Version } else { "Unknown" }
+                vendor  = if ($app.Vendor) { $app.Vendor } else { "Unknown" }
+                Source  = "WMI"
+            }
+        }
+    }
+}
+catch {
+    Write-Host "       Skip WMI (Not Available)." -ForegroundColor Yellow
+}
+
+# Pembersihan & Pengiriman
+Write-Host "       Menggabungkan data..." -ForegroundColor Cyan
+
+$uniqueSoftware = $allSoftware | Sort-Object -Property Name -Unique
+
+Write-Host "       Total Unik: $($uniqueSoftware.Count) software ditemukan." -ForegroundColor Green
+Write-Host " [5/5] Mengirim data ke Server..." -ForegroundColor Yellow
+
+$payload = @{
+    computer_name      = $computerName
+    os_info            = $osName
+    os_license_status  = $osStatus
+    os_partial_key     = $partialKey
+    installed_software = @($uniqueSoftware)
+}
+
 $jsonPayload = $payload | ConvertTo-Json -Depth 4
 
 try {
-    # Kirim Request POST
     $response = Invoke-RestMethod -Uri $apiUrl -Method Post -Body $jsonPayload -ContentType "application/json"
-
-    # Cek Respon Server
-    Write-Host "------------------------------------------"
-    Write-Host " SUKSES! Data berhasil diterima server." -ForegroundColor Green
-    Write-Host " Pesan Server: $($response.message)"
-    Write-Host " Komputer ID : $($response.computer)"
-    Write-Host "------------------------------------------"
+    Write-Host " SUKSES! Server Response: $($response.message)" -ForegroundColor Green
+    if ($response.inserted_count) {
+        Write-Host " Jumlah Software Baru: $($response.inserted_count)"
+    }
 }
 catch {
-    Write-Host "------------------------------------------"
-    Write-Host " GAGAL MENGIRIM DATA!" -ForegroundColor Red
-    Write-Host " Pastikan:"
-    Write-Host " - API Server berjalan"
-    Write-Host " - Koneksi internet tersedia"
-    Write-Host " Error Detail: $($_.Exception.Message)"
-    Write-Host "------------------------------------------"
+    Write-Host " GAGAL! Cek koneksi server." -ForegroundColor Red
+    Write-Host " Error: $($_.Exception.Message)"
 }
 
 Write-Host "Tekan sembarang tombol untuk keluar..."
