@@ -11,7 +11,7 @@
             @if (empty($breadcrumbs))
                 <span class="text-foreground font-bold text-lg">Dashboard</span>
             @else
-                <ol class="flex items-center gap-2">
+                <ol class="flex items-center">
                     @foreach ($breadcrumbs as $item)
                         <li>
                             <div class="flex items-center">
@@ -20,7 +20,7 @@
                                 @endif
 
                                 @if ($loop->last)
-                                    <span class="text-foreground font-bold text-lg">
+                                    <span class="text-foreground font-bold text-md">
                                         {{ $item['name'] }}
                                     </span>
                                 @else

@@ -8,14 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ $title }} - USN Manifest</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.15.5/dist/cdn.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </head>
 
-<body class="bg-background min-h-screen flex overflow-hidden font-sans antialiased text-foreground"
-    x-data="{ sidebarOpen: true }">
+<body class="bg-background h-screen flex overflow-hidden font-sans antialiased text-foreground" x-data="{ sidebarOpen: false }">
 
     <x-layout.side-bar />
 
@@ -30,7 +30,7 @@
     </div>
 
     <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 bg-black/50 z-20 md:hidden"
-        style="display: none;" x-trasition.opacoty>
+        style="display: none;" x-trasition.opacity>
 
     </div>
 

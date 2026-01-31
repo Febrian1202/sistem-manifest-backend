@@ -21,18 +21,13 @@
 
     <nav class="flex-1 overflow-y-auto py-4 flex flex-col gap-1 px-3">
 
-        {{-- 
-           LOGIKA STYLE BARU (Sesuai app.css):
-           - Active: bg-sidebar-accent + text-sidebar-accent-foreground
-           - Inactive: text-sidebar-foreground + hover:bg-sidebar-accent
-        --}}
         @php
             $activeClass = 'bg-sidebar-accent text-sidebar-primary font-medium';
             $inactiveClass = 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground';
         @endphp
 
-        <a href="/"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('/') ? $activeClass : $inactiveClass }}">
+        <a href="/dashboard"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('dashboard') ? $activeClass : $inactiveClass }}">
             <div class="w-6 flex justify-center">
                 <i class="fa-solid fa-house text-lg"></i>
             </div>
@@ -101,11 +96,10 @@
 
     </nav>
 
-    <div class="p-3 border-t border-sidebar-border justify-center flex">
-        <button @click="sidebarOpen = !sidebarOpen"
-            class="text-sidebar-foreground hover:text-sidebar-accent-foreground hover:bg-sidebar-accent p-2 rounded-md focus:outline-none transition-colors">
+    <div class="p-3 border-t border-sidebar-border justify-center flex"">
+        <x-button @click="sidebarOpen = !sidebarOpen" class="transition-colors w-full" variant="outline">
             <i class="fa-solid fa-angle-right text-xl transition-transform duration-300"
                 :class="sidebarOpen ? 'rotate-180' : 'rotate-0'"></i>
-        </button>
+        </x-button>
     </div>
 </aside>

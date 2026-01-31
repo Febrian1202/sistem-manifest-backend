@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "@fontsource/inter": "^5.2.8",
+        "@fontsource/poppins": "^5.2.7",
         "@fortawesome/fontawesome-free": "^7.1.0"
     }
 }
