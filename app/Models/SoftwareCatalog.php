@@ -8,4 +8,9 @@ class SoftwareCatalog extends Model
 {
     //
     protected $guarded = ['id'];
+
+    public function discoveries()
+    {
+        return $this->hasMany(SoftwareDiscovery::class, 'catalog_id');
+    }
 }
