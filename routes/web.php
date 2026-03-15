@@ -12,9 +12,16 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 Route::get('/computers', [ComputerDataController::class, 'index'])->name('computers');
 Route::put('/computers/{computer}', [ComputerDataController::class, 'update'])->name('computers.update');
+
 Route::get('/softwares', [SoftwareDataController::class, 'index'])->name('softwares');
 Route::put('softwares/{software}', [SoftwareDataController::class, 'update'])->name('softwares.update');
+
 Route::get('/licenses', [LicenseDataController::class, 'index'])->name('licenses');
+Route::post('/licenses', [LicenseDataController::class, 'store'])->name('licenses.store');
+Route::put('/licenses/{license', [LicenseDataController::class, 'update'])->name('licenses.update');
+Route::delete('/licenses/{license', [LicenseDataController::class, 'destroy'])->name('licenses.destroy');
+
 Route::get('/compliance', [ComplianceDataController::class, 'index'])->name('compliance');
