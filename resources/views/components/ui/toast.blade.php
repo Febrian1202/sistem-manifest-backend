@@ -19,7 +19,8 @@
     };
 @endphp
 
-<div x-data="{ show: true }" x-init="setTimeout(() => show = false, {{ $duration }})" x-show="show" style="display: none;" x-teleport="body"
+<div x-data="{ show: true }" x-init="setTimeout(() => show = false, {{ $duration }})" x-show="show"
+    style="display: none;" x-teleport="body"
     class="fixed bottom-4 right-4 z-100 flex flex-col gap-2 w-full max-w-sm pointer-events-none">
 
     <div x-show="show" {{-- ANIMASI FADE IN (Masuk) --}} x-transition:enter="transition ease-out duration-500"
@@ -33,7 +34,8 @@
         <div class="flex items-center gap-3">
             <i class="fa-solid {{ $icon }} text-lg"></i>
             <p class="text-sm font-medium">
-                {{ $message }}
+                {{-- Ganti {{ $message }} menjadi {!! $message !!} --}}
+                {!! $message !!}
             </p>
         </div>
 

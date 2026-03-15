@@ -11,6 +11,13 @@
             </div>
         </div>
 
+        @if (session('status'))
+            <x-ui.alert.index variant="{{session('status') === 'success' ? 'success' : 'destructive'}}">
+                <x-ui.alert.title>{{ session('status') === 'success' ? 'Berhasil' : 'Gagal' }}</x-ui.alert.title>
+                <x-ui.alert.description>{!! session('message') !!}</x-ui.alert.description>
+            </x-ui.alert.index>
+        @endif
+
         {{-- 1. STAT CARDS --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 

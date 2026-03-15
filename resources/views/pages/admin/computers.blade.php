@@ -12,7 +12,10 @@
         </div>
 
         @if (session('status'))
-            <x-ui.toast type="success" message="{{ session('status') }}" duration="5000" />
+            <x-ui.alert.index variant="{{session('status') === 'success' ? 'success' : 'destructive'}}">
+                <x-ui.alert.title>{{ session('status') === 'success' ? 'Berhasil' : 'Gagal' }}</x-ui.alert.title>
+                <x-ui.alert.description>{!! session('message') !!}</x-ui.alert.description>
+            </x-ui.alert.index>
         @endif
 
         {{-- FORM PENCARIAN & FILTER --}}

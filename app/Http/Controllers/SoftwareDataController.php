@@ -63,6 +63,9 @@ class SoftwareDataController extends Controller
 
         $software->update($validated);
 
-        return back()->with('status', "Katalog <strong>{$software->normalized_name}</strong> berhasil diperbarui!");
+        return back()->with([
+            'message' => "Software <strong>{$software->normalized_name}</strong> berhasil diperbarui!",
+            "status" => "success"
+        ]);
     }
 }

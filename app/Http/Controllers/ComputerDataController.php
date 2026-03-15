@@ -58,6 +58,9 @@ class ComputerDataController extends Controller
         $computer->update($validated);
 
         // 3. Redirect kembali
-        return back()->with('status', 'Data komputer berhasil diperbarui!');
+        return back()->with([
+            'message' => 'Data komputer berhasil diperbarui!',
+            'status' => 'success',
+        ]);
     }
 }
