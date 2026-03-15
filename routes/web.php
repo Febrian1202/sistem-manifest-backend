@@ -15,5 +15,6 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::get('/computers', [ComputerDataController::class, 'index'])->name('computers');
 Route::put('/computers/{computer}', [ComputerDataController::class, 'update'])->name('computers.update');
 Route::get('/softwares', [SoftwareDataController::class, 'index'])->name('softwares');
+Route::put('softwares/{software}', [SoftwareDataController::class, 'update'])->name('softwares.update');
 Route::get('/licenses', [LicenseDataController::class, 'index'])->name('licenses');
 Route::get('/compliance', [ComplianceDataController::class, 'index'])->name('compliance');

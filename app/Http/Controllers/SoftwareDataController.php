@@ -51,4 +51,18 @@ class SoftwareDataController extends Controller
 
         return view('pages.admin.softwares', compact('softwares', 'stats'));
     }
+
+    // Update data katalog software (misal: update status, kategori, dll)
+    public function update(Request $request, SoftwareCatalog $software)
+    {
+        $validated = $request->validate([
+            'category' => 'required|string',
+            'status' => 'required|string',
+            'description' => 'nullable|string',
+        ]);
+
+        $software->update($validated);
+
+        return back()->with('status', "Katalog <strong>{$software->normalized_name}</strong> berhasil diperbarui!");
+    }
 }
