@@ -21,7 +21,7 @@ Route::put('softwares/{software}', [SoftwareDataController::class, 'update'])->n
 
 Route::get('/licenses', [LicenseDataController::class, 'index'])->name('licenses');
 Route::post('/licenses', [LicenseDataController::class, 'store'])->name('licenses.store');
-Route::put('/licenses/{license', [LicenseDataController::class, 'update'])->name('licenses.update');
-Route::delete('/licenses/{license', [LicenseDataController::class, 'destroy'])->name('licenses.destroy');
+Route::put('/licenses/{license}', [LicenseDataController::class, 'update'])->name('licenses.update');
+Route::delete('/licenses/{license}', [LicenseDataController::class, 'destroy'])->name('licenses.destroy');
 
 Route::get('/compliance', [ComplianceDataController::class, 'index'])->name('compliance');

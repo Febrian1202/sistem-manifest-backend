@@ -39,7 +39,7 @@ class LicenseDataController extends Controller
 
         // Hitung statistik untuk Dashboard Card
         $stats = [
-            'total_license' => LicenseInventory::sum('quota_limit'), // Jumlah total Lisensi
+            'total_licenses' => LicenseInventory::sum('quota_limit'), // Jumlah total Lisensi
             'total_value' => LicenseInventory::sum(\DB::raw('quota_limit * price_per_unit')), // Total Aset
             'expiring_soon' => LicenseInventory::where('expiry_date', '<=', now()->addDays(30))
                 ->where('expiry_date', '>', now())
@@ -62,7 +62,7 @@ class LicenseDataController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $license->update($validated);
+        $license->create($validated);
 
         return back()->with([
             'status' => 'success',
