@@ -26,6 +26,7 @@ return new class extends Migration {
             $table->decimal('price_per_unit', 15, 2)->nullable();
 
             $table->text('notes')->nullable();
+            $table->string('proof_image');
             $table->timestamps();
         });
     }

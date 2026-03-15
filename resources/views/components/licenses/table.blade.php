@@ -9,6 +9,7 @@
                 <x-ui.table.table-head>Penggunaan / Kuota</x-ui.table.table-head>
                 <x-ui.table.table-head>Tgl Kedaluwarsa</x-ui.table.table-head>
                 <x-ui.table.table-head>Status</x-ui.table.table-head>
+                <x-ui.table.table-head>Bukti Pembelian</x-ui.table.table-head>
                 <x-ui.table.table-head class="text-right">Aksi</x-ui.table.table-head>
             </x-ui.table.table-row>
         </x-ui.table.table-header>
@@ -87,6 +88,25 @@
                     {{-- Status --}}
                     <x-ui.table.table-cell>
                         {!! $statusBadge !!}
+                    </x-ui.table.table-cell>
+
+                    <!-- Bukti Pembelian -->
+                    <x-ui.table.table-cell>
+                        @if($license->proof_image)
+                            <a href="{{ asset('storage/' . $license->proof_image) }}" target="_blank"
+                                class="group relative inline-block">
+                                <div class="h-10 w-10 overflow-hidden rounded border border-border">
+                                    <img src="{{ asset('storage/' . $license->proof_image) }}"
+                                        class="h-full w-full object-cover transition-transform group-hover:scale-110">
+                                </div>
+                                <div
+                                    class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100 rounded">
+                                    <i class="fa-solid fa-eye text-white text-[10px]"></i>
+                                </div>
+                            </a>
+                        @else
+                            <span class="text-xs text-muted-foreground italic">No image</span>
+                        @endif
                     </x-ui.table.table-cell>
 
                     {{-- Aksi (Dropdown & Edit) --}}
@@ -207,7 +227,7 @@
                 </x-ui.table.table-row>
             @empty
                 <x-ui.table.table-row>
-                    <x-ui.table.table-cell colspan="6" class="text-center h-32 text-muted-foreground">
+                    <x-ui.table.table-cell colspan="7" class="text-center h-32 text-muted-foreground">
                         <div class="flex flex-col items-center justify-center gap-2">
                             <i class="fa-solid fa-file-invoice-dollar text-2xl opacity-50"></i>
                             <p>Tidak ada inventaris lisensi yang tercatat.</p>

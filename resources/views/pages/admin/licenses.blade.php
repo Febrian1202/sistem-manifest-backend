@@ -56,6 +56,15 @@
                             </div>
                         </div>
 
+                        <div class="space-y-1.5">
+                            <x-form.label>Bukti Pembelian (Gambar) <span
+                                    class="text-destructive">*</span></x-form.label>
+                            <input type="file" name="proof_image" required
+                                class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium">
+                            <p class="text-[10px] text-muted-foreground italic ">* Wajib mengunggah bukti
+                                dalam format gambar (JPG/PNG)</p>
+                        </div>
+
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <x-form.label>Tanggal Beli</x-form.label>

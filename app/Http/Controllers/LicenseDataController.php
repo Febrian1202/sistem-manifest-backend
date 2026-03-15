@@ -60,7 +60,13 @@ class LicenseDataController extends Controller
             'expiry_date' => 'nullable|date|after_or_equal:purchase_date',
             'price_per_unit' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
+            'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
+
+        if ($request->hasFile('proof_image')) {
+            $path = $request->file('proof_image')->store('license_proofs', 'public');
+            $validated['proof_image'] = $path;
+        }
 
         $license->create($validated);
 
