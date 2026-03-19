@@ -99,6 +99,47 @@ class LicenseDataController extends Controller
         }
     }
 
+    public function update(Request $request, LicenseInventory $license)
+    {
+        try {
+            $validated = $request->validate([
+                'catalog_id' => 'required|exists:software_catalogs,id',
+                'quota_limit' => 'required|integer|min:1',
+                'expiry_date' => 'nullable|date',
+                'proof_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'notes' => 'nullable|string',
+                'price_per_unit' => 'nullable|numeric|min:0',
+                'purchase_order_number' => 'nullable|string|max:255',
+                'purchase_date' => 'nullable|date',
+            ]);
+
+            if ($request->hasFile('proof_image')) {
+                // Hapus gambar lama jika ada
+                if ($license->proof_image) {
+                    \Storage::disk('public')->delete($license->proof_image);
+                }
+                $validated['proof_image'] = $request->file('proof_image')->store('license_proofs', 'public');
+            }
+
+            $license->update($validated);
+
+            return back()->with([
+                'status' => 'success',
+                'message' => 'Data lisensi berhasil diperbarui.'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput()->with([
+                'status' => 'destructive',
+                'message' => 'Gagal! Harap periksa kembali isian form Anda: ' . $e->getMessage()
+            ]);
+        } catch (\Exception $e) {
+            return back()->withInput()->with([
+                'status' => 'destructive',
+                'message' => 'Gagal update: ' . $e->getMessage()
+            ]);
+        }
+    }
+
     // Menghapus Data Lisensi
     public function destroy(LicenseInventory $license)
     {

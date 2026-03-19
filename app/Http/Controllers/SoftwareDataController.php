@@ -55,17 +55,29 @@ class SoftwareDataController extends Controller
     // Update data katalog software (misal: update status, kategori, dll)
     public function update(Request $request, SoftwareCatalog $software)
     {
-        $validated = $request->validate([
-            'category' => 'required|string',
-            'status' => 'required|string',
-            'description' => 'nullable|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'category' => 'required|string',
+                'status' => 'required|string',
+                'description' => 'nullable|string',
+            ]);
 
-        $software->update($validated);
+            $software->update($validated);
 
-        return back()->with([
-            'message' => "Software <strong>{$software->normalized_name}</strong> berhasil diperbarui!",
-            "status" => "success"
-        ]);
+            return back()->with([
+                'message' => "Software <strong>{$software->normalized_name}</strong> berhasil diperbarui!",
+                "status" => "success"
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput()->with([
+                'status' => 'destructive',
+                'message' => 'Gagal memperbarui katalog. Periksa inputan Anda: ' . $e->getMessage(),
+            ]);
+        } catch (\Exception $e) {
+            return back()->withInput()->with([
+                'status' => 'destructive',
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
+            ]);
+        }
     }
 }

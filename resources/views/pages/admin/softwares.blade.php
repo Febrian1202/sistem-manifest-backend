@@ -11,10 +11,22 @@
             </div>
         </div>
 
+        {{-- Menampilkan Pesan Berhasil/Gagal dari Controller --}}
         @if (session('status'))
-            <x-ui.alert.index variant="{{session('status') === 'success' ? 'success' : 'destructive'}}">
-                <x-ui.alert.title>{{ session('status') === 'success' ? 'Berhasil' : 'Gagal' }}</x-ui.alert.title>
-                <x-ui.alert.description>{!! session('message') !!}</x-ui.alert.description>
+            <x-ui.alert.index variant="{{ session('status') === 'success' ? 'success' : 'destructive' }}" class="mb-6">
+                <x-ui.alert.title>{{ session('status') === 'success' ? 'Berhasil' : 'Peringatan' }}</x-ui.alert.title>
+                <x-ui.alert.description>
+                    {!! session('message') !!}
+
+                    {{-- List detail error validasi jika ada --}}
+                    @if ($errors->any())
+                        <ul class="mt-2 list-disc list-inside text-xs opacity-80">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </x-ui.alert.description>
             </x-ui.alert.index>
         @endif
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Computer;
 use Illuminate\Http\Request;
+use PhpParser\Node\Stmt\TryCatch;
 
 class ComputerDataController extends Controller
 {
@@ -48,19 +49,32 @@ class ComputerDataController extends Controller
 
     public function update(Request $request, Computer $computer)
     {
-        // 1. Validasi
-        $validated = $request->validate([
-            'location' => 'nullable|string|max:255',
-            // Tambahkan field lain jika ingin bisa diedit, misal: 'os_license_status'
-        ]);
+        try {
+            // 1. Validasi
+            $validated = $request->validate([
+                'location' => 'nullable|string|max:255',
+                // Tambahkan field lain jika ingin bisa diedit, misal: 'os_license_status'
+            ]);
 
-        // 2. Update Data
-        $computer->update($validated);
+            // 2. Update Data
+            $computer->update($validated);
 
-        // 3. Redirect kembali
-        return back()->with([
-            'message' => 'Data komputer berhasil diperbarui!',
-            'status' => 'success',
-        ]);
+            // 3. Redirect kembali
+            return back()->with([
+                'message' => 'Data komputer berhasil diperbarui!',
+                'status' => 'success',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput()->with([
+                'status' => 'destructive',
+                'message' => 'Gagal! Harap periksa kembali isian form Anda: ' . $e->getMessage(),
+            ]);
+        } catch (\Exception $e) {
+            return back()->withInput()->with([
+                'status' => 'destructive',
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+            ]);
+        }
+
     }
 }

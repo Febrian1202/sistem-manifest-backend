@@ -93,16 +93,16 @@
             </x-ui.sheet.sheet>
         </div>
 
-        {{-- Menampilkan Notifikasi Status (Success/Error dari Controller) --}}
+        {{-- Menampilkan Pesan Berhasil/Gagal dari Controller --}}
         @if (session('status'))
             <x-ui.alert.index variant="{{ session('status') === 'success' ? 'success' : 'destructive' }}" class="mb-6">
-                <x-ui.alert.title>{{ session('status') === 'success' ? 'Berhasil' : 'Perhatian!' }}</x-ui.alert.title>
+                <x-ui.alert.title>{{ session('status') === 'success' ? 'Berhasil' : 'Peringatan' }}</x-ui.alert.title>
                 <x-ui.alert.description>
                     {!! session('message') !!}
 
-                    {{-- Menampilkan daftar error validasi jika ada --}}
+                    {{-- List detail error validasi jika ada --}}
                     @if ($errors->any())
-                        <ul class="mt-2 list-disc list-inside text-sm opacity-80">
+                        <ul class="mt-2 list-disc list-inside text-xs opacity-80">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -126,7 +126,7 @@
         </div>
 
         {{-- Pencarian --}}
-        <form method="GET" action="{{ url()->current() }}"
+        <form method="GET" action="{{ url()->current() }}" enctype="multipart/form-data"
             class="bg-card border border-border p-4 rounded-lg shadow-sm flex flex-col md:flex-row gap-4 items-center">
             <div class="w-full relative">
                 <i
