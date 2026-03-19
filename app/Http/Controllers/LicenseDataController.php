@@ -52,28 +52,51 @@ class LicenseDataController extends Controller
     // Menyimpan data pembelian
     public function store(Request $request, LicenseInventory $license)
     {
-        $validated = $request->validate([
-            'catalog_id' => 'required|exists:software_catalogs,id',
-            'purchase_order_number' => 'nullable|string|max:255',
-            'quota_limit' => 'required|integer|min:1',
-            'purchase_date' => 'nullable|date',
-            'expiry_date' => 'nullable|date|after_or_equal:purchase_date',
-            'price_per_unit' => 'nullable|numeric|min:0',
-            'notes' => 'nullable|string',
-            'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        try {
+            // 1. Validasi Data
+            $validated = $request->validate([
+                'catalog_id' => 'required|exists:software_catalogs,id',
+                'purchase_order_number' => 'nullable|string|max:255',
+                'quota_limit' => 'required|integer|min:1',
+                'purchase_date' => 'nullable|date',
+                'expiry_date' => 'nullable|date|after_or_equal:purchase_date',
+                'price_per_unit' => 'nullable|numeric|min:0',
+                'notes' => 'nullable|string',
+                'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Wajib & Gambar
+            ], [
+                // Custom Message agar user paham (Opsional)
+                'proof_image.required' => 'Bukti pembelian berupa gambar wajib diunggah.',
+                'catalog_id.required' => 'Silakan pilih software terlebih dahulu.',
+                'quota_limit.min' => 'Kuota lisensi minimal adalah 1.',
+            ]);
 
-        if ($request->hasFile('proof_image')) {
-            $path = $request->file('proof_image')->store('license_proofs', 'public');
-            $validated['proof_image'] = $path;
+            // 2. Handle Upload Gambar
+            if ($request->hasFile('proof_image')) {
+                $path = $request->file('proof_image')->store('license_proofs', 'public');
+                $validated['proof_image'] = $path;
+            }
+
+            // 3. Simpan ke Database
+            LicenseInventory::create($validated);
+
+            return back()->with([
+                'status' => 'success',
+                'message' => 'Data inventaris lisensi berhasil ditambahkan!'
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Jika validasi gagal, kirim pesan error spesifik
+            return back()->withErrors($e->validator)->withInput()->with([
+                'status' => 'destructive',
+                'message' => 'Gagal menyimpan! Ada kesalahan pada isian form Anda.'
+            ]);
+        } catch (\Exception $e) {
+            // Jika ada error sistem/database (misal: database mati atau kolom kurang)
+            return back()->withInput()->with([
+                'status' => 'destructive',
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+            ]);
         }
-
-        $license->create($validated);
-
-        return back()->with([
-            'status' => 'success',
-            'message' => 'Data inventaris lisensi berhasil diperbarui.'
-        ]);
     }
 
     // Menghapus Data Lisensi

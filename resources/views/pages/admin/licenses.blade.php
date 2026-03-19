@@ -25,7 +25,8 @@
                             inventaris.</x-ui.sheet.description>
                     </x-ui.sheet.header>
 
-                    <form action="{{ route('licenses.store') }}" method="POST" class="mt-6 space-y-4">
+                    <form action="{{ route('licenses.store') }}" method="POST" enctype="multipart/form-data"
+                        class="mt-6 space-y-4">
                         @csrf
                         <div class="space-y-1.5">
                             <x-form.label>Pilih Software</x-form.label>
@@ -92,10 +93,22 @@
             </x-ui.sheet.sheet>
         </div>
 
+        {{-- Menampilkan Notifikasi Status (Success/Error dari Controller) --}}
         @if (session('status'))
-            <x-ui.alert.index variant="{{session('status') === 'success' ? 'success' : 'destructive'}}">
-                <x-ui.alert.title>{{ session('status') === 'success' ? 'Berhasil' : 'Gagal' }}</x-ui.alert.title>
-                <x-ui.alert.description>{!! session('message') !!}</x-ui.alert.description>
+            <x-ui.alert.index variant="{{ session('status') === 'success' ? 'success' : 'destructive' }}" class="mb-6">
+                <x-ui.alert.title>{{ session('status') === 'success' ? 'Berhasil' : 'Perhatian!' }}</x-ui.alert.title>
+                <x-ui.alert.description>
+                    {!! session('message') !!}
+
+                    {{-- Menampilkan daftar error validasi jika ada --}}
+                    @if ($errors->any())
+                        <ul class="mt-2 list-disc list-inside text-sm opacity-80">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </x-ui.alert.description>
             </x-ui.alert.index>
         @endif
 
@@ -137,7 +150,7 @@
         </form>
 
         {{-- Tabel Komponen --}}
-        <x-licenses.table :licenses="$licenses" :catalogs="$catalogs" />
+        <x-licenses.grid :licenses="$licenses" :catalogs="$catalogs" />
 
         {{-- Pagination --}}
         <div class="mt-4 flex flex-col items-center justify-between gap-4 border-t border-border py-4 sm:flex-row">
