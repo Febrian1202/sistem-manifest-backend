@@ -1,4 +1,4 @@
-@props(['disabled' => false])
+@props(['disabled' => false, 'name' => null])
 
 <input {{ $disabled ? 'disabled' : '' }} {!! $attributes->merge([
     'class' =>

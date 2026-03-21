@@ -13,4 +13,9 @@ class SoftwareCatalog extends Model
     {
         return $this->hasMany(SoftwareDiscovery::class, 'catalog_id');
     }
+
+    public function licenses()
+    {
+        return $this->hasMany(LicenseInventory::class, 'catalog_id');
+    }
 }
