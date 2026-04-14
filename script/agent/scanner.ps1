@@ -1,8 +1,8 @@
 # Konfigurasi API
-$baseUrl = "http://127.0.0.1:8000/api"
+$baseUrl     = "http://127.0.0.1:8000/api"
 $registerUrl = "$baseUrl/agent/register"
-$scanUrl = "$baseUrl/scan-result"
-$tokenFile = "$PSScriptRoot\agent_token.txt"
+$scanUrl     = "$baseUrl/scan-result"
+$tokenFile   = "$PSScriptRoot\agent_token.txt"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -16,16 +16,16 @@ Write-Host "==========================================" -ForegroundColor Cyan
 # ---------------------------------------------------------
 Write-Host " [0/3] Mengecek Identitas Perangkat..." -ForegroundColor Yellow
 
-# 1. Ambil MAC Address & Hostname untuk Registrasi/Identitas
-$sys = Get-CimInstance -ClassName Win32_ComputerSystem
-$bios = Get-CimInstance -ClassName Win32_BIOS
-$net = Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled -eq $true } | Select-Object -First 1
+$sys        = Get-CimInstance Win32_ComputerSystem
+$bios       = Get-CimInstance Win32_BIOS
+$net        = Get-CimInstance Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled } | Select-Object -First 1
 $macAddress = $net.MACAddress
-$hostname = $sys.DNSHostName
+$hostname   = $sys.DNSHostName
+$ipv4       = ($net.IPAddress | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' }) | Select-Object -First 1
 
 if (-not (Test-Path $tokenFile)) {
     Write-Host " [!] Token tidak ditemukan. Melakukan registrasi..." -ForegroundColor Cyan
-    
+
     $regPayload = @{
         mac_address   = $macAddress
         hostname      = $hostname
@@ -37,14 +37,8 @@ if (-not (Test-Path $tokenFile)) {
         $token = $regResponse.token
         $token | Out-File -FilePath $tokenFile -Encoding ascii
         Write-Host " [+] Registrasi berhasil. Token disimpan." -ForegroundColor Green
-    }
-    catch {
+    } catch {
         Write-Host " [!] Registrasi GAGAL: $($_.Exception.Message)" -ForegroundColor Red
-        if ($_.Exception.Response) {
-             $details = $_.Exception.Response.GetResponseStream()
-             $reader = New-Object System.IO.StreamReader($details)
-             Write-Host " Detail: $($reader.ReadToEnd())" -ForegroundColor Red
-        }
         exit
     }
 } else {
@@ -62,24 +56,21 @@ $headers = @{
 # ---------------------------------------------------------
 Write-Host " [1/3] Mengambil Spesifikasi Hardware..." -ForegroundColor Yellow
 
+# Default values — aman jika scan gagal
+$cpu        = $null; $os = $null; $disk = $null
+$ramGB      = 0; $diskTotal = 0; $diskFree = 0
+$osStatus   = "Unknown"; $partialKey = "N/A"
+
 try {
-    # 1. RAM ke GB
-    $ramGB = [math]::Round($sys.TotalPhysicalMemory / 1GB, 0)
+    $cpu         = Get-CimInstance Win32_Processor
+    $disk        = Get-CimInstance Win32_LogicalDisk | Where-Object { $_.DeviceID -eq "C:" }
+    $os          = Get-CimInstance Win32_OperatingSystem
+    $licenseInfo = Get-CimInstance SoftwareLicensingProduct -Filter "PartialProductKey IS NOT NULL" |
+                   Where-Object { $_.Name -like "*Windows*" } | Select-Object -First 1
 
-    # 2. Info Processor
-    $cpu = Get-CimInstance -ClassName Win32_Processor
-    
-    # 3. Info Disk (Drive C:)
-    $disk = Get-CimInstance -ClassName Win32_LogicalDisk | Where-Object { $_.DeviceID -eq "C:" }
+    $ramGB     = [math]::Round($sys.TotalPhysicalMemory / 1GB, 0)
     $diskTotal = [math]::Round($disk.Size / 1GB, 0)
-    $diskFree = [math]::Round($disk.FreeSpace / 1GB, 0)
-
-    # 4. Info OS & Lisensi
-    $os = Get-CimInstance -ClassName Win32_OperatingSystem
-    $licenseInfo = Get-CimInstance -ClassName SoftwareLicensingProduct -Filter "PartialProductKey IS NOT NULL" | Where-Object { $_.Name -like "*Windows*" } | Select-Object -First 1
-    
-    $osStatus = "Unknown"
-    $partialKey = "N/A"
+    $diskFree  = [math]::Round($disk.FreeSpace / 1GB, 0)
 
     if ($licenseInfo) {
         switch ($licenseInfo.LicenseStatus) {
@@ -93,9 +84,8 @@ try {
         }
         $partialKey = $licenseInfo.PartialProductKey
     }
-}
-catch {
-    Write-Host "Error saat mengambil info hardware: $($_.Exception.Message)" -ForegroundColor Red
+} catch {
+    Write-Host " [WARN] Sebagian info hardware gagal diambil: $($_.Exception.Message)" -ForegroundColor DarkYellow
 }
 
 # ---------------------------------------------------------
@@ -104,7 +94,6 @@ catch {
 Write-Host " [2/3] Memindai Aplikasi Terinstall..." -ForegroundColor Yellow
 $allSoftware = @()
 
-# A. Registry Scan
 $registryPaths = @(
     "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*",
     "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*",
@@ -117,31 +106,35 @@ foreach ($path in $registryPaths) {
         foreach ($key in $keys) {
             if ($key.DisplayName) {
                 $allSoftware += [PSCustomObject]@{
-                    name    = $key.DisplayName
-                    version = if ($key.DisplayVersion) { $key.DisplayVersion } else { "Unknown" }
-                    vendor  = if ($key.Publisher) { $key.Publisher } else { "Unknown" }
+                    name         = $key.DisplayName
+                    version      = if ($key.DisplayVersion) { $key.DisplayVersion } else { $null }
+                    vendor       = if ($key.Publisher) { $key.Publisher } else { $null }
+                    install_date = if ($key.InstallDate) { $key.InstallDate } else { $null }
                 }
             }
         }
     }
 }
 
-# B. Windows Store Apps
 try {
-    $storeApps = Get-AppxPackage | Where-Object { $_.NonRemovable -eq $false -and $_.IsFramework -eq $false }
+    $storeApps = Get-AppxPackage | Where-Object {
+        $_.NonRemovable -eq $false -and
+        $_.IsFramework -eq $false -and
+        $_.Name -notmatch "^Microsoft\.(NET|VCLibs|UI|Windows|Xbox|Bing|Zune|549981C3F5F10)"
+    }
     foreach ($app in $storeApps) {
         $allSoftware += [PSCustomObject]@{
-            name    = $app.Name
-            version = $app.Version
-            vendor  = $app.Publisher
+            name         = $app.Name
+            version      = $app.Version
+            vendor       = $app.Publisher
+            install_date = $null
         }
     }
 } catch {
-    Write-Host " [!] Melewati scan Windows Store Apps (Memerlukan Admin)." -ForegroundColor Gray
+    Write-Host " [!] Melewati scan Windows Store Apps." -ForegroundColor Gray
 }
 
-# Filter Duplikat
-$uniqueSoftware = $allSoftware | Sort-Object -Property Name -Unique
+$uniqueSoftware = $allSoftware | Sort-Object name -Unique
 
 # ---------------------------------------------------------
 # TAHAP 3: KIRIM DATA
@@ -149,19 +142,19 @@ $uniqueSoftware = $allSoftware | Sort-Object -Property Name -Unique
 Write-Host " [3/3] Mengirim Data ke Server..." -ForegroundColor Yellow
 
 $payload = @{
-    computer_name      = $hostname
-    processor          = $cpu.Name.Trim()
+    hostname           = $hostname
+    processor          = if ($cpu)  { $cpu.Name.Trim() }      else { "Unknown" }
     ram_gb             = $ramGB
     disk_total_gb      = $diskTotal
     disk_free_gb       = $diskFree
     manufacturer       = $sys.Manufacturer.Trim()
     model              = $sys.Model.Trim()
     serial_number      = $bios.SerialNumber.Trim()
-    ip_address         = $net.IPAddress[0]
+    ip_address         = $ipv4
     mac_address        = $macAddress
-    os_name            = $os.Caption.Trim()
-    os_version         = $os.Version
-    os_architecture    = $os.OSArchitecture
+    os_name            = if ($os)   { $os.Caption.Trim() }    else { "Unknown" }
+    os_version         = if ($os)   { $os.Version }           else { "Unknown" }
+    os_architecture    = if ($os)   { $os.OSArchitecture }    else { "Unknown" }
     os_license_status  = $osStatus
     os_partial_key     = $partialKey
     installed_software = @($uniqueSoftware)
@@ -171,17 +164,15 @@ $jsonPayload = $payload | ConvertTo-Json -Depth 5
 
 try {
     $response = Invoke-RestMethod -Uri $scanUrl -Method Post -Headers $headers -Body $jsonPayload -ContentType "application/json"
-    
     Write-Host "`n [SUKSES]" -ForegroundColor Green
-    Write-Host " Server: $($response.message)"
+    Write-Host " Server  : $($response.message)"
     Write-Host " Komputer: $($response.computer)"
-}
-catch {
-    $err = $_.Exception.Response
-    if ($err -and $err.StatusCode -eq "Unauthorized") {
+} catch {
+    $statusCode = $_.Exception.Response.StatusCode
+    if ($statusCode -eq "Unauthorized") {
         Write-Host "`n [!] Token tidak valid atau dicabut." -ForegroundColor Red
         if (Test-Path $tokenFile) { Remove-Item $tokenFile }
-        Write-Host " Token telah dihapus. SIlakan jalankan kembali script untuk registrasi ulang." -ForegroundColor Yellow
+        Write-Host " Token dihapus. Jalankan ulang script untuk registrasi ulang." -ForegroundColor Yellow
     } else {
         Write-Host "`n [GAGAL] Tidak dapat menghubungi server." -ForegroundColor Red
         Write-Host " Error: $($_.Exception.Message)"
