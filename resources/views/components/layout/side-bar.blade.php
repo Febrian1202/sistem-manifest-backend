@@ -94,12 +94,20 @@
             </span>
         </a>
 
+        <a href="{{ route('reports') }}"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('reports*') ? $activeClass : $inactiveClass }}">
+            <div class="w-6 flex justify-center">
+                <i class="fa-solid fa-file-pdf text-lg"></i>
+            </div>
+            <span class="font-medium whitespace-nowrap"
+                :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Laporan & Cetak</span>
+        </a>
     </nav>
 
     <div class="p-3 border-t border-sidebar-border justify-center flex"">
-        <x-button @click="sidebarOpen = !sidebarOpen" class="transition-colors w-full" variant="outline">
-            <i class="fa-solid fa-angle-right text-xl transition-transform duration-300"
-                :class="sidebarOpen ? 'rotate-180' : 'rotate-0'"></i>
+        <x-button @click=" sidebarOpen=!sidebarOpen" class="transition-colors w-full" variant="outline">
+        <i class="fa-solid fa-angle-right text-xl transition-transform duration-300"
+            :class="sidebarOpen ? 'rotate-180' : 'rotate-0'"></i>
         </x-button>
     </div>
 </aside>

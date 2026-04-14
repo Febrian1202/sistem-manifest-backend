@@ -33,12 +33,12 @@ class ReportController extends Controller
         // 1. Kumpulkan Data berdasarkan Tipe Laporan
         switch ($type) {
             case 'compliance_summary':
-                $data['title'] = 'Ringkasan Kepatuhan Lisensi Perangkat Lunak';
+                $data['title'] = 'Laporan Ringkasan';
                 $data['softwares'] = $this->getComplianceData();
                 break;
 
             case 'violation_report':
-                $data['title'] = 'Laporan Detail Pelanggaran Hak Cipta (Non-Compliant)';
+                $data['title'] = 'Laporan Detail Pelanggaran';
                 // Ambil data yang defisitnya lebih dari 0
                 $data['softwares'] = $this->getComplianceData()->filter(fn($s) => $s->deficit > 0);
                 break;

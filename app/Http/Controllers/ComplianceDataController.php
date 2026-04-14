@@ -10,40 +10,48 @@ class ComplianceDataController extends Controller
     //
     public function index()
     {
-        // 1. Ambil HANYA software berbayar (Commercial) untuk diaudit
+        // 1. Ambil software berbayar (Commercial) dengan agregasi dalam SATU query
         $softwares = SoftwareCatalog::where('category', 'Commercial')
-            // Eager load relasi ke komputer agar bisa dilihat siapa pelakunya
-            ->with(['discoveries.computer'])
-            ->withCount('discoveries') // Hitung total instalasi
-            ->withSum('licenses as total_owned', 'quota_limit') // Hitung total lisensi dibeli
-            ->get()
-            ->map(function ($software) {
-                // Proses Audit (Kalkulasi Kepatuhan)
+            ->withCount('discoveries')
+            ->withSum('licenses as owned_count', 'quota_limit')
+            // Urutkan berdasarkan selisih (deficit) secara langsung di level database
+            // Deficit = (jumlah terinstall) - (jumlah lisensi dimiliki)
+            ->orderByRaw('(discoveries_count - COALESCE(owned_count, 0)) DESC')
+            ->paginate(20)
+            ->through(function ($software) {
+                // Tambahkan atribut virtual untuk kebutuhan tampilan view
                 $installed = $software->discoveries_count ?? 0;
-                $owned = $software->total_owned ?? 0;
-
-                // Jika yang install lebih banyak dari lisensi, berarti ada Defisit (Ilegal)
+                $owned = $software->owned_count ?? 0;
                 $deficit = $installed > $owned ? $installed - $owned : 0;
 
-                // Masukkan hasil kalkulasi ke dalam object
                 $software->installed_count = $installed;
                 $software->owned_count = $owned;
                 $software->deficit = $deficit;
                 $software->is_compliant = $deficit === 0;
 
                 return $software;
-            })
-            // Urutkan dari yang pelanggarannya paling banyak ke paling sedikit
-            ->sortByDesc('deficit')
-            ->values();
+            });
 
-        // 2. Hitung Statistik Global untuk Dashboard Kepatuhan
+        // 2. Hitung Statistik Global (Ini bisa dicache nanti di Step 2, tapi sekarang kita hitung efisien)
+        // Karena kita pakai pagination, kita butuh query terpisah untuk total deficit global
         $stats = [
-            'total_commercial' => $softwares->count(),
-            'compliant' => $softwares->where('is_compliant', true)->count(),
-            'non_compliant' => $softwares->where('is_compliant', false)->count(),
-            'total_deficit' => $softwares->sum('deficit'), // Total software bajakan
+            'total_commercial' => SoftwareCatalog::where('category', 'Commercial')->count(),
+            'total_deficit' => SoftwareCatalog::where('category', 'Commercial')
+                ->withCount('discoveries')
+                ->withSum('licenses as owned_count', 'quota_limit')
+                ->get()
+                ->sum(fn($s) => max(0, $s->discoveries_count - ($s->owned_count ?? 0))),
         ];
+
+        // Hitung compliant/non-compliant untuk stats dashboard page
+        // (Bisa dioptimasi lebih lanjut jika data sangat besar)
+        $complianceStats = SoftwareCatalog::where('category', 'Commercial')
+            ->withCount('discoveries')
+            ->withSum('licenses as owned_count', 'quota_limit')
+            ->get();
+            
+        $stats['compliant'] = $complianceStats->filter(fn($s) => ($s->discoveries_count <= ($s->owned_count ?? 0)))->count();
+        $stats['non_compliant'] = $stats['total_commercial'] - $stats['compliant'];
 
         return view('pages.admin.compliance', compact('softwares', 'stats'));
     }

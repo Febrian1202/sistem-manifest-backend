@@ -20,7 +20,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Registration of Model Observers for Cache Invalidation
+        \App\Models\Computer::observe(\App\Observers\ComputerObserver::class);
+        \App\Models\SoftwareCatalog::observe(\App\Observers\SoftwareCatalogObserver::class);
+        \App\Models\LicenseInventory::observe(\App\Observers\LicenseInventoryObserver::class);
+
         Blade::component('components.ui.dropdown', 'dropdown');
         Blade::component('components.ui.dropdown-item', 'dropdown-item');
         Blade::component('components.ui.dropdown-label', 'dropdown-label');
