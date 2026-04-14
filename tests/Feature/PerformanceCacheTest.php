@@ -55,7 +55,7 @@ class PerformanceCacheTest extends TestCase
 
     public function test_dashboard_statistics_are_cached()
     {
-        // Use array driver for testing as it supports tags
+        // Use array driver for testing as it supports basic caching
         config(['cache.default' => 'array']);
         
         Computer::create(['hostname' => 'PC-CACHE-TEST']);
@@ -71,6 +71,7 @@ class PerformanceCacheTest extends TestCase
         
         // Assert no database queries were made for the statistics
         $queryCount = count(DB::getQueryLog());
+        // Normal keys work with any driver
         $this->assertEquals(0, $queryCount, "Dashboard metrics were recalculated instead of being served from cache.");
         
         DB::disableQueryLog();
@@ -82,7 +83,7 @@ class PerformanceCacheTest extends TestCase
         
         // Warm up cache
         $this->get('/dashboard');
-        $this->assertTrue(Cache::tags(['dashboard'])->has('dashboard.stats'));
+        $this->assertTrue(Cache::has('dashboard.stats'));
         
         // Trigger invalidation via SoftwareCatalog status update
         $software = SoftwareCatalog::create([
@@ -92,6 +93,6 @@ class PerformanceCacheTest extends TestCase
         ]);
         
         // Assert cache is empty after creation
-        $this->assertFalse(Cache::tags(['dashboard'])->has('dashboard.stats'));
+        $this->assertFalse(Cache::has('dashboard.stats'));
     }
 }

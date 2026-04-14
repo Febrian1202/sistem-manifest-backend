@@ -34,7 +34,7 @@ class ProcessScanResultJob implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        public array $hardwareData,
+        public Computer $computer,
         public array $softwareList,
     ) {
         $this->onQueue('scans');
@@ -45,19 +45,15 @@ class ProcessScanResultJob implements ShouldQueue
      */
     public function handle(SoftwareFilterService $filterService, SoftwareCatalogService $catalogService): void
     {
-        // 1. Find the computer (it was created/synced synchronously in Controller)
-        $computer = Computer::where('hostname', $this->hardwareData['computer_name'] ?? '')->first();
-
-        if (!$computer) {
-            throw new \Exception("Computer record not found for hostname: " . ($this->hardwareData['computer_name'] ?? 'unknown'));
-        }
+        // 1. Log processing start
+        Log::info('Processing scan for computer: ' . $this->computer->hostname);
 
         // 2. Filter software into categories
         $filterResult = $filterService->filter($this->softwareList);
 
         // 3. Sync discoveries to database
         $catalogService->syncDiscoveries(
-            $computer,
+            $this->computer,
             $filterResult->clean,
             $filterResult->flagged
         );

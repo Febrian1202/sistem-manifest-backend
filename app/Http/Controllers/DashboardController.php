@@ -14,7 +14,7 @@ class DashboardController extends Controller
     public function index()
     {
         // --- 1. STATISTIK UTAMA (TTL: 10 Menit) ---
-        $stats = Cache::tags(['dashboard'])->remember('dashboard.stats', 600, function () {
+        $stats = Cache::remember('dashboard.stats', 600, function () {
             $totalComputers = Computer::count();
             return [
                 'totalComputers' => $totalComputers,
@@ -42,7 +42,7 @@ class DashboardController extends Controller
         $systemHealth = $totalComputers > 0 ? round(($stats['healthyComputers'] / $totalComputers) * 100) : 0;
 
         // --- 2. CHART & ACTIVITY (TTL: 5 Menit) ---
-        $data = Cache::tags(['dashboard'])->remember('dashboard.charts', 300, function () {
+        $data = Cache::remember('dashboard.charts', 300, function () {
             // OS Distribution
             $osStats = Computer::select('os_name', DB::raw('count(*) as total'))
                 ->groupBy('os_name')

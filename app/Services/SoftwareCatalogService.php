@@ -38,14 +38,16 @@ class SoftwareCatalogService
                 }
 
                 // 3. Sync Discovery (updateOrCreate for idempotency)
+                // We use [computer_id, raw_name, version] as match keys per Fix 1 requirements.
+                // We use '' as a sentinel for NULL version to ensure proper unique indexing.
                 $discovery = SoftwareDiscovery::updateOrCreate(
                     [
                         'computer_id' => $computer->id,
-                        'catalog_id' => $catalog->id,
+                        'raw_name' => $name,
+                        'version' => $soft['version'] ?? '',
                     ],
                     [
-                        'raw_name' => $name,
-                        'version' => $soft['version'] ?? null,
+                        'catalog_id' => $catalog->id,
                         'vendor' => $soft['vendor'] ?? null,
                         'install_date' => $soft['install_date'] ?? now(),
                     ]

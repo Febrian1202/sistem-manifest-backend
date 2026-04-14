@@ -10,16 +10,19 @@ class LicenseInventoryObserver
     public function created(LicenseInventory $license): void
     {
         // License changes affect compliance stats shown on dashboard
-        Cache::tags(['dashboard'])->flush();
+        Cache::forget('dashboard.stats');
+        Cache::forget('dashboard.charts');
     }
 
     public function updated(LicenseInventory $license): void
     {
-        Cache::tags(['dashboard'])->flush();
+        Cache::forget('dashboard.stats');
+        Cache::forget('dashboard.charts');
     }
 
     public function deleted(LicenseInventory $license): void
     {
-        Cache::tags(['dashboard'])->flush();
+        Cache::forget('dashboard.stats');
+        Cache::forget('dashboard.charts');
     }
 }

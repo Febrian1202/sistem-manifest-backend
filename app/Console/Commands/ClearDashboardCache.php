@@ -26,7 +26,8 @@ class ClearDashboardCache extends Command
      */
     public function handle()
     {
-        Cache::tags(['dashboard'])->flush();
+        Cache::forget('dashboard.stats');
+        Cache::forget('dashboard.charts');
         $this->info('Dashboard cache cleared successfully.');
     }
 }
