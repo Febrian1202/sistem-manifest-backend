@@ -24,11 +24,11 @@ class DashboardController extends Controller
                 'uniqueSoftwares' => SoftwareDiscovery::distinct('raw_name')->count(),
                 'unlicensedOS' => Computer::where('os_license_status', '!=', 'Licensed')->count(),
                 'computersWithBlacklist' => SoftwareDiscovery::whereHas('catalog', function ($q) {
-                    $q->where('status', 'Blacklisted');
+                    $q->where('status', 'Blacklist');
                 })->distinct('computer_id')->count(),
                 'healthyComputers' => Computer::where('os_license_status', 'Licensed')
                     ->whereDoesntHave('softwares.catalog', function ($q) {
-                        $q->where('status', 'Blacklisted');
+                        $q->where('status', 'Blacklist');
                     })->count(),
             ];
         });
@@ -90,14 +90,23 @@ class DashboardController extends Controller
 
             // Recent Activity
             $recentActivities = Computer::withCount('softwares')
+                ->with(['softwares.catalog' => function ($q) {
+                    $q->where('status', 'Blacklist');
+                }])
                 ->orderBy('last_seen_at', 'desc')
                 ->take(5)
                 ->get()
                 ->map(function ($computer) {
+                    // Check if computer has any blacklisted software
+                    $hasBlacklist = $computer->softwares->some(fn($s) => $s->catalog && $s->catalog->status === 'Blacklist');
+
                     $status = 'success';
                     $statusText = 'Clean';
 
-                    if ($computer->os_license_status !== 'Licensed') {
+                    if ($hasBlacklist) {
+                        $status = 'destructive';
+                        $statusText = 'Software Issue';
+                    } elseif ($computer->os_license_status !== 'Licensed') {
                         $status = 'warning';
                         $statusText = 'OS Issue';
                     }

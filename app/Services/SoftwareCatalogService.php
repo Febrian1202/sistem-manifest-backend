@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Computer;
 use App\Models\SoftwareCatalog;
 use App\Models\SoftwareDiscovery;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class SoftwareCatalogService
@@ -49,7 +50,7 @@ class SoftwareCatalogService
                     [
                         'catalog_id' => $catalog->id,
                         'vendor' => $soft['vendor'] ?? null,
-                        'install_date' => $soft['install_date'] ?? now(),
+                        'install_date' => $this->parseInstallDate($soft['install_date'] ?? null),
                     ]
                 );
 
@@ -61,5 +62,31 @@ class SoftwareCatalogService
                 ->whereNotIn('id', $currentDiscoveryIds)
                 ->delete();
         });
+    }
+
+    /**
+     * Parse install_date from various formats (e.g. 'M/d/yyyy', 'yyyyMMdd') to a MySQL-compatible date.
+     */
+    private function parseInstallDate(?string $date): string
+    {
+        if (empty($date)) {
+            return now()->toDateString();
+        }
+
+        // Handle Windows registry format 'yyyyMMdd' (e.g. '20250205')
+        if (preg_match('/^\d{8}$/', $date)) {
+            try {
+                return Carbon::createFromFormat('Ymd', $date)->toDateString();
+            } catch (\Exception $e) {
+                return now()->toDateString();
+            }
+        }
+
+        // Handle other formats like 'M/d/yyyy', 'yyyy-MM-dd', etc.
+        try {
+            return Carbon::parse($date)->toDateString();
+        } catch (\Exception $e) {
+            return now()->toDateString();
+        }
     }
 }

@@ -15,7 +15,7 @@ class SoftwareCatalogObserver
 
     public function updated(SoftwareCatalog $catalog): void
     {
-        // Many dashboard stats depend on software status (e.g. Blacklisted)
+        // Many dashboard stats depend on software status (e.g. Blacklist)
         Cache::forget('dashboard.stats');
         Cache::forget('dashboard.charts');
     }
