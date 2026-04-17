@@ -75,6 +75,14 @@ class ComputerDataController extends Controller
                 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
             ]);
         }
+    }
+    public function requestScan(Computer $computer)
+    {
+        $computer->update(['scan_requested' => true]);
 
+        return back()->with([
+            'message' => 'Permintaan scan dikirim. Agent akan memproses pada polling berikutnya.',
+            'status' => 'success',
+        ]);
     }
 }

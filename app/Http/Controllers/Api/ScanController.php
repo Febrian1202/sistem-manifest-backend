@@ -76,6 +76,9 @@ class ScanController extends Controller
             );
         }
 
+        // 5. Reset on-demand scan flag
+        $computer->update(['scan_requested' => false]);
+
         return response()->json([
             'status'   => 'received',
             'message'  => 'Data scan hardware & software sedang diproses',

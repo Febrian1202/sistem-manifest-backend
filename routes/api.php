@@ -14,4 +14,5 @@ Route::post('/agent/register', [AgentRegisterController::class, 'register']);
 // 2. Protected Agent Routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/scan-result', [ScanController::class, 'store']);
+    Route::get('/agent/scan-command', [\App\Http\Controllers\Api\AgentCommandController::class, 'index']);
 });

@@ -1,8 +1,11 @@
+param([string]$Mode = "poll")
+
 # Konfigurasi API
-$baseUrl     = "http://127.0.0.1:8000/api"
-$registerUrl = "$baseUrl/agent/register"
-$scanUrl     = "$baseUrl/scan-result"
-$tokenFile   = "$PSScriptRoot\agent_token.txt"
+$baseUrl        = "http://127.0.0.1:8000/api"
+$registerUrl    = "$baseUrl/agent/register"
+$scanUrl        = "$baseUrl/scan-result"
+$scanCommandUrl = "$baseUrl/agent/scan-command"
+$tokenFile      = "$PSScriptRoot\agent_token.txt"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -49,6 +52,26 @@ if (-not (Test-Path $tokenFile)) {
 $headers = @{
     "Authorization" = "Bearer $token"
     "Accept"        = "application/json"
+}
+
+# ---------------------------------------------------------
+# TAHAP 0.5: CEK PERINTAH SCAN
+# ---------------------------------------------------------
+if ($Mode -eq "poll") {
+    Write-Host " [0.5/3] Mengecek Perintah Scan dari Server..." -ForegroundColor Yellow
+    try {
+        $command = Invoke-RestMethod -Uri $scanCommandUrl -Method Get -Headers $headers
+        if (-not $command.should_scan) {
+            Write-Host " [!] Tidak ada permintaan scan. Keluar." -ForegroundColor Cyan
+            exit 0
+        }
+        Write-Host " [+] Ada permintaan scan. Melanjutkan..." -ForegroundColor Green
+    } catch {
+        Write-Host " [WARN] Gagal cek perintah: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        exit 0
+    }
+} else {
+    Write-Host " [0.5/3] Mode Scheduled: Menjalankan Scan Lengkap..." -ForegroundColor Green
 }
 
 # ---------------------------------------------------------
