@@ -129,7 +129,7 @@ class DashboardSeeder extends Seeder
         }
 
         foreach (array_chunk($discoveries, 100) as $chunk) {
-            DB::table('software_discoveries')->insert($chunk);
+            DB::table('software_discoveries')->insertOrIgnore($chunk);
         }
     }
 }

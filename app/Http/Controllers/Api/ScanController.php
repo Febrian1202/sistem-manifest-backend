@@ -4,212 +4,85 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Computer;
 use Illuminate\Http\Request;
-use App\Models\SoftwareCatalog;
-use App\Models\SoftwareDiscovery;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessScanResultJob;
 
 class ScanController extends Controller
 {
+    /**
+     * Store scan results from agent.
+     * Identity is tied to the Sanctum token (auth()->user()).
+     */
     public function store(Request $request)
     {
-        // 1. Validasi Input (Gabungan Hardware Baru + Software)
+        // 1. Check Token Ability
+        if (!$request->user()->tokenCan('scan:submit')) {
+            return response()->json(['message' => 'Token does not have scan submission abilities.'], 403);
+        }
+
+        // 2. Validate Input
         $request->validate([
-            'computer_name' => 'required|string',
-
-            // Field Hardware Baru
-            'processor' => 'nullable|string',
-            'ram_gb' => 'nullable|integer',
-            'disk_total_gb' => 'nullable|integer',
-            'disk_free_gb' => 'nullable|integer',
-            'manufacturer' => 'nullable|string',
-            'model' => 'nullable|string',
-            'serial_number' => 'nullable|string',
-
-            // Network & OS
-            'ip_address' => 'nullable|string',
-            'mac_address' => 'nullable|string',
-            'os_name' => 'nullable|string', // Sesuai migration baru (dulu os_info)
-            'os_version' => 'nullable|string',
-            'os_architecture' => 'nullable|string',
-            'os_license_status' => 'nullable|string',
-            'os_partial_key' => 'nullable|string',
-
-            // Software List
-            'installed_software' => 'required|array',
+            'hostname'           => 'required|string|max:255',
+            'processor'          => 'nullable|string|max:255',
+            'ram_gb'             => 'nullable|integer|min:0',
+            'disk_total_gb'      => 'nullable|integer|min:0',
+            'disk_free_gb'       => 'nullable|integer|min:0',
+            'manufacturer'       => 'nullable|string|max:255',
+            'model'              => 'nullable|string|max:255',
+            'serial_number'      => 'nullable|string|max:255',
+            'ip_address'         => 'nullable|string|max:45',
+            'mac_address'        => 'nullable|string|max:17',
+            'os_name'            => 'nullable|string|max:255',
+            'os_version'         => 'nullable|string|max:255',
+            'os_architecture'    => 'nullable|string|max:50',
+            'os_license_status'  => 'nullable|string|max:50',
+            'os_partial_key'     => 'nullable|string|max:255',
+            'installed_software' => 'nullable|array',
+            'installed_software.*.name'    => 'required|string',
+            'installed_software.*.version' => 'nullable|string',
+            'installed_software.*.vendor'  => 'nullable|string',
+            'installed_software.*.install_date' => 'nullable|string',
         ]);
 
-        DB::beginTransaction();
+        // 3. Update Authenticated Computer record (Identity comes from Token)
+        $computer = $request->user();
+        $computer->update([
+            'hostname'          => $request->hostname,
+            'processor'         => $request->processor,
+            'ram_gb'            => $request->ram_gb,
+            'disk_total_gb'     => $request->disk_total_gb,
+            'disk_free_gb'      => $request->disk_free_gb,
+            'manufacturer'      => $request->manufacturer,
+            'model'             => $request->model,
+            'serial_number'     => $request->serial_number,
 
-        try {
-            // 2. Simpan/Update Data Komputer (Termasuk Spesifikasi Hardware)
-            $computer = Computer::updateOrCreate(
-                ['hostname' => $request->computer_name], // Kunci pencarian
-                [
-                    // Update spesifikasi hardware
-                    'processor' => $request->processor,
-                    'ram_gb' => $request->ram_gb,
-                    'disk_total_gb' => $request->disk_total_gb,
-                    'disk_free_gb' => $request->disk_free_gb,
-                    'manufacturer' => $request->manufacturer,
-                    'model' => $request->model,
-                    'serial_number' => $request->serial_number,
+            'ip_address'        => $request->ip_address ?? $request->ip(),
+            'mac_address'       => $request->mac_address,
 
-                    // Network & Identitas
-                    'ip_address' => $request->ip_address ?? $request->ip(),
-                    'mac_address' => $request->mac_address,
+            'os_name'           => $request->os_name,
+            'os_version'        => $request->os_version,
+            'os_architecture'   => $request->os_architecture,
+            'os_license_status' => $request->os_license_status,
+            'os_partial_key'    => $request->os_partial_key,
 
-                    // Info OS (Mapping os_info lama ke os_name baru jika perlu)
-                    'os_name' => $request->os_name ?? $request->os_info,
-                    'os_version' => $request->os_version,
-                    'os_architecture' => $request->os_architecture,
-                    'os_license_status' => $request->os_license_status,
-                    'os_partial_key' => $request->os_partial_key,
+            'last_seen_at'      => now(),
+        ]);
 
-                    'last_seen_at' => now(),
-                ]
+        // 4. Dispatch heavy software processing to async job
+        if ($request->installed_software) {
+            ProcessScanResultJob::dispatch(
+                $computer,
+                $request->installed_software
             );
-
-            // 3. Reset Data Software Lama (Clean Slate)
-            SoftwareDiscovery::where('computer_id', $computer->id)->delete();
-
-            // 4. Proses Filtering Software (Logika Lama Anda Dipertahankan)
-            $rawSoftwares = $request->installed_software;
-
-            // A. Keywords Prioritas (Wajib Masuk: Bajakan/Game/Torrent)
-            $priorityKeywords = [
-                'Epic Games',
-                'Steam',
-                'Ubisoft',
-                'Crack',
-                'Patch',
-                'Keygen',
-                'Activator',
-                'Torrent',
-                'uTorrent',
-                'BitTorrent',
-                'Daemon Tools'
-            ];
-
-            // B. Keywords Sampah (Filter Sampah Driver/Update/Runtime)
-            $ignoredKeywords = [
-                'Redistributable',
-                'Runtime',
-                'Framework',
-                'Library',
-                'SDK',
-                'API',
-                'DirectX',
-                'Vulkan',
-                'OpenGL',
-                'Prerequisites',
-                'Driver',
-                'Chipset',
-                'PhysX',
-                'GeForce',
-                'Radeon',
-                'Intel(R)',
-                'Realtek',
-                'BIOS',
-                'Firmware',
-                'Update',
-                'KB',
-                'Patch',
-                'Service Pack',
-                'Language Pack',
-                'Feature Pack',
-                'Support',
-                'Bootstrap',
-                'Test Suite',
-                'Documentation',
-                'Help',
-                'Manual',
-                'Setup',
-                'Installer',
-                'Launcher',
-                'Helper',
-                'Agent',
-                'Updater',
-                'Assistant',
-                'Wizard',
-                'Tool',
-                'Bridge',
-                'Connector',
-                'Plugin',
-                'Extension',
-                'Add-in',
-                'Addon',
-                'WebResource',
-                'Click-to-Run',
-                'Extensibility',
-                'Localization',
-                'Licensing Component',
-                'AppHost',
-                'Host FX',
-                'vs_',
-                'Minshell',
-                'Redist',
-                'Client Profile',
-                'Targeting Pack',
-            ];
-
-            foreach ($rawSoftwares as $soft) {
-                // Skip jika nama kosong
-                if (empty($soft['name']))
-                    continue;
-
-                $name = $soft['name'];
-                $isPriority = false;
-
-                // 4.1 Cek Priority (Case Insensitive)
-                foreach ($priorityKeywords as $pk) {
-                    if (stripos($name, $pk) !== false) {
-                        $isPriority = true;
-                        break;
-                    }
-                }
-
-                // 4.2 Cek Filter Sampah (Hanya jika bukan prioritas)
-                if (!$isPriority) {
-                    foreach ($ignoredKeywords as $keyword) {
-                        if (stripos($name, $keyword) !== false) {
-                            // Skip loop software ini (jangan disimpan)
-                            continue 2;
-                        }
-                    }
-                }
-
-                // 4.3 Cek Katalog (Auto Discovery)
-                $catalog = SoftwareCatalog::firstOrCreate(
-                    ['normalized_name' => $name],
-                    ['status' => 'Unreviewed', 'category' => 'Freeware']
-                );
-
-                // 4.4 Simpan ke Database
-                SoftwareDiscovery::create([
-                    'computer_id' => $computer->id,
-                    'catalog_id' => $catalog->id,
-                    'raw_name' => $name,
-                    'version' => $soft['version'] ?? null,
-                    'vendor' => $soft['vendor'] ?? null,
-                    'install_date' => now(),
-                ]);
-            }
-
-            DB::commit();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Data scan hardware & software berhasil disimpan',
-                'computer' => $computer->hostname
-            ], 200);
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Gagal memproses data: ' . $e->getMessage()
-            ], 500);
         }
+
+        // 5. Reset on-demand scan flag
+        $computer->update(['scan_requested' => false]);
+
+        return response()->json([
+            'status'   => 'received',
+            'message'  => 'Data scan hardware & software sedang diproses',
+            'computer' => $computer->hostname
+        ], 202);
     }
 }

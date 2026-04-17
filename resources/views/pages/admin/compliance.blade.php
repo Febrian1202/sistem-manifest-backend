@@ -14,5 +14,10 @@
 
         {{-- Tabel Audit --}}
         <x-compliance.table :softwares="$softwares" />
+
+        {{-- Pagination --}}
+        <div class="mt-4">
+            {{ $softwares->links() }}
+        </div>
     </div>
 </x-layout.app>
