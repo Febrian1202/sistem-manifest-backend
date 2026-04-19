@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@usn.ac.id'
         ], [
             'name' => 'Administrator',
-            'password' => Hash::make('password'),
+            'password' => 'password',
         ]);
         $admin->assignRole('admin');
 
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'pimpinan@usn.ac.id'
         ], [
             'name' => 'Pimpinan',
-            'password' => Hash::make('password'),
+            'password' => 'password',
         ]);
         $pimpinan->assignRole('pimpinan');
     }

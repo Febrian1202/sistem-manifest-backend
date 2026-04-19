@@ -40,68 +40,74 @@
             </div>
         </a>
 
-        <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
-            :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
-            Manajemen Aset
-        </div>
-        <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
-
-        <a href="/computers"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('computers*') ? $activeClass : $inactiveClass }}">
-            <div class="w-6 flex justify-center">
-                <i class="fa-solid fa-desktop text-lg"></i>
+        @canany(['manage computers', 'manage softwares'])
+            <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
+                :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
+                Manajemen Aset
             </div>
-            <span class="font-medium whitespace-nowrap transition-opacity duration-200"
-                :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Data Komputer</span>
-        </a>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
 
-        <a href="/softwares"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('softwares*') ? $activeClass : $inactiveClass }}">
-            <div class="w-6 flex justify-center">
-                <i class="fa-solid fa-database text-lg"></i>
+            <a href="/computers"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('computers*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-desktop text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Data Komputer</span>
+            </a>
+
+            <a href="/softwares"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('softwares*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-database text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Katalog Software</span>
+            </a>
+        @endcanany
+
+        @can('manage licenses')
+            <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
+                :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
+                Lisensi & Audit
             </div>
-            <span class="font-medium whitespace-nowrap transition-opacity duration-200"
-                :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Katalog Software</span>
-        </a>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
 
-        <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
-            :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
-            Lisensi & Audit
-        </div>
-        <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
+            <a href="/licenses"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('licenses*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-file-contract text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Inventaris Lisensi</span>
+            </a>
 
-        <a href="/licenses"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('licenses*') ? $activeClass : $inactiveClass }}">
-            <div class="w-6 flex justify-center">
-                <i class="fa-solid fa-file-contract text-lg"></i>
+            <a href="/compliance"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('compliance*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-shield-halved text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Audit Kepatuhan</span>
+            </a>
+        @endcan
+
+        @can('view reports')
+            <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
+                :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
+                Laporan
             </div>
-            <span class="font-medium whitespace-nowrap transition-opacity duration-200"
-                :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Inventaris Lisensi</span>
-        </a>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
 
-        <a href="/compliance"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('compliance*') ? $activeClass : $inactiveClass }}">
-            <div class="w-6 flex justify-center">
-                <i class="fa-solid fa-shield-halved text-lg"></i>
-            </div>
-            <span class="font-medium whitespace-nowrap transition-opacity duration-200"
-                :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Audit Kepatuhan</span>
-        </a>
-
-        <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
-            :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
-            Laporan
-        </div>
-        <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
-
-        <a href="{{ route('reports') }}"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('reports*') ? $activeClass : $inactiveClass }}">
-            <div class="w-6 flex justify-center">
-                <i class="fa-solid fa-file-pdf text-lg"></i>
-            </div>
-            <span class="font-medium whitespace-nowrap transition-opacity duration-200"
-                :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Laporan & Cetak</span>
-        </a>
+            <a href="{{ route('reports') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('reports*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-file-pdf text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Laporan & Cetak</span>
+            </a>
+        @endcan
     </nav>
 
     <div class="p-3 border-t border-sidebar-border justify-center flex">
