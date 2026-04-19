@@ -76,6 +76,7 @@
                     </x-ui.table.table-cell>
 
                     <x-ui.table.table-cell class="text-right">
+                        @role('admin')
                         <div class="flex items-center justify-end">
                             {{-- DROPDRWON ACTIONS --}}
                             <x-ui.dropdown align="right" width="48">
@@ -189,6 +190,9 @@
                                 </x-slot>
                             </x-ui.dropdown>
                         </div>
+                        @else
+                        <span class="text-xs text-muted-foreground italic">Read Only</span>
+                        @endrole
                     </x-ui.table.table-cell>
                 </x-ui.table.table-row>
             @empty

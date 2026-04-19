@@ -40,14 +40,6 @@
     {{-- Kanan: Search & Menu --}}
     <div class="flex items-center gap-4">
 
-        {{-- Search Bar --}}
-        <div class="relative hidden md:block">
-            <i
-                class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"></i>
-            <x-input placeholder="Search..."
-                class="w-64 pl-10 bg-muted/50 border-transparent focus:bg-background focus:border-input transition-colors placeholder:text-muted-foreground" />
-        </div>
-
         {{-- Dropdown Notifikasi --}}
         <x-dropdown align="right" width="w-80">
             <x-slot name="trigger">
@@ -92,11 +84,17 @@
                 <button
                     class="flex items-center gap-3 transition-colors hover:bg-accent rounded-md py-1 pr-2 pl-1 focus:outline-none focus:ring-2 focus:ring-ring">
                     <div class="h-8 w-8 rounded-full bg-primary flex items-center justify-center shadow-sm">
-                        <span class="text-sm font-bold text-primary-foreground">AD</span>
+                        <span class="text-sm font-bold text-primary-foreground">
+                            {{ substr(auth()->user()->name, 0, 2) }}
+                        </span>
                     </div>
                     <div class="hidden md:flex flex-col items-start text-left">
-                        <span class="text-sm font-semibold text-foreground leading-tight">Admin IT</span>
-                        <span class="text-[10px] text-muted-foreground font-medium">Administrator</span>
+                        <span class="text-sm font-semibold text-foreground leading-tight">
+                            {{ auth()->user()->name }}
+                        </span>
+                        <span class="text-[10px] text-muted-foreground font-medium uppercase">
+                            {{ auth()->user()->roles->pluck('name')->first() ?? 'User' }}
+                        </span>
                     </div>
                     <i class="fa-solid fa-angle-up fa-xs text-muted-foreground transition-transform duration-300"
                         :class="{ 'rotate-180': open }"></i>
@@ -105,22 +103,10 @@
 
             <x-slot name="content">
                 <div class="md:hidden px-3 py-2 border-b border-border">
-                    <p class="text-sm font-semibold text-foreground">Admin IT</p>
-                    <p class="text-xs text-muted-foreground">admin@usn.ac.id</p>
+                    <p class="text-sm font-semibold text-foreground">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-muted-foreground">{{ auth()->user()->email }}</p>
                 </div>
-                <div class="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Akun Saya
-                </div>
-                <x-dropdown-item href="/profile">
-                    <i class="fa-regular fa-user mr-2 text-muted-foreground text-md"></i>
-                    Profil
-                </x-dropdown-item>
-                <x-dropdown-item href="/settings">
-                    <i class="fa-solid fa-gear mr-2 text-muted-foreground"></i>
-                    Pengaturan
-                </x-dropdown-item>
-                <x-dropdown-separator />
-                <form method="POST" action="">
+                <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <x-dropdown-item onclick="event.preventDefault(); this.closest('form').submit();"
                         class="text-destructive focus:bg-destructive/10 focus:text-destructive">

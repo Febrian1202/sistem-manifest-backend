@@ -11,6 +11,7 @@
             </div>
 
             {{-- SHEET TAMBAH LISENSI --}}
+            @role('admin')
             <x-ui.sheet.sheet>
                 <x-ui.sheet.trigger>
                     <x-ui.button>
@@ -91,6 +92,7 @@
                     </form>
                 </x-ui.sheet.content>
             </x-ui.sheet.sheet>
+            @endrole
         </div>
 
         {{-- Menampilkan Pesan Berhasil/Gagal dari Controller --}}

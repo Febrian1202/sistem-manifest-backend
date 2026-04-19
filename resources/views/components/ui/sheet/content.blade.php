@@ -43,7 +43,7 @@
             x-transition:enter-start="{{ $enterStart }}" x-transition:enter-end="{{ $enterEnd }}"
             x-transition:leave="transition ease-in-out duration-300 transform"
             x-transition:leave-start="{{ $enterEnd }}" x-transition:leave-end="{{ $enterStart }}"
-            {{ $attributes->merge(['class' => 'fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out duration-300 ' . $positionClass]) }}>
+            {{ $attributes->merge(['class' => 'fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out duration-300 overflow-y-auto max-h-screen ' . $positionClass]) }}>
 
             {{-- Close Button --}}
             <button @click="open = false"
