@@ -78,10 +78,13 @@
                 <div class="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Akun Saya
                 </div>
+                {{-- Temporarily hidden until profile feature is implemented --}}
+                {{-- 
                 <x-dropdown-item href="/profile">
                     <i class="fa-regular fa-user mr-2 text-muted-foreground"></i>
                     Profil
                 </x-dropdown-item>
+                --}}
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <x-dropdown-item onclick="event.preventDefault(); this.closest('form').submit();"

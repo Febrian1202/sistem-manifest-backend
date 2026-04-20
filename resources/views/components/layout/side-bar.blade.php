@@ -40,7 +40,7 @@
             </div>
         </a>
 
-        @canany(['manage computers', 'manage softwares'])
+        @role('admin|pimpinan')
             <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
                 Manajemen Aset
@@ -64,9 +64,9 @@
                 <span class="font-medium whitespace-nowrap transition-opacity duration-200"
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Katalog Software</span>
             </a>
-        @endcanany
+        @endrole
 
-        @can('manage licenses')
+        @role('admin')
             <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
                 Lisensi & Audit
@@ -90,9 +90,9 @@
                 <span class="font-medium whitespace-nowrap transition-opacity duration-200"
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Audit Kepatuhan</span>
             </a>
-        @endcan
+        @endrole
 
-        @can('view reports')
+        @role('admin|pimpinan')
             <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
                 Laporan
@@ -107,7 +107,7 @@
                 <span class="font-medium whitespace-nowrap transition-opacity duration-200"
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Laporan & Cetak</span>
             </a>
-        @endcan
+        @endrole
     </nav>
 
     <div class="p-3 border-t border-sidebar-border justify-center flex">

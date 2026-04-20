@@ -66,14 +66,14 @@
                 {{-- Header --}}
                 <div class="space-y-2">
                     <h2 class="text-3xl font-bold tracking-tight text-foreground">
-                        Welcome back
+                        Selamat Datang
                     </h2>
                     <p class="text-sm text-muted-foreground">
-                        Please enter your credentials to access the dashboard.
+                        Silakan masukkan kredensial Anda untuk mengakses dashboard.
                     </p>
                 </div>
 
-                {{-- Error Status Session (Jika login salah) --}}
+                {{-- Error Status Session --}}
                 @if (session('status'))
                     <div class="mb-4 font-medium text-sm text-green-600">
                         {{ session('status') }}
@@ -81,75 +81,87 @@
                 @endif
 
                 @if ($errors->any())
-                    <div class="mb-4">
-                        <div class="font-medium text-red-600 text-sm">Whoops! Something went wrong.</div>
-                        <ul class="mt-1 list-disc list-inside text-xs text-red-600">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                    <x-ui.card class="p-4 bg-destructive/5 border-destructive/20">
+                        <div class="flex gap-3">
+                            <i class="fa-solid fa-circle-exclamation text-destructive mt-0.5"></i>
+                            <div class="space-y-1">
+                                <p class="text-sm font-semibold text-destructive">Ups! Terjadi kesalahan.</p>
+                                <ul class="text-xs text-destructive/90 list-disc list-inside">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </x-ui.card>
                 @endif
 
                 {{-- Login Form --}}
-                <form method="POST" action="{{ route('login') }}" class="space-y-5" x-data="{ showPassword: false }">
+                <form method="POST" action="{{ route('login') }}" class="space-y-5" 
+                    x-data="{ showPassword: false, loading: false }"
+                    @submit="loading = true">
                     @csrf
 
                     {{-- Email Input --}}
                     <div class="space-y-2">
-                        <label for="email"
-                            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Email
-                        </label>
+                        <x-form.label for="email">Email</x-form.label>
                         <div class="relative">
-                            <i
-                                class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm"></i>
-                            <input id="email" type="email" name="email" placeholder="nama@usn.ac.id"
+                            <i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm z-10"></i>
+                            <x-form.input id="email" type="email" name="email" placeholder="nama@usn.ac.id"
                                 value="{{ old('email') }}" required autofocus autocomplete="username"
-                                class="flex h-11 w-full rounded-md border border-input bg-transparent pl-10 pr-3 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" />
+                                class="pl-10" />
                         </div>
+                        @error('email')
+                            <p class="text-xs text-destructive font-medium mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     {{-- Password Input --}}
                     <div class="space-y-2">
-                        <label for="password"
-                            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            Password
-                        </label>
+                        <x-form.label for="password">Password</x-form.label>
                         <div class="relative">
-                            <i
-                                class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm"></i>
-                            <input id="password" :type="showPassword ? 'text' : 'password'" name="password"
+                            <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm z-10"></i>
+                            <x-form.input id="password" ::type="showPassword ? 'text' : 'password'" name="password"
                                 placeholder="••••••••" required autocomplete="current-password"
-                                class="flex h-11 w-full rounded-md border border-input bg-transparent pl-10 pr-10 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" />
+                                class="pl-10 pr-10" />
 
                             {{-- Toggle Button (Alpine) --}}
                             <button type="button" @click="showPassword = !showPassword"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none rounded">
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none rounded z-10">
                                 <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
                             </button>
                         </div>
+                        @error('password')
+                            <p class="text-xs text-destructive font-medium mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    {{-- Extras: Remember Me & Forgot Password --}}
+                    {{-- Extras: Remember Me --}}
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-2">
                             <input type="checkbox" id="remember_me" name="remember"
                                 class="peer h-4 w-4 shrink-0 rounded-sm border border-primary shadow focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 accent-primary" />
-                            <label for="remember_me"
-                                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer">
-                                Remember me
-                            </label>
+                            <x-form.label for="remember_me" class="cursor-pointer">
+                                Ingat saya
+                            </x-form.label>
                         </div>
                     </div>
+
                     {{-- Submit Button --}}
-                    <button type="submit"
-                        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-11 w-full">
-                        <span class="flex items-center gap-2">
-                            Sign In
-                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                        </span>
-                    </button>
+                    <x-ui.button type="submit" class="w-full h-11" ::disabled="loading">
+                        <template x-if="!loading">
+                            <span class="flex items-center gap-2">
+                                Masuk
+                                <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                            </span>
+                        </template>
+                        <template x-if="loading">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-notch animate-spin"></i>
+                                Memproses...
+                            </span>
+                        </template>
+                    </x-ui.button>
                 </form>
 
                 {{-- Footer --}}
