@@ -32,25 +32,17 @@ class ComplianceDataController extends Controller
                 return $software;
             });
 
-        // 2. Hitung Statistik Global (Ini bisa dicache nanti di Step 2, tapi sekarang kita hitung efisien)
-        // Karena kita pakai pagination, kita butuh query terpisah untuk total deficit global
-        $stats = [
-            'total_commercial' => SoftwareCatalog::where('category', 'Commercial')->count(),
-            'total_deficit' => SoftwareCatalog::where('category', 'Commercial')
-                ->withCount('discoveries')
-                ->withSum('licenses as owned_count', 'quota_limit')
-                ->get()
-                ->sum(fn($s) => max(0, $s->discoveries_count - ($s->owned_count ?? 0))),
-        ];
-
-        // Hitung compliant/non-compliant untuk stats dashboard page
-        // (Bisa dioptimasi lebih lanjut jika data sangat besar)
-        $complianceStats = SoftwareCatalog::where('category', 'Commercial')
+        // 2. Hitung Statistik Global (Efisien)
+        $allCommercial = SoftwareCatalog::where('category', 'Commercial')
             ->withCount('discoveries')
             ->withSum('licenses as owned_count', 'quota_limit')
             ->get();
-            
-        $stats['compliant'] = $complianceStats->filter(fn($s) => ($s->discoveries_count <= ($s->owned_count ?? 0)))->count();
+
+        $stats = [
+            'total_commercial' => $allCommercial->count(),
+            'total_deficit' => $allCommercial->sum(fn($s) => max(0, $s->discoveries_count - ($s->owned_count ?? 0))),
+            'compliant' => $allCommercial->where(fn($s) => $s->discoveries_count <= ($s->owned_count ?? 0))->count(),
+        ];
         $stats['non_compliant'] = $stats['total_commercial'] - $stats['compliant'];
 
         return view('pages.admin.compliance', compact('softwares', 'stats'));

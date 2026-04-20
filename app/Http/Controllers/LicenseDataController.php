@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\LicenseInventory;
 use App\Models\SoftwareCatalog;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreLicenseRequest;
+use App\Http\Requests\UpdateLicenseRequest;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class LicenseDataController extends Controller
 {
@@ -50,25 +54,10 @@ class LicenseDataController extends Controller
     }
 
     // Menyimpan data pembelian
-    public function store(Request $request, LicenseInventory $license)
+    public function store(StoreLicenseRequest $request)
     {
         try {
-            // 1. Validasi Data
-            $validated = $request->validate([
-                'catalog_id' => 'required|exists:software_catalogs,id',
-                'purchase_order_number' => 'nullable|string|max:255',
-                'quota_limit' => 'required|integer|min:1',
-                'purchase_date' => 'nullable|date',
-                'expiry_date' => 'nullable|date|after_or_equal:purchase_date',
-                'price_per_unit' => 'nullable|numeric|min:0',
-                'notes' => 'nullable|string',
-                'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Wajib & Gambar
-            ], [
-                // Custom Message agar user paham (Opsional)
-                'proof_image.required' => 'Bukti pembelian berupa gambar wajib diunggah.',
-                'catalog_id.required' => 'Silakan pilih software terlebih dahulu.',
-                'quota_limit.min' => 'Kuota lisensi minimal adalah 1.',
-            ]);
+            $validated = $request->validated();
 
             // 2. Handle Upload Gambar
             if ($request->hasFile('proof_image')) {
@@ -91,32 +80,25 @@ class LicenseDataController extends Controller
                 'message' => 'Gagal menyimpan! Ada kesalahan pada isian form Anda.'
             ]);
         } catch (\Exception $e) {
-            // Jika ada error sistem/database (misal: database mati atau kolom kurang)
+            Log::error('License Store Error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan sistem saat menyimpan data.'
             ]);
         }
     }
 
-    public function update(Request $request, LicenseInventory $license)
+    public function update(UpdateLicenseRequest $request, LicenseInventory $license)
     {
         try {
-            $validated = $request->validate([
-                'catalog_id' => 'required|exists:software_catalogs,id',
-                'quota_limit' => 'required|integer|min:1',
-                'expiry_date' => 'nullable|date',
-                'proof_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-                'notes' => 'nullable|string',
-                'price_per_unit' => 'nullable|numeric|min:0',
-                'purchase_order_number' => 'nullable|string|max:255',
-                'purchase_date' => 'nullable|date',
-            ]);
+            $validated = $request->validated();
 
             if ($request->hasFile('proof_image')) {
                 // Hapus gambar lama jika ada
                 if ($license->proof_image) {
-                    \Storage::disk('public')->delete($license->proof_image);
+                    Storage::disk('public')->delete($license->proof_image);
                 }
                 $validated['proof_image'] = $request->file('proof_image')->store('license_proofs', 'public');
             }
@@ -130,12 +112,16 @@ class LicenseDataController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->validator)->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Gagal! Harap periksa kembali isian form Anda: ' . $e->getMessage()
+                'message' => 'Gagal! Harap periksa kembali isian form Anda.'
             ]);
         } catch (\Exception $e) {
+            Log::error('License Update Error: ' . $e->getMessage(), [
+                'id' => $license->id,
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Gagal update: ' . $e->getMessage()
+                'message' => 'Gagal memperbarui data lisensi.'
             ]);
         }
     }
@@ -143,6 +129,11 @@ class LicenseDataController extends Controller
     // Menghapus Data Lisensi
     public function destroy(LicenseInventory $license)
     {
+        // UX-002: Hapus gambar bukti dari storage agar tidak jadi orphan file
+        if ($license->proof_image) {
+            Storage::disk('public')->delete($license->proof_image);
+        }
+
         $license->delete();
 
         return back()->with([

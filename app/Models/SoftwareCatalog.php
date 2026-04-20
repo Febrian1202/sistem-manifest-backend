@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class SoftwareCatalog extends Model
 {
     //
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'normalized_name',
+        'category',
+        'status',
+        'description',
+    ];
 
     public function discoveries()
     {

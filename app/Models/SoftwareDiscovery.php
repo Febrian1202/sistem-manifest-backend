@@ -7,7 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class SoftwareDiscovery extends Model
 {
     //
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'computer_id',
+        'raw_name',
+        'version',
+        'vendor',
+        'install_date',
+        'catalog_id',
+    ];
 
     public function computer()
     {

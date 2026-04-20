@@ -12,7 +12,7 @@ Route::get('/ping', function () {
 Route::post('/agent/register', [AgentRegisterController::class, 'register']);
 
 // 2. Protected Agent Routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::post('/scan-result', [ScanController::class, 'store']);
     Route::get('/agent/scan-command', [\App\Http\Controllers\Api\AgentCommandController::class, 'index']);
 });

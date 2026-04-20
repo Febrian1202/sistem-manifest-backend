@@ -1,4 +1,3 @@
-    <!-- Breathing in, I calm body and mind. Breathing out, I smile. - Thich Nhat Hanh -->
     @props(['computers'])
 
     <div class="rounded-md border border-border bg-card shadow-sm">
@@ -172,6 +171,18 @@
 
                                     </x-ui.sheet.content>
                                 </x-ui.sheet.sheet>
+
+                                {{-- DELETE BUTTON --}}
+                                <form action="{{ route('computers.destroy', $computer->id) }}" method="POST"
+                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus komputer {{ $computer->hostname }}? Semua data scan terkait akan ikut terhapus.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <x-ui.button type="submit" variant="ghost" size="sm"
+                                        class="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                        title="Hapus Komputer">
+                                        <i class="fa-solid fa-trash-can text-xs"></i>
+                                    </x-ui.button>
+                                </form>
                                 @endrole
 
 
