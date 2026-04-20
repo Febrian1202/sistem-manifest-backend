@@ -1,59 +1,175 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Manifest (USN Kolaka)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem Informasi Manifest Lisensi Software untuk mengelola aset IT dan mencegah pelanggaran hak cipta perangkat lunak.
 
-## About Laravel
+![Build Status](https://img.shields.io/github/actions/workflow/status/Febrian1202/sistem-manifest-backend/tests.yml?branch=main)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-green)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📸 Demo
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+> _(Placeholder: Tambahkan screenshot atau GIF dashboard aplikasi di sini)_
+> `![Dashboard Preview](/docs/images/dashboard-preview.png)`
 
-## Learning Laravel
+## ✨ Fitur Utama
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- **Role-Based Access Control (RBAC):** Pemisahan hak akses antara Administrator dan Pimpinan.
+- **Manajemen Aset IT:** Pendataan komputer dan perangkat lunak yang terinstal di setiap unit/fakultas.
+- **Manajemen Lisensi:** Pencatatan lisensi software resmi untuk memantau legalitas penggunaan.
+- **Audit Kepatuhan (Compliance):** Deteksi otomatis perangkat lunak tanpa lisensi atau bajakan.
+- **REST API Terintegrasi:** Endpoint khusus untuk agen (client) di setiap komputer agar dapat mengirim hasil _scan_ secara otomatis.
+- **Laporan & Ekspor:** Menghasilkan laporan kepatuhan dalam format PDF dan Excel.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🛠️ Prerequisites (Prasyarat)
 
-## Laravel Sponsors
+Sebelum menjalankan proyek ini, pastikan sistem Anda telah menginstal perangkat lunak berikut:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **PHP** >= 8.2
+- **Composer** (Dependency Manager untuk PHP)
+- **Node.js & NPM** (Untuk kompilasi aset _frontend_)
+- **Database** (MySQL atau SQLite)
+- **Git**
 
-### Premium Partners
+## 🚀 Instalasi
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Ikuti langkah-langkah berikut untuk menjalankan proyek di lingkungan lokal:
 
-## Contributing
+1. **Clone repositori:**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    ```bash
+    git clone https://github.com/Febrian1202/sistem-manifest-backend.git
+    cd sistem-manifest-backend
+    ```
 
-## Code of Conduct
+2. **Instal dependensi PHP:**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    ```bash
+    composer install
+    ```
 
-## Security Vulnerabilities
+3. **Salin file konfigurasi _environment_:**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    ```bash
+    cp .env.example .env
+    ```
 
-## License
+4. **Konfigurasi Database:**
+   Buka file `.env` dan sesuaikan pengaturan koneksi database (misalnya menggunakan SQLite untuk kemudahan lokal atau MySQL).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    ```env
+    DB_CONNECTION=sqlite
+    # Atau jika menggunakan MySQL:
+    # DB_CONNECTION=mysql
+    # DB_HOST=127.0.0.1
+    # DB_PORT=3306
+    # DB_DATABASE=sistem_manifest
+    # DB_USERNAME=root
+    # DB_PASSWORD=
+    ```
+
+5. **Generate Application Key:**
+
+    ```bash
+    php artisan key:generate
+    ```
+
+6. **Jalankan Migrasi dan Seeder (untuk membuat tabel dan data awal):**
+
+    ```bash
+    php artisan migrate --seed
+    ```
+
+7. **Instal dependensi Node.js & bangun aset UI (Tailwind CSS):**
+
+    ```bash
+    npm install
+    npm run build
+    ```
+
+8. **Jalankan _Development Server_:**
+    ```bash
+    php artisan serve
+    ```
+    Aplikasi sekarang dapat diakses melalui `http://localhost:8000`.
+
+## 💻 Penggunaan Dasar
+
+**Akses Panel Admin:**
+
+1. Buka `http://localhost:8000/login`
+2. Gunakan kredensial _default_ (biasanya diatur pada seeder):
+    - **Email:** `admin@usn.ac.id` (atau sesuai konfigurasi seeder)
+    - **Password:** `password`
+
+**Menambahkan Lisensi Baru:**
+
+1. Login sebagai Admin.
+2. Navigasi ke menu **Lisensi & Audit > Kelola Lisensi**.
+3. Klik tombol **Tambah Lisensi** dan isi formulir yang disediakan.
+
+## 📡 API Reference
+
+Aplikasi ini menyediakan REST API berbasis Laravel Sanctum untuk menerima data _scan_ dari perangkat agen (komputer klien).
+
+### 1. Registrasi Agen (Komputer Baru)
+
+- **Endpoint:** `POST /api/agent/register`
+- **Deskripsi:** Mendaftarkan komputer baru ke dalam sistem dan mendapatkan _Bearer Token_.
+- **Payload:** `{"mac_address": "00:1A:2B:3C:4D", "hostname": "PC-LAB-01"}`
+
+### 2. Mengirim Hasil Scan Software
+
+- **Endpoint:** `POST /api/scan-result`
+- **Auth:** Bearer Token (Sanctum)
+- **Deskripsi:** Mengirimkan daftar _software_ yang terinstal pada komputer agen.
+- **Payload:** `{"softwares": [{"name": "Microsoft Office", "version": "2019"}]}`
+
+### 3. Memeriksa Perintah Scan
+
+- **Endpoint:** `GET /api/agent/scan-command`
+- **Auth:** Bearer Token (Sanctum)
+- **Deskripsi:** Agen melakukan _polling_ secara berkala untuk mengecek apakah server memerintahkan pemindaian ulang.
+
+## 📂 Struktur Proyek
+
+```text
+sistem-manifest-backend/
+├── app/
+│   ├── Http/Controllers/    # Logika bisnis (Web & API Controllers)
+│   ├── Models/              # Representasi tabel database (Eloquent)
+│   └── Observers/           # Event listeners untuk model (misal: ComputerObserver)
+├── database/
+│   ├── migrations/          # Skema database
+│   └── seeders/             # Data dummy/awal (Roles, Admin User)
+├── lang/id/                 # Lokalisasi/Terjemahan Bahasa Indonesia
+├── resources/
+│   ├── css/ & js/           # Aset statis & Tailwind entry
+│   └── views/               # File antarmuka pengguna (Blade Templates)
+│       └── components/      # Reusable Blade UI Components
+├── routes/
+│   ├── api.php              # Definisi route untuk Agent API
+│   └── web.php              # Definisi route untuk Admin Panel
+└── tests/                   # Automated Testing (Pest/PHPUnit)
+```
+
+## 🤝 Contributing
+
+Bagi _developer_ yang ingin berkontribusi:
+
+1. _Fork_ repositori ini.
+2. Buat _branch_ fitur baru (`git checkout -b feature/FiturBaru`).
+3. Lakukan _commit_ pada perubahan Anda (`git commit -m 'feat: menambahkan FiturBaru'`).
+4. _Push_ ke _branch_ tersebut (`git push origin feature/FiturBaru`).
+5. Buat _Pull Request_.
+
+Pastikan kode Anda lolos _testing_ standar sebelum membuat Pull Request:
+
+```bash
+php artisan test
+```
+
+## 📄 License
+
+Proyek ini dirilis di bawah [MIT License](https://opensource.org/licenses/MIT).
