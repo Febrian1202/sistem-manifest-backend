@@ -78,6 +78,7 @@
                             <div class="flex items-center justify-end gap-2">
 
                                 {{-- A. EDIT SHEET (Form Update) --}}
+                                @role('admin')
                                 <x-ui.sheet.sheet>
                                     <x-ui.sheet.trigger>
                                         <x-ui.button variant="outline" size="sm" class="h-8 w-8 p-0"
@@ -132,6 +133,7 @@
 
                                     </x-ui.sheet.content>
                                 </x-ui.sheet.sheet>
+                                @endrole
 
 
                                 {{-- B. DETAIL SHEET (View Only - Kode Lama) --}}

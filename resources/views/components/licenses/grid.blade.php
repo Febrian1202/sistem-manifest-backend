@@ -54,6 +54,7 @@
                 </div>
 
                 {{-- Dropdown Actions (Titik Tiga) --}}
+                @role('admin')
                 <x-ui.dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button
@@ -191,6 +192,7 @@
                         </form>
                     </x-slot>
                 </x-ui.dropdown>
+                @endrole
             </div>
 
             {{-- BODY CARD: Progress Bar & Status Angka --}}
