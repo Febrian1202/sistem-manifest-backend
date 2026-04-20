@@ -11,6 +11,7 @@
                     {{-- [BARU] Kolom Location --}}
                     <x-ui.table.table-head>Location</x-ui.table.table-head>
                     <x-ui.table.table-head>License Status</x-ui.table.table-head>
+                    <x-ui.table.table-head>Scan Terakhir</x-ui.table.table-head>
                     <x-ui.table.table-head class="text-right">Actions</x-ui.table.table-head>
                 </x-ui.table.table-row>
             </x-ui.table.table-header>
@@ -31,6 +32,20 @@
                             'Unlicensed', 'Non-Genuine' => 'fa-circle-xmark',
                             default => 'fa-circle-question',
                         };
+
+                        // TASK-004: Logic for Last Scan color
+                        $lastSeen = $computer->last_seen_at;
+                        $lastSeenColor = 'text-muted-foreground';
+                        if ($lastSeen) {
+                            $hoursSince = $lastSeen->diffInHours(now());
+                            if ($hoursSince <= 24) {
+                                $lastSeenColor = 'text-green-600';
+                            } elseif ($hoursSince <= 168) { // 7 days
+                                $lastSeenColor = 'text-yellow-600';
+                            } else {
+                                $lastSeenColor = 'text-red-600';
+                            }
+                        }
                     @endphp
 
                     <x-ui.table.table-row>
@@ -72,10 +87,34 @@
                             </span>
                         </x-ui.table.table-cell>
 
-                        {{-- 6. Actions --}}
+                        {{-- 6. Scan Terakhir --}}
+                        <x-ui.table.table-cell>
+                            <span class="text-xs font-medium {{ $lastSeenColor }}">
+                                {{ $lastSeen ? $lastSeen->diffForHumans() : 'Belum pernah scan' }}
+                            </span>
+                        </x-ui.table.table-cell>
+
+                        {{-- 7. Actions --}}
                         <x-ui.table.table-cell class="text-right">
 
                             <div class="flex items-center justify-end gap-2">
+
+                                {{-- TASK-001: REQUEST SCAN BUTTON --}}
+                                @role('admin')
+                                <form action="{{ route('computers.request-scan', $computer->id) }}" method="POST"
+                                    x-data="{ loading: false }" @submit="loading = true">
+                                    @csrf
+                                    @php
+                                        $isPending = (bool) $computer->scan_requested;
+                                    @endphp
+                                    <x-ui.button type="submit" variant="outline" size="sm" class="h-8 w-8 p-0"
+                                        title="{{ $isPending ? 'Scan Pending...' : 'Request Scan' }}"
+                                        ::disabled="loading || {{ $isPending ? 'true' : 'false' }}">
+                                        <i class="fa-solid fa-rotate text-xs {{ $isPending ? 'animate-spin text-yellow-500' : '' }}"
+                                            :class="loading ? 'animate-spin' : ''"></i>
+                                    </x-ui.button>
+                                </form>
+                                @endrole
 
                                 {{-- A. EDIT SHEET (Form Update) --}}
                                 @role('admin')
@@ -267,7 +306,7 @@
                     </x-ui.table.table-row>
                 @empty
                     <x-ui.table.table-row>
-                        <x-ui.table.table-cell colspan="6" class="text-center h-24 text-muted-foreground">
+                        <x-ui.table.table-cell colspan="7" class="text-center h-24 text-muted-foreground">
                             Tidak ada data komputer.
                         </x-ui.table.table-cell>
                     </x-ui.table.table-row>

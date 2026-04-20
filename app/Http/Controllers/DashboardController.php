@@ -30,6 +30,8 @@ class DashboardController extends Controller
                     ->whereDoesntHave('softwares.catalog', function ($q) {
                         $q->where('status', 'Blacklist');
                     })->count(),
+                // IMPROVEMENT-001: Komputer tidak aktif (> 7 hari)
+                'inactiveComputers' => Computer::where('last_seen_at', '<', now()->subDays(7))->count(),
             ];
         });
 
@@ -40,31 +42,29 @@ class DashboardController extends Controller
         $uniqueSoftwares = $stats['uniqueSoftwares'];
         $criticalAlerts = $stats['unlicensedOS'] + $stats['computersWithBlacklist'];
         $systemHealth = $totalComputers > 0 ? round(($stats['healthyComputers'] / $totalComputers) * 100) : 0;
+        $inactiveComputers = $stats['inactiveComputers'];
 
         // --- 2. CHART & ACTIVITY (TTL: 5 Menit) ---
         $data = Cache::remember('dashboard.charts', 300, function () {
-            // OS Distribution
-            $osStats = Computer::select('os_name', DB::raw('count(*) as total'))
-                ->groupBy('os_name')
+            // BUG-001: OS Distribution with Normalization
+            $osStats = Computer::select(DB::raw("
+                CASE 
+                    WHEN os_name LIKE '%Windows 10%' THEN 'Windows 10'
+                    WHEN os_name LIKE '%Windows 11%' THEN 'Windows 11'
+                    WHEN os_name LIKE '%Ubuntu%' THEN os_name
+                    ELSE 'Others'
+                END as normalized_os
+            "), DB::raw('count(*) as total'))
+                ->groupBy('normalized_os')
                 ->orderByDesc('total')
                 ->get();
 
             $osLabels = [];
             $osSeries = [];
-            $otherCount = 0;
 
-            foreach ($osStats as $index => $stat) {
-                if ($index < 3) {
-                    $name = str_replace(['Microsoft ', ' edition', 'Pro', 'Home', 'Enterprise'], '', $stat->os_name);
-                    $osLabels[] = trim($name) ?: 'Unknown';
-                    $osSeries[] = $stat->total;
-                } else {
-                    $otherCount += $stat->total;
-                }
-            }
-            if ($otherCount > 0) {
-                $osLabels[] = 'Others';
-                $osSeries[] = $otherCount;
+            foreach ($osStats as $stat) {
+                $osLabels[] = $stat->normalized_os ?: 'Unknown';
+                $osSeries[] = $stat->total;
             }
 
             // License Status
@@ -87,6 +87,20 @@ class DashboardController extends Controller
                     $licenseSeries[] = $licenseStats[$label] ?? 0;
                 }
             }
+
+            // IMPROVEMENT-004: Top 10 Software
+            $topSoftware = SoftwareDiscovery::with('catalog')
+                ->selectRaw('catalog_id, COUNT(*) as total')
+                ->groupBy('catalog_id')
+                ->orderByDesc('total')
+                ->limit(10)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'name' => $item->catalog ? $item->catalog->normalized_name : 'Unknown Application',
+                        'total' => $item->total,
+                    ];
+                });
 
             // Recent Activity
             $recentActivities = Computer::withCount('softwares')
@@ -126,6 +140,7 @@ class DashboardController extends Controller
                 'osSeries' => $osSeries,
                 'licenseSeries' => $licenseSeries,
                 'recentActivities' => $recentActivities,
+                'topSoftware' => $topSoftware,
             ];
         });
 
@@ -134,6 +149,7 @@ class DashboardController extends Controller
         $licenseLabelsChart = ['Licensed', 'Grace Period', 'Action Required'];
         $licenseSeries = $data['licenseSeries'];
         $recentActivities = $data['recentActivities'];
+        $topSoftware = $data['topSoftware'];
 
         return view('pages.admin.dashboard', compact(
             'totalComputers',
@@ -147,7 +163,9 @@ class DashboardController extends Controller
             'osSeries',
             'licenseLabelsChart',
             'licenseSeries',
-            'recentActivities'
+            'recentActivities',
+            'inactiveComputers',
+            'topSoftware'
         ));
     }
 }

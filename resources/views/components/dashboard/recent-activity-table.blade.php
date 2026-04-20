@@ -31,6 +31,12 @@
                         class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
                         Status
                     </th>
+                    @role('admin')
+                        <th
+                            class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                            Aksi
+                        </th>
+                    @endrole
                 </tr>
             </thead>
 
@@ -67,10 +73,19 @@
                                 {{ $activity['statusText'] }}
                             </span>
                         </td>
+                        @role('admin')
+                            <td class="p-4 align-middle">
+                                <a href="/compliance?computer={{ $activity['id'] }}"
+                                    class="text-xs font-semibold text-blue-600 border border-blue-300 px-3 py-1 rounded-md hover:bg-blue-50 transition-colors">
+                                    Lihat Detail
+                                </a>
+                            </td>
+                        @endrole
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="p-4 text-center text-muted-foreground">Belum ada data scan.</td>
+                        <td colspan="{{ auth()->user()->hasRole('admin') ? 5 : 4 }}"
+                            class="p-4 text-center text-muted-foreground">Belum ada data scan.</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -9,6 +9,18 @@
                     Kelola dan pantau seluruh komputer terdaftar
                 </p>
             </div>
+
+            {{-- TASK-002: Scan Semua Button --}}
+            @role('admin')
+            <form action="{{ route('computers.request-scan-all') }}" method="POST" x-data="{ loading: false }"
+                @submit.prevent="if(confirm('Kirim permintaan scan ke semua perangkat?')) { loading = true; $el.submit(); }">
+                @csrf
+                <x-ui.button type="submit" variant="default" ::disabled="loading">
+                    <i class="fa-solid fa-satellite-dish mr-2" :class="loading ? 'animate-pulse' : ''"></i>
+                    <span x-text="loading ? 'Mengirim Permintaan...' : 'Scan Semua Perangkat'"></span>
+                </x-ui.button>
+            </form>
+            @endrole
         </div>
 
         {{-- Menampilkan Pesan Berhasil/Gagal dari Controller --}}

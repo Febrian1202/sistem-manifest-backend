@@ -34,6 +34,7 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
 
     // Admin-only Mutations
     Route::middleware(['role:admin'])->group(function () {
+        Route::post('/computers/request-scan-all', [ComputerDataController::class, 'requestScanAll'])->name('computers.request-scan-all');
         Route::put('/computers/{computer}', [ComputerDataController::class, 'update'])->name('computers.update');
         Route::post('/computers/{computer}/request-scan', [ComputerDataController::class, 'requestScan'])->name('computers.request-scan');
         
