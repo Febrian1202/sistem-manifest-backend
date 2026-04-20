@@ -85,4 +85,15 @@ class ComputerDataController extends Controller
             'status' => 'success',
         ]);
     }
+
+    public function requestScanAll()
+    {
+        $updated = Computer::where('scan_requested', false)
+            ->update(['scan_requested' => true]);
+
+        return back()->with([
+            'message' => "Permintaan scan dikirim ke {$updated} komputer.",
+            'status' => 'success',
+        ]);
+    }
 }

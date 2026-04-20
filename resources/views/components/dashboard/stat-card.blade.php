@@ -6,6 +6,7 @@
     'trend' => null,
     'variant' => 'default',
     'progress' => null,
+    'description' => null,
 ])
 
 @php
@@ -27,15 +28,15 @@
     // logika progress bar
     $progressColor = 'bg-red-500';
     if ($progress !== null) {
-        if ($progress >= 90) {
+        if ($progress >= 80) {
             $progressColor = 'bg-green-500';
-        } elseif ($progress >= 70) {
+        } elseif ($progress >= 50) {
             $progressColor = 'bg-yellow-500';
         }
     }
 @endphp
 
-<div class="{{ $containerClasses }}">
+<div {{ $attributes->merge(['class' => $containerClasses]) }}>
     <!-- It is never too late to be what you might have been. - George Eliot -->
     <div class="flex items-start justify-between">
 
@@ -72,6 +73,10 @@
                         </div>
                     </div>
                 </div>
+            @endif
+
+            @if ($description)
+                <p class="text-[10px] text-muted-foreground mt-2 leading-tight">{{ $description }}</p>
             @endif
 
         </div>
