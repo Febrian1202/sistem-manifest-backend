@@ -10,7 +10,17 @@ class LicenseInventory extends Model
     //
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'catalog_id',
+        'purchase_order_number',
+        'quota_limit',
+        'purchase_date',
+        'expiry_date',
+        'price_per_unit',
+        'notes',
+        'proof_image',
+        'license_key',
+    ];
 
     protected $casts = [
         'license_key' => 'encrypted',

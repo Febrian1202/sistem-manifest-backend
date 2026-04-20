@@ -65,7 +65,7 @@ class ProcessScanResultJob implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         Log::error('ProcessScanResultJob failed', [
-            'mac_address' => $this->hardwareData['mac_address'] ?? 'unknown',
+            'mac_address' => $this->computer->mac_address ?? 'unknown',
             'error' => $exception->getMessage(),
         ]);
     }

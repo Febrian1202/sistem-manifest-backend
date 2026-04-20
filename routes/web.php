@@ -36,6 +36,7 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         Route::post('/computers/request-scan-all', [ComputerDataController::class, 'requestScanAll'])->name('computers.request-scan-all');
         Route::put('/computers/{computer}', [ComputerDataController::class, 'update'])->name('computers.update');
+        Route::delete('/computers/{computer}', [ComputerDataController::class, 'destroy'])->name('computers.destroy');
         Route::post('/computers/{computer}/request-scan', [ComputerDataController::class, 'requestScan'])->name('computers.request-scan');
         
         Route::put('softwares/{software}', [SoftwareDataController::class, 'update'])->name('softwares.update');

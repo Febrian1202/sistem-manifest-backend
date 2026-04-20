@@ -6,6 +6,7 @@ $registerUrl    = "$baseUrl/agent/register"
 $scanUrl        = "$baseUrl/scan-result"
 $scanCommandUrl = "$baseUrl/agent/scan-command"
 $tokenFile      = "$PSScriptRoot\agent_token.txt"
+$registrationKey = "4ea50b7ae96598e1671af1240c243fcd" # Ganti dengan AGENT_REGISTRATION_KEY dari file .env backend
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -36,7 +37,11 @@ if (-not (Test-Path $tokenFile)) {
     } | ConvertTo-Json
 
     try {
-        $regResponse = Invoke-RestMethod -Uri $registerUrl -Method Post -Body $regPayload -ContentType "application/json"
+        $regHeaders = @{
+            "X-Agent-Key"  = $registrationKey
+            "Accept"       = "application/json"
+        }
+        $regResponse = Invoke-RestMethod -Uri $registerUrl -Method Post -Headers $regHeaders -Body $regPayload -ContentType "application/json"
         $token = $regResponse.token
         $token | Out-File -FilePath $tokenFile -Encoding ascii
         Write-Host " [+] Registrasi berhasil. Token disimpan." -ForegroundColor Green

@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'agent_registration_key' => env('AGENT_REGISTRATION_KEY'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

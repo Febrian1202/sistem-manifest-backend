@@ -100,7 +100,7 @@
             <x-ui.alert.index variant="{{ session('status') === 'success' ? 'success' : 'destructive' }}" class="mb-6">
                 <x-ui.alert.title>{{ session('status') === 'success' ? 'Berhasil' : 'Peringatan' }}</x-ui.alert.title>
                 <x-ui.alert.description>
-                    {!! session('message') !!}
+                    {{ session('message') }}
 
                     {{-- List detail error validasi jika ada --}}
                     @if ($errors->any())

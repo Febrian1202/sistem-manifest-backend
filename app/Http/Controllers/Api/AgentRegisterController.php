@@ -30,6 +30,15 @@ class AgentRegisterController extends Controller
             ], 422);
         }
 
+        // 1.5 Security: Check AGENT_REGISTRATION_KEY from header
+        $registrationKey = config('app.agent_registration_key');
+        if ($request->header('X-Agent-Key') !== $registrationKey) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized: Invalid Registration Key'
+            ], 401);
+        }
+
         // 2. Find or Create Computer record by mac_address
         // Per Fix 2 requirements elsewhere, mac_address is the primary identifier
         $computer = Computer::updateOrCreate(

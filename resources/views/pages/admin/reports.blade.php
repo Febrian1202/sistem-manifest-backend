@@ -9,7 +9,7 @@
         @if (session('status'))
             <x-ui.alert.index variant="{{ session('status') }}" class="mb-6">
                 <x-ui.alert.title>Informasi</x-ui.alert.title>
-                <x-ui.alert.description>{!! session('message') !!}</x-ui.alert.description>
+                <x-ui.alert.description>{{ session('message') }}</x-ui.alert.description>
             </x-ui.alert.index>
         @endif
 

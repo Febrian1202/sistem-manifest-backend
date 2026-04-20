@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SoftwareCatalog;
+use App\Http\Requests\UpdateSoftwareRequest;
+use Illuminate\Support\Facades\Log;
 
 class SoftwareDataController extends Controller
 {
@@ -17,11 +19,6 @@ class SoftwareDataController extends Controller
         // Asumsi: Anda sudah menambahkan relasi 'discoveries' di model SoftwareCatalog
         // Jika belum, tambahkan: public function discoveries() { return $this->hasMany(SoftwareDiscovery::class, 'catalog_id'); }
         $query->withCount('discoveries');
-        $query->with([
-            'discoveries' => function ($q) {
-                $q->latest('install_date'); // Untuk ambil vendor/version terbaru
-            }
-        ]);
 
         // 2. SEARCH (Nama Software)
         if ($request->filled('search')) {
@@ -53,30 +50,28 @@ class SoftwareDataController extends Controller
     }
 
     // Update data katalog software (misal: update status, kategori, dll)
-    public function update(Request $request, SoftwareCatalog $software)
+    public function update(UpdateSoftwareRequest $request, SoftwareCatalog $software)
     {
         try {
-            $validated = $request->validate([
-                'category' => 'required|string',
-                'status' => 'required|string',
-                'description' => 'nullable|string',
-            ]);
-
-            $software->update($validated);
+            $software->update($request->validated());
 
             return back()->with([
-                'message' => "Software <strong>{$software->normalized_name}</strong> berhasil diperbarui!",
+                'message' => "Software {$software->normalized_name} berhasil diperbarui!",
                 "status" => "success"
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->validator)->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Gagal memperbarui katalog. Periksa inputan Anda: ' . $e->getMessage(),
+                'message' => 'Gagal memperbarui katalog. Periksa inputan Anda.',
             ]);
         } catch (\Exception $e) {
+            Log::error('Software Catalog Update Error: ' . $e->getMessage(), [
+                'id' => $software->id,
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan sistem saat memperbarui katalog.',
             ]);
         }
     }

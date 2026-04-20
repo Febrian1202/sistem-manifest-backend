@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Computer;
 use Illuminate\Http\Request;
-use PhpParser\Node\Stmt\TryCatch;
+use App\Http\Requests\UpdateComputerRequest;
+use Illuminate\Support\Facades\Log;
 
 class ComputerDataController extends Controller
 {
@@ -47,17 +48,11 @@ class ComputerDataController extends Controller
         return view('pages.admin.computers', compact('computers', 'locations'));
     }
 
-    public function update(Request $request, Computer $computer)
+    public function update(UpdateComputerRequest $request, Computer $computer)
     {
         try {
-            // 1. Validasi
-            $validated = $request->validate([
-                'location' => 'nullable|string|max:255',
-                // Tambahkan field lain jika ingin bisa diedit, misal: 'os_license_status'
-            ]);
-
-            // 2. Update Data
-            $computer->update($validated);
+            // 1. Validasi & Update Data
+            $computer->update($request->validated());
 
             // 3. Redirect kembali
             return back()->with([
@@ -67,12 +62,16 @@ class ComputerDataController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->validator)->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Gagal! Harap periksa kembali isian form Anda: ' . $e->getMessage(),
+                'message' => 'Gagal! Harap periksa kembali isian form Anda.',
             ]);
         } catch (\Exception $e) {
+            Log::error('Computer Update Error: ' . $e->getMessage(), [
+                'id' => $computer->id,
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan sistem saat memperbarui data.'
             ]);
         }
     }
@@ -95,5 +94,27 @@ class ComputerDataController extends Controller
             'message' => "Permintaan scan dikirim ke {$updated} komputer.",
             'status' => 'success',
         ]);
+    }
+
+    public function destroy(Computer $computer)
+    {
+        try {
+            $hostname = $computer->hostname;
+            $computer->delete();
+
+            return back()->with([
+                'status' => 'success',
+                'message' => "Komputer {$hostname} berhasil dihapus dari sistem."
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Computer Delete Error: ' . $e->getMessage(), [
+                'id' => $computer->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with([
+                'status' => 'destructive',
+                'message' => 'Gagal menghapus komputer.'
+            ]);
+        }
     }
 }
