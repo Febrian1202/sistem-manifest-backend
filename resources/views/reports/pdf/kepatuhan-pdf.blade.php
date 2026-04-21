@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Kepatuhan Lisensi</title>
+    <title>Laporan Kepatuhan Lisensi</title>
     <style>
         body { font-family: sans-serif; font-size: 10px; color: #333; line-height: 1.3; }
         .header { text-align: center; margin-bottom: 20px; }
@@ -33,7 +33,7 @@
     <div class="header">
         <div class="logo-box">[LOGO USN KOLAKA]</div>
         <h1 class="institution">Universitas Sembilanbelas November Kolaka</h1>
-        <p class="system-name">Sistem Manifest — Laporan Kepatuhan Lisensi</p>
+        <p class="system-name">Sistem Manifest — Laporan Kepatuhan Lisensi (Per Software)</p>
     </div>
 
     <div class="metadata">
@@ -54,55 +54,43 @@
     <table class="data-table">
         <thead>
             <tr>
-                <th width="30">No</th>
-                <th>Nama Komputer</th>
-                <th>IP Address</th>
-                <th>Nama Software</th>
-                <th width="80">Status</th>
-                <th>Tanggal Deteksi</th>
+                <th width="20">No</th>
+                <th>Komputer</th>
+                <th>Software</th>
+                <th width="50">Versi</th>
+                <th width="70" class="text-center">Status</th>
+                <th width="80">Terdeteksi</th>
                 <th>Keterangan</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($reports as $index => $computer)
+            @forelse($reports as $index => $report)
             @php
-                $report = $computer->latestComplianceReport;
-                $statusClass = 'badge-safe'; // Default
-                $statusText = 'Belum Diperiksa';
-                
-                if ($report) {
-                    $statusClass = $report->status === 'Safe' ? 'badge-safe' : ($report->status === 'Warning' ? 'badge-warning' : 'badge-critical');
-                    $statusText = $report->status === 'Safe' ? 'Berlisensi' : ($report->status === 'Warning' ? 'Grace Period' : 'Tidak Berlisensi');
-                }
-                
-                // Software names fallback
-                if ($report && is_array($report->violation_details)) {
-                    $swNames = collect($report->violation_details)->pluck('software_name')->filter()->implode(', ');
-                } else {
-                    $swNames = $computer->softwares->map(fn($s) => $s->catalog->normalized_name ?? $s->raw_name)->unique()->implode(', ');
-                }
-                $swNames = $swNames ?: '-';
+                $statusClass = 'badge-safe';
+                if ($report->status === 'Grace Period') $statusClass = 'badge-warning';
+                if ($report->status === 'Tidak Berlisensi') $statusClass = 'badge-critical';
             @endphp
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
-                <td><strong>{{ $computer->hostname ?? '-' }}</strong></td>
-                <td>{{ $computer->ip_address ?? '-' }}</td>
-                <td style="font-size: 8px;">
-                    {{ \Illuminate\Support\Str::limit($swNames, 40) }}
+                <td>
+                    <strong>{{ $report->computer->hostname ?? '-' }}</strong><br>
+                    <span style="color: #666; font-size: 8px;">{{ $report->computer->ip_address ?? '-' }}</span>
                 </td>
+                <td>{{ $report->software_name }}</td>
+                <td class="text-center">{{ $report->software_version ?? '-' }}</td>
                 <td class="text-center">
-                    <span class="badge {{ $statusClass }}">{{ $statusText }}</span>
+                    <span class="badge {{ $statusClass }}">{{ $report->status }}</span>
                 </td>
-                <td>{{ $report && $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-' }}</td>
-                <td style="font-size: 8px;">
-                    @if($report)
-                        Unlicensed: {{ $report->unlicensed_count }} | Blacklist: {{ $report->blacklisted_count }}
-                    @else
-                        -
-                    @endif
+                <td>{{ $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-' }}</td>
+                <td style="font-size: 8px;">{{ $report->keterangan }}</td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="7" class="text-center" style="padding: 20px; font-style: italic; color: #999;">
+                    Tidak ada data kepatuhan yang ditemukan.
                 </td>
             </tr>
-            @endforeach
+            @endforelse
         </tbody>
     </table>
 

@@ -24,6 +24,8 @@ class LicenseInventory extends Model
 
     protected $casts = [
         'license_key' => 'encrypted',
+        'purchase_date' => 'date',
+        'expiry_date' => 'date',
     ];
 
     /**

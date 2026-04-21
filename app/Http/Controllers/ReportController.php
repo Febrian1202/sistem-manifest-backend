@@ -176,9 +176,9 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         
-        $reports = Computer::with(['latestComplianceReport', 'softwares.catalog'])
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->orderBy('hostname')
+        $reports = ComplianceReport::with(['computer', 'softwareCatalog'])
+            ->whereBetween('scanned_at', [$startDate, $endDate])
+            ->orderByDesc('scanned_at')
             ->paginate(15)->withQueryString();
 
         return view('reports.kepatuhan', compact('reports', 'startDate', 'endDate'));
@@ -189,9 +189,9 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $format = $request->query('format', 'pdf');
         
-        $reports = Computer::with(['latestComplianceReport', 'softwares.catalog'])
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->orderBy('hostname')
+        $reports = ComplianceReport::with(['computer', 'softwareCatalog'])
+            ->whereBetween('scanned_at', [$startDate, $endDate])
+            ->orderByDesc('scanned_at')
             ->get();
 
         if ($format === 'excel') {
@@ -203,7 +203,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . auth()->user()->getRoleNames()->first() . ')',
+            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->roles->first()->name ?? 'User') . ')',
         ];
 
         return Pdf::loadView('reports.pdf.kepatuhan-pdf', $data)->setPaper('a4', 'portrait')->stream();
@@ -269,59 +269,15 @@ class ReportController extends Controller
     public function runComplianceScan()
     {
         $computers = \App\Models\Computer::all();
-        $count = 0;
-
+        
         foreach ($computers as $computer) {
-            $discoveries = \App\Models\SoftwareDiscovery::where('computer_id', $computer->id)
-                ->with('catalog.licenses')
-                ->get();
-                
-            $unlicensed = [];
-            $blacklisted = [];
-            
-            foreach ($discoveries as $sw) {
-                $catalog = $sw->catalog;
-                if (!$catalog) continue;
-                
-                if ($catalog->status === 'Blacklist') {
-                    $blacklisted[] = ['software_name' => $catalog->normalized_name, 'reason' => 'Blacklisted'];
-                }
-                
-                if ($catalog->category === 'Commercial') {
-                    $hasLicense = $catalog->licenses->count() > 0;
-                    if (!$hasLicense) {
-                        $unlicensed[] = ['software_name' => $catalog->normalized_name, 'reason' => 'No License Found'];
-                    }
-                }
-            }
-            
-            $unlicensedCount = count($unlicensed);
-            $blacklistedCount = count($blacklisted);
-            
-            $status = 'Safe';
-            if ($blacklistedCount > 0) $status = 'Critical';
-            elseif ($unlicensedCount > 3) $status = 'Critical';
-            elseif ($unlicensedCount > 0) $status = 'Warning';
-            
-            \App\Models\ComplianceReport::updateOrCreate(
-                ['computer_id' => $computer->id],
-                [
-                    'status' => $status,
-                    'total_software_installed' => $discoveries->count(),
-                    'unlicensed_count' => $unlicensedCount,
-                    'blacklisted_count' => $blacklistedCount,
-                    'violation_details' => array_merge($unlicensed, $blacklisted),
-                    'scanned_at' => now(),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
-            );
-            $count++;
+            \App\Jobs\GenerateComplianceReportJob::dispatch($computer)
+                ->onQueue('compliance');
         }
 
         return back()->with([
             'status' => 'success',
-            'message' => "Berhasil memperbarui data kepatuhan untuk {$count} komputer."
+            'message' => "Pemeriksaan kepatuhan untuk " . $computers->count() . " komputer telah dijadwalkan di background."
         ]);
     }
 }

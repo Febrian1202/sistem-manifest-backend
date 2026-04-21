@@ -6,6 +6,7 @@ use App\Models\Computer;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessScanResultJob;
+use App\Jobs\GenerateComplianceReportJob;
 
 class ScanController extends Controller
 {
@@ -74,6 +75,11 @@ class ScanController extends Controller
                 $computer,
                 $request->installed_software
             );
+
+            // Dispatch compliance report generation (runs after scan processing)
+            GenerateComplianceReportJob::dispatch($computer)
+                ->onQueue('compliance')
+                ->delay(now()->addSeconds(10));
         }
 
         // 5. Reset on-demand scan flag
