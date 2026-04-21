@@ -30,7 +30,25 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     Route::get('/licenses', [LicenseDataController::class, 'index'])->name('licenses');
     Route::get('/compliance', [ComplianceDataController::class, 'index'])->name('compliance');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports');
-    Route::post('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+
+    // New detailed reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        // Preview pages
+        Route::get('/eksekutif',  [ReportController::class, 'showEksekutif'])->name('eksekutif');
+        Route::get('/komputer',   [ReportController::class, 'showKomputer'])->name('komputer');
+        Route::get('/software',   [ReportController::class, 'showSoftware'])->name('software');
+        Route::get('/kepatuhan',  [ReportController::class, 'showKepatuhan'])->name('kepatuhan');
+        Route::get('/lisensi',    [ReportController::class, 'showLisensi'])->name('lisensi');
+
+        // Export endpoints
+        Route::get('/eksekutif/export',  [ReportController::class, 'exportEksekutif'])->name('eksekutif.export');
+        Route::get('/komputer/export',   [ReportController::class, 'exportKomputer'])->name('komputer.export');
+        Route::get('/software/export',   [ReportController::class, 'exportSoftware'])->name('software.export');
+        Route::get('/kepatuhan/export',  [ReportController::class, 'exportKepatuhan'])->name('kepatuhan.export');
+        Route::get('/lisensi/export',    [ReportController::class, 'exportLisensi'])->name('lisensi.export');
+
+        Route::post('/kepatuhan/scan', [ReportController::class, 'runComplianceScan'])->name('kepatuhan.scan');
+    });
 
     // Admin-only Mutations
     Route::middleware(['role:admin'])->group(function () {

@@ -37,4 +37,14 @@ class Computer extends Authenticatable
     {
         return $this->hasMany(SoftwareDiscovery::class);
     }
+
+    public function complianceReports()
+    {
+        return $this->hasMany(ComplianceReport::class);
+    }
+
+    public function latestComplianceReport()
+    {
+        return $this->hasOne(ComplianceReport::class)->latestOfMany();
+    }
 }

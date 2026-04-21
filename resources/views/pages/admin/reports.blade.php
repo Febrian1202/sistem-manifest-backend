@@ -15,71 +15,89 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-            {{-- Modul: Compliance Summary --}}
-            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full">
-                <div
-                    class="h-10 w-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center text-lg mb-4">
-                    <i class="fa-solid fa-chart-pie"></i>
+            {{-- Modul: Ringkasan Eksekutif --}}
+            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full border-blue-100 bg-blue-50/10">
+                <div class="h-10 w-10 bg-blue-500/10 text-blue-500 rounded-lg flex items-center justify-center text-lg mb-4">
+                    <i class="fa-solid fa-file-contract"></i>
                 </div>
-                <h3 class="font-bold text-lg mb-1">Compliance Summary</h3>
-                <p class="text-sm text-muted-foreground mb-6 grow">Ringkasan total instalasi perangkat lunak
-                    komersial dibandingkan dengan kepemilikan lisensi kampus.</p>
+                <h3 class="font-bold text-lg mb-1">Ringkasan Eksekutif</h3>
+                <p class="text-sm text-muted-foreground mb-6 grow">Laporan ringkasan kondisi kepatuhan dan aset IT dalam format eksekutif (PDF Only).</p>
 
-                <form action="{{ route('reports.export') }}" method="POST" class="mt-auto space-y-3">
-                    @csrf
-                    <input type="hidden" name="report_type" value="compliance_summary">
-                    <div class="grid grid-cols-2 gap-2">
-                        <x-ui.button type="submit" name="format" value="pdf" variant="outline"
-                            class="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
-                            <i class="fa-solid fa-file-pdf mr-2"></i> PDF
+                <div class="mt-auto">
+                    <a href="{{ route('reports.eksekutif') }}" class="block">
+                        <x-ui.button variant="default" class="w-full">
+                            <i class="fa-solid fa-eye mr-2"></i> Preview & Filter
                         </x-ui.button>
-                        <x-ui.button type="submit" name="format" value="excel" variant="outline"
-                            class="w-full text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200">
-                            <i class="fa-solid fa-file-excel mr-2"></i> Excel
-                        </x-ui.button>
-                    </div>
-                </form>
+                    </a>
+                </div>
             </div>
 
-            {{-- Modul: Violation Report --}}
-            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full">
-                <div
-                    class="h-10 w-10 bg-destructive/10 text-destructive rounded-lg flex items-center justify-center text-lg mb-4">
-                    <i class="fa-solid fa-user-ninja"></i>
-                </div>
-                <h3 class="font-bold text-lg mb-1">Violation Details</h3>
-                <p class="text-sm text-muted-foreground mb-6 grow">Laporan mendetail berisi daftar spesifik IP
-                    Address & Komputer yang menginstall aplikasi tanpa lisensi (Ilegal).</p>
-
-                <form action="{{ route('reports.export') }}" method="POST" class="mt-auto space-y-3">
-                    @csrf
-                    <input type="hidden" name="report_type" value="violation_report">
-                    <div class="grid grid-cols-2 gap-2">
-                        <x-ui.button type="submit" name="format" value="pdf" variant="outline"
-                            class="w-full text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200">
-                            <i class="fa-solid fa-file-pdf mr-2"></i> PDF
-                        </x-ui.button>
-                        <x-ui.button type="submit" name="format" value="excel" variant="outline"
-                            class="w-full text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200">
-                            <i class="fa-solid fa-file-excel mr-2"></i> Excel
-                        </x-ui.button>
-                    </div>
-                </form>
-            </div>
-
-            {{-- Modul: Asset Inventory (Placeholder) --}}
-            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full opacity-70">
-                <div
-                    class="h-10 w-10 bg-muted text-muted-foreground rounded-lg flex items-center justify-center text-lg mb-4">
+            {{-- Modul: Inventaris Komputer --}}
+            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full border-green-100 bg-green-50/10">
+                <div class="h-10 w-10 bg-green-500/10 text-green-500 rounded-lg flex items-center justify-center text-lg mb-4">
                     <i class="fa-solid fa-desktop"></i>
                 </div>
-                <h3 class="font-bold text-lg mb-1">Asset Inventory</h3>
-                <p class="text-sm text-muted-foreground mb-6 grow">Daftar lengkap inventaris komputer (Hostname,
-                    CPU, RAM) yang ada di lingkungan kampus.</p>
+                <h3 class="font-bold text-lg mb-1">Inventaris Komputer</h3>
+                <p class="text-sm text-muted-foreground mb-6 grow">Daftar lengkap inventaris hardware, spesifikasi OS, dan status konektivitas komputer.</p>
 
-                <x-ui.button disabled class="w-full mt-auto">
-                    <i class="fa-solid fa-lock mr-2"></i> Segera Hadir
-                </x-ui.button>
+                <div class="mt-auto">
+                    <a href="{{ route('reports.komputer') }}" class="block">
+                        <x-ui.button variant="default" class="w-full">
+                            <i class="fa-solid fa-eye mr-2"></i> Preview & Filter
+                        </x-ui.button>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Modul: Inventaris Software --}}
+            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full border-purple-100 bg-purple-50/10">
+                <div class="h-10 w-10 bg-purple-500/10 text-purple-500 rounded-lg flex items-center justify-center text-lg mb-4">
+                    <i class="fa-solid fa-box-archive"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">Inventaris Software</h3>
+                <p class="text-sm text-muted-foreground mb-6 grow">Rekapitulasi seluruh software yang terdeteksi di jaringan beserta jumlah instalasinya.</p>
+
+                <div class="mt-auto">
+                    <a href="{{ route('reports.software') }}" class="block">
+                        <x-ui.button variant="default" class="w-full">
+                            <i class="fa-solid fa-eye mr-2"></i> Preview & Filter
+                        </x-ui.button>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Modul: Kepatuhan Lisensi --}}
+            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full border-amber-100 bg-amber-50/10">
+                <div class="h-10 w-10 bg-amber-500/10 text-amber-500 rounded-lg flex items-center justify-center text-lg mb-4">
+                    <i class="fa-solid fa-shield-check"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">Kepatuhan Lisensi</h3>
+                <p class="text-sm text-muted-foreground mb-6 grow">Laporan mendalam status lisensi per perangkat untuk audit kepatuhan (Compliant/Non-Compliant).</p>
+
+                <div class="mt-auto">
+                    <a href="{{ route('reports.kepatuhan') }}" class="block">
+                        <x-ui.button variant="default" class="w-full">
+                            <i class="fa-solid fa-eye mr-2"></i> Preview & Filter
+                        </x-ui.button>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Modul: Status Lisensi --}}
+            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full border-indigo-100 bg-indigo-50/10">
+                <div class="h-10 w-10 bg-indigo-500/10 text-indigo-500 rounded-lg flex items-center justify-center text-lg mb-4">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">Status Lisensi (Quota)</h3>
+                <p class="text-sm text-muted-foreground mb-6 grow">Pemantauan sisa kuota lisensi komersial dan rekapitulasi penggunaan seat aplikasi.</p>
+
+                <div class="mt-auto">
+                    <a href="{{ route('reports.lisensi') }}" class="block">
+                        <x-ui.button variant="default" class="w-full">
+                            <i class="fa-solid fa-eye mr-2"></i> Preview & Filter
+                        </x-ui.button>
+                    </a>
+                </div>
             </div>
 
         </div>
