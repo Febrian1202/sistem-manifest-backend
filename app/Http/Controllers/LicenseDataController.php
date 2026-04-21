@@ -22,7 +22,7 @@ class LicenseDataController extends Controller
             }
         ]);
 
-        // Fitur Pencarian dan Filter
+        // Fitur Pencarian
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -33,24 +33,68 @@ class LicenseDataController extends Controller
             });
         }
 
-        $licenses = $query->orderBy('expiry_date', 'asc')->paginate(10)->withQueryString();
+        // Fitur Filter Status
+        if ($request->filled('status')) {
+            switch ($request->status) {
+                case 'Aman':
+                    // Usage <= Quota DAN Belum Expired
+                    $query->where(function($q) {
+                        $q->whereRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) <= license_inventories.quota_limit')
+                          ->where(function($sub) {
+                              $sub->whereNull('expiry_date')->orWhere('expiry_date', '>=', now()->toDateString());
+                          });
+                    });
+                    break;
+                case 'Segera Habis':
+                    // Usage > 80% Quota ATAU Expiring Soon (30 days)
+                    $query->where(function($q) {
+                        $q->whereRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) > (license_inventories.quota_limit * 0.8)')
+                          ->orWhereBetween('expiry_date', [now()->toDateString(), now()->addDays(30)->toDateString()]);
+                    });
+                    break;
+                case 'Kedaluwarsa':
+                    $query->where('expiry_date', '<', now()->toDateString());
+                    break;
+                case 'Over Limit':
+                    $query->whereRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) > license_inventories.quota_limit');
+                    break;
+            }
+        }
+
+        $licenses = $query->orderBy('expiry_date', 'asc')->paginate(12)->withQueryString();
 
         // Menyiapkan data untuk dropdown Tambah Lisensi
-        // (Hanya ambil software yang statusnya Whitelist atau Commercial)
         $catalogs = SoftwareCatalog::whereIn('status', ['Whitelist', 'Unreviewed'])
             ->orderBy('normalized_name')
             ->get();
 
         // Hitung statistik untuk Dashboard Card
         $stats = [
-            'total_licenses' => LicenseInventory::sum('quota_limit'), // Jumlah total Lisensi
-            'total_value' => LicenseInventory::sum(\DB::raw('quota_limit * price_per_unit')), // Total Aset
+            'total_licenses' => LicenseInventory::sum('quota_limit'),
+            'total_value' => LicenseInventory::sum(\DB::raw('quota_limit * price_per_unit')),
             'expiring_soon' => LicenseInventory::where('expiry_date', '<=', now()->addDays(30))
                 ->where('expiry_date', '>', now())
                 ->count(),
             'expired' => LicenseInventory::where('expiry_date', '<', now())->count()
         ];
+        
         return view('pages.admin.licenses', compact('licenses', 'catalogs', 'stats'));
+    }
+
+    /**
+     * Tampilkan detail lisensi beserta daftar komputer yang menggunakannya.
+     */
+    public function show(LicenseInventory $license)
+    {
+        $license->load(['catalog.discoveries.computer']);
+        
+        // Ambil software catalog terkait
+        $catalog = $license->catalog;
+        
+        // Ambil daftar discovery (komputer) yang menggunakan software ini
+        $discoveries = $catalog->discoveries()->with('computer')->paginate(10);
+
+        return view('pages.admin.license.show', compact('license', 'catalog', 'discoveries'));
     }
 
     // Menyimpan data pembelian

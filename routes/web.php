@@ -28,6 +28,7 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     Route::get('/computers', [ComputerDataController::class, 'index'])->name('computers');
     Route::get('/softwares', [SoftwareDataController::class, 'index'])->name('softwares');
     Route::get('/licenses', [LicenseDataController::class, 'index'])->name('licenses');
+    Route::get('/licenses/{license}', [LicenseDataController::class, 'show'])->name('licenses.show');
     Route::get('/compliance', [ComplianceDataController::class, 'index'])->name('compliance');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports');
 

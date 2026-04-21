@@ -42,9 +42,14 @@
 
         {{-- Kiri --}}
         <div class="flex-1">
-            <p class="text-sm font-medium {{ $titleColor }}">
-                {{ $title }}
-            </p>
+            <div class="flex items-center">
+                <p class="text-sm font-medium {{ $titleColor }}">
+                    {{ $title }}
+                </p>
+                @if (isset($title_extra))
+                    {{ $title_extra }}
+                @endif
+            </div>
 
             <h3 class="text-2xl font-bold mt-2 {{ $valueColor }}">
                 {{ $value }}
