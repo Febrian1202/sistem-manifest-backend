@@ -219,11 +219,27 @@ return [
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
+            'compliance-worker' => [
+                'connection' => 'redis',
+                'queue'      => ['compliance'],
+                'balance'    => 'auto',
+                'processes'  => 3,
+                'tries'      => 3,
+                'timeout'    => 120,
+            ],
         ],
 
         'local' => [
             'supervisor-1' => [
                 'maxProcesses' => 3,
+            ],
+            'compliance-worker' => [
+                'connection' => 'redis',
+                'queue'      => ['compliance'],
+                'balance'    => 'auto',
+                'processes'  => 3,
+                'tries'      => 3,
+                'timeout'    => 120,
             ],
         ],
     ],

@@ -30,35 +30,29 @@ class KepatuhanExport implements FromCollection, WithHeadings, WithStyles, WithT
 
     private int $rowNumber = 0;
 
-    public function map($computer): array
+    /**
+     * @param \App\Models\ComplianceReport $report
+     */
+    public function map($report): array
     {
         $this->rowNumber++;
-        $report = $computer->latestComplianceReport;
         
         $statusMap = [
-            'Safe' => 'Berlisensi',
-            'Warning' => 'Grace Period',
-            'Critical' => 'Tidak Berlisensi',
+            'Berlisensi' => 'Berlisensi',
+            'Grace Period' => 'Grace Period',
+            'Tidak Berlisensi' => 'Tidak Berlisensi',
         ];
 
-        $status = $report ? ($statusMap[$report->status] ?? $report->status) : 'Belum Diperiksa';
-
-        // Extract software names from violation_details JSON or fallback to discovery
-        if ($report && is_array($report->violation_details)) {
-            $swNames = collect($report->violation_details)->pluck('software_name')->filter()->implode(', ');
-        } else {
-            $swNames = $computer->softwares->map(fn($s) => $s->catalog->normalized_name ?? $s->raw_name)->unique()->implode(', ');
-        }
-        $swNames = $swNames ?: '-';
+        $status = $statusMap[$report->status] ?? $report->status;
 
         return [
             $this->rowNumber,
-            $computer->hostname ?? '-',
-            $computer->ip_address ?? '-',
-            \Illuminate\Support\Str::limit($swNames, 100), // Limit but a bit longer for Excel
+            $report->computer->hostname ?? '-',
+            $report->computer->ip_address ?? '-',
+            $report->software_name ?? '-',
             $status,
-            $report && $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-',
-            $report ? "Pelanggaran: $report->unlicensed_count | Blacklist: $report->blacklisted_count" : "-",
+            $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-',
+            $report->keterangan ?? '-',
         ];
     }
 
@@ -80,32 +74,27 @@ class KepatuhanExport implements FromCollection, WithHeadings, WithStyles, WithT
     {
         $lastRow = $sheet->getHighestRow();
 
-        // Color-code Status column
-        foreach ($this->reports as $index => $computer) {
-            $report = $computer->latestComplianceReport;
-            if (!$report) continue;
-
+        // Color-code Status column (Column E)
+        foreach ($this->reports as $index => $report) {
             $row = $index + 4;
             $cell = 'E' . $row;
-            if ($report->status === 'Safe') {
+            if ($report->status === 'Berlisensi') {
                 $sheet->getStyle($cell)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('DCFCE7');
-            } elseif ($report->status === 'Warning') {
+            } elseif ($report->status === 'Grace Period') {
                 $sheet->getStyle($cell)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('FEF9C3');
-            } elseif ($report->status === 'Critical') {
+            } elseif ($report->status === 'Tidak Berlisensi') {
                 $sheet->getStyle($cell)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('FEE2E2');
             }
         }
 
         // Summary row
         $total = $this->reports->count();
-        $withReport = $this->reports->filter(fn($c) => $c->latestComplianceReport)->count();
-        $safe = $this->reports->filter(fn($c) => $c->latestComplianceReport?->status === 'Safe')->count();
-        $warning = $this->reports->filter(fn($c) => $c->latestComplianceReport?->status === 'Warning')->count();
-        $critical = $withReport - $safe - $warning;
-        $noReport = $total - $withReport;
+        $safe = $this->reports->where('status', 'Berlisensi')->count();
+        $warning = $this->reports->where('status', 'Grace Period')->count();
+        $critical = $this->reports->where('status', 'Tidak Berlisensi')->count();
         
         $summaryRow = $lastRow + 1;
-        $summaryText = "Total: $total | $safe berlisensi | $warning grace period | $critical tidak berlisensi | $noReport belum diperiksa";
+        $summaryText = "Total Temuan: $total | $safe berlisensi | $warning grace period | $critical tidak berlisensi";
         $sheet->setCellValue('A' . $summaryRow, $summaryText);
         $sheet->mergeCells('A' . $summaryRow . ':G' . $summaryRow);
         $sheet->getStyle('A' . $summaryRow)->getFont()->setBold(true);
