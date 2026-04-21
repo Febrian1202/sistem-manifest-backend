@@ -44,7 +44,7 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         $data = $this->getEksekutifData($startDate, $endDate);
-        
+
         return view('reports.eksekutif', array_merge($data, [
             'startDate' => $startDate->toDateString(),
             'endDate' => $endDate->toDateString(),
@@ -68,12 +68,12 @@ class ReportController extends Controller
     {
         $totalComputers = Computer::count();
         $totalInstallations = SoftwareDiscovery::whereBetween('created_at', [$startDate, $endDate])->count();
-        
+
         // Compliance stats
         $licensed = Computer::where('os_license_status', 'Licensed')->count();
         $complianceRate = $totalComputers > 0 ? round(($licensed / $totalComputers) * 100, 2) : 0;
-        
-        $criticalAlerts = SoftwareDiscovery::whereHas('catalog', function($q) {
+
+        $criticalAlerts = SoftwareDiscovery::whereHas('catalog', function ($q) {
             $q->where('category', 'Commercial')->whereDoesntHave('licenses');
         })->whereBetween('created_at', [$startDate, $endDate])->count();
 
@@ -83,15 +83,15 @@ class ReportController extends Controller
             ['status' => 'Action Required', 'count' => Computer::whereNotIn('os_license_status', ['Licensed', 'Grace Period'])->count(), 'pct' => $totalComputers > 0 ? round((Computer::whereNotIn('os_license_status', ['Licensed', 'Grace Period'])->count() / $totalComputers) * 100, 1) : 0],
         ];
 
-        $topUnlicensed = SoftwareDiscovery::whereHas('catalog', function($q) {
+        $topUnlicensed = SoftwareDiscovery::whereHas('catalog', function ($q) {
             $q->where('category', 'Commercial')->whereDoesntHave('licenses');
         })
-        ->whereBetween('created_at', [$startDate, $endDate])
-        ->select('raw_name', \DB::raw('count(*) as total'))
-        ->groupBy('raw_name')
-        ->orderByDesc('total')
-        ->take(5)
-        ->get();
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->select('raw_name', \DB::raw('count(*) as total'))
+            ->groupBy('raw_name')
+            ->orderByDesc('total')
+            ->take(5)
+            ->get();
 
         return compact('totalComputers', 'totalInstallations', 'complianceRate', 'criticalAlerts', 'breakdown', 'topUnlicensed');
     }
@@ -175,7 +175,7 @@ class ReportController extends Controller
     public function showKepatuhan(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
-        
+
         $reports = ComplianceReport::with(['computer', 'softwareCatalog'])
             ->whereBetween('scanned_at', [$startDate, $endDate])
             ->orderByDesc('scanned_at')
@@ -188,7 +188,7 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         $format = $request->query('format', 'pdf');
-        
+
         $reports = ComplianceReport::with(['computer', 'softwareCatalog'])
             ->whereBetween('scanned_at', [$startDate, $endDate])
             ->orderByDesc('scanned_at')
@@ -217,7 +217,7 @@ class ReportController extends Controller
         $licenses = LicenseInventory::with('catalog')->whereBetween('created_at', [$startDate, $endDate])->get();
 
         // Enrich data with usage then sort by usage_pct DESC
-        $licenses = $licenses->map(function($license) {
+        $licenses = $licenses->map(function ($license) {
             $usage = SoftwareDiscovery::where('catalog_id', $license->catalog_id)->count();
             $license->used_count = $usage;
             $license->remaining = max(0, $license->quota_limit - $usage);
@@ -235,7 +235,7 @@ class ReportController extends Controller
             $page,
             ['path' => request()->url(), 'query' => request()->query()]
         );
-        
+
         return view('reports.lisensi', ['licenses' => $paginatedLicenses, 'startDate' => $startDate, 'endDate' => $endDate]);
     }
 
@@ -243,7 +243,7 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         $format = $request->query('format', 'pdf');
-        $licenses = LicenseInventory::with('catalog')->whereBetween('created_at', [$startDate, $endDate])->get()->map(function($license) {
+        $licenses = LicenseInventory::with('catalog')->whereBetween('created_at', [$startDate, $endDate])->get()->map(function ($license) {
             $usage = SoftwareDiscovery::where('catalog_id', $license->catalog_id)->count();
             $license->used_count = $usage;
             $license->remaining = max(0, $license->quota_limit - $usage);
@@ -268,8 +268,8 @@ class ReportController extends Controller
 
     public function runComplianceScan()
     {
-        $computers = \App\Models\Computer::all();
-        
+        $computers = Computer::all();
+
         foreach ($computers as $computer) {
             \App\Jobs\GenerateComplianceReportJob::dispatch($computer)
                 ->onQueue('compliance');
