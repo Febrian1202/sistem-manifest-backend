@@ -149,7 +149,7 @@
 
             {{-- Empty State Alpine.js (Muncul jika filter tidak menghasilkan baris) --}}
             <x-ui.table.table-row 
-                x-show="activeTab !== 'semua' && $el.parentElement.querySelectorAll('tr[data-status]:not([style*=\'display: none\'])').length === 0"
+                x-show="activeTab !== 'semua' && $el.parentElement.querySelectorAll('tr[data-status]:not([style*=&quot;display: none&quot;])').length === 0"
                 x-cloak
             >
                 <x-ui.table.table-cell colspan="6" class="text-center py-16 text-gray-400">
