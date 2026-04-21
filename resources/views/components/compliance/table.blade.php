@@ -63,28 +63,73 @@
                                     Lacak PC
                                 </x-ui.button>
                             </x-ui.sheet.trigger>
-                            <x-ui.sheet.content side="right">
+                            <x-ui.sheet.content side="right" x-data="{ 
+                                canScroll: false,
+                                checkScroll() {
+                                    const container = $el.querySelector('.scroll-container');
+                                    if (container) {
+                                        this.canScroll = container.scrollHeight > container.clientHeight;
+                                    }
+                                }
+                            }" x-init="
+                                $watch('open', value => { 
+                                    if(value) { 
+                                        setTimeout(() => {
+                                            checkScroll();
+                                            const container = $el.querySelector('.scroll-container');
+                                            if(container) container.scrollTop = 0;
+                                        }, 100);
+                                    } 
+                                })
+                            ">
                                 <x-ui.sheet.header>
                                     <x-ui.sheet.title>Daftar Instalasi</x-ui.sheet.title>
-                                    <x-ui.sheet.description>Komputer yang menginstall
-                                        {{ $software->normalized_name }}</x-ui.sheet.description>
+                                    <x-ui.sheet.description>
+                                        Komputer yang menginstall {{ $software->normalized_name }} 
+                                        <span class="font-bold text-primary">({{ count($software->discoveries) }} komputer)</span>
+                                    </x-ui.sheet.description>
                                 </x-ui.sheet.header>
 
-                                <div class="mt-6 space-y-4">
+                                <div class="mt-6 space-y-4 scroll-container overflow-y-auto max-h-[calc(100vh-200px)] pr-2" @scroll.debounce="checkScroll()">
                                     @foreach($software->discoveries as $discovery)
                                         @if($discovery->computer)
-                                            <div class="p-3 bg-card border rounded shadow-sm flex justify-between items-center">
-                                                <div>
-                                                    <p class="font-bold text-sm">{{ $discovery->computer->hostname }}</p>
-                                                    <p class="text-[10px] text-muted-foreground">
-                                                        {{ $discovery->computer->ip_address }}</p>
+                                            <a href="{{ route('computers', ['search' => $discovery->computer->hostname]) }}" 
+                                               target="_blank"
+                                               class="p-3 bg-card border rounded shadow-sm flex justify-between items-start hover:bg-gray-50 cursor-pointer transition-colors relative group">
+                                                {{-- External Link Icon - positioned so it doesn't overlap text --}}
+                                                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-muted-foreground"></i>
                                                 </div>
-                                                <div class="text-[10px] text-muted-foreground">
-                                                    Terdeteksi: {{ \Carbon\Carbon::parse($discovery->created_at)->format('d/m/Y') }}
+                                                
+                                                <div class="flex-1">
+                                                    {{-- Header Row with Padding Right to avoid icon overlap --}}
+                                                    <div class="flex justify-between items-center mb-1 pr-5">
+                                                        <p class="font-bold text-sm text-foreground">{{ $discovery->computer->hostname }}</p>
+                                                        <span class="text-[10px] text-muted-foreground shrink-0">
+                                                            Terdeteksi: {{ \Carbon\Carbon::parse($discovery->created_at)->format('d/m/Y') }}
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    <div class="flex items-center gap-2 text-[10px] text-muted-foreground">
+                                                        <span>{{ $discovery->computer->ip_address }}</span>
+                                                        <span>•</span>
+                                                        @if($discovery->version)
+                                                            <span class="text-gray-400">{{ $discovery->version }}</span>
+                                                        @else
+                                                            <span class="text-gray-400 italic">Versi tidak diketahui</span>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </a>
                                         @endif
                                     @endforeach
+                                </div>
+
+                                {{-- Scroll Indicator --}}
+                                <div x-show="canScroll" class="mt-4 pt-4 border-t border-border text-center">
+                                    <p class="text-xs text-muted-foreground">
+                                        Menampilkan {{ count($software->discoveries) }} dari {{ count($software->discoveries) }} komputer
+                                    </p>
                                 </div>
                             </x-ui.sheet.content>
                         </x-ui.sheet.sheet>
