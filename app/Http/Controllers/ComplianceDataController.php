@@ -12,10 +12,21 @@ class ComplianceDataController extends Controller
     {
         // 1. Ambil software berbayar (Commercial) dengan agregasi dalam SATU query
         $softwares = SoftwareCatalog::where('category', 'Commercial')
-            ->withCount('discoveries')
+            ->withCount(['discoveries' => function ($query) {
+                $query->select(\DB::raw('count(distinct(computer_id))'));
+            }])
             ->withSum('licenses as owned_count', 'quota_limit')
+            ->with(['discoveries' => function ($query) {
+                // Deduplicate by computer_id to solve BUG-001
+                $query->select('id', 'catalog_id', 'computer_id', 'version', 'created_at')
+                    ->whereIn('id', function ($q) {
+                        $q->select(\DB::raw('MAX(id)'))
+                            ->from('software_discoveries')
+                            ->groupBy('computer_id', 'catalog_id');
+                    })
+                    ->with('computer:id,hostname,ip_address');
+            }])
             // Urutkan berdasarkan selisih (deficit) secara langsung di level database
-            // Deficit = (jumlah terinstall) - (jumlah lisensi dimiliki)
             ->orderByRaw('(discoveries_count - COALESCE(owned_count, 0)) DESC')
             ->paginate(20)
             ->through(function ($software) {
@@ -34,7 +45,9 @@ class ComplianceDataController extends Controller
 
         // 2. Hitung Statistik Global (Efisien)
         $allCommercial = SoftwareCatalog::where('category', 'Commercial')
-            ->withCount('discoveries')
+            ->withCount(['discoveries' => function ($query) {
+                $query->select(\DB::raw('count(distinct(computer_id))'));
+            }])
             ->withSum('licenses as owned_count', 'quota_limit')
             ->get();
 
