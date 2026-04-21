@@ -59,14 +59,20 @@
             @foreach($softwares as $index => $sw)
             @php
                 $hasLicense = $sw->catalog && $sw->catalog->licenses->count() > 0;
+                $isCommercial = $sw->category === 'Commercial';
+                $isCritical = $isCommercial && !$hasLicense;
             @endphp
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
                 <td><strong>{{ $sw->normalized_name }}</strong></td>
                 <td>{{ $sw->version }}</td>
                 <td class="text-center">{{ $sw->computer_count }}</td>
-                <td class="{{ !$hasLicense ? 'text-danger' : '' }}">
-                    {{ $hasLicense ? 'Berlisensi' : 'Tidak Berlisensi' }}
+                <td class="{{ $isCritical ? 'text-danger' : '' }}">
+                    @if($isCommercial)
+                        {{ $hasLicense ? 'Berlisensi' : 'Tidak Berlisensi' }}
+                    @else
+                        Gratis / Tidak Perlu
+                    @endif
                 </td>
                 <td>{{ $sw->category }}</td>
             </tr>

@@ -60,17 +60,23 @@
                     @foreach($softwares as $index => $sw)
                     @php
                         $hasLicense = $sw->catalog && $sw->catalog->licenses->count() > 0;
+                        $isCommercial = $sw->category === 'Commercial';
+                        $isCritical = $isCommercial && !$hasLicense;
                     @endphp
-                    <tr class="{{ !$hasLicense ? 'bg-red-50' : '' }}">
+                    <tr class="{{ $isCritical ? 'bg-red-50' : '' }}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $softwares->firstItem() + $index }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $sw->normalized_name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ $sw->version }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 font-bold">{{ $sw->computer_count }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            @if($hasLicense)
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Berlisensi</span>
+                            @if($isCommercial)
+                                @if($hasLicense)
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Berlisensi</span>
+                                @else
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Tidak Berlisensi</span>
+                                @endif
                             @else
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Tidak Berlisensi</span>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Gratis / Tidak Perlu</span>
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $sw->category }}</td>

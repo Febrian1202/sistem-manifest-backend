@@ -35,7 +35,12 @@ class SoftwareExport implements FromCollection, WithHeadings, WithStyles, WithTi
         $this->rowNumber++;
         
         $hasLicense = $sw->catalog && $sw->catalog->licenses->count() > 0;
-        $status = $hasLicense ? 'Berlisensi' : 'Tidak Berlisensi';
+        
+        if ($sw->category === 'Commercial') {
+            $status = $hasLicense ? 'Berlisensi' : 'Tidak Berlisensi';
+        } else {
+            $status = 'Gratis / Tidak Perlu';
+        }
 
         return [
             $this->rowNumber,
@@ -66,7 +71,9 @@ class SoftwareExport implements FromCollection, WithHeadings, WithStyles, WithTi
         // Highlight "Tidak Berlisensi" rows
         foreach ($this->softwares as $index => $sw) {
             $hasLicense = $sw->catalog && $sw->catalog->licenses->count() > 0;
-            if (!$hasLicense) {
+            $isCommercial = $sw->category === 'Commercial';
+            
+            if ($isCommercial && !$hasLicense) {
                 $row = $index + 4;
                 $sheet->getStyle('A' . $row . ':F' . $row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('FEE2E2');
             }
