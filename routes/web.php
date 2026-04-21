@@ -46,6 +46,8 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
         Route::get('/software/export',   [ReportController::class, 'exportSoftware'])->name('software.export');
         Route::get('/kepatuhan/export',  [ReportController::class, 'exportKepatuhan'])->name('kepatuhan.export');
         Route::get('/lisensi/export',    [ReportController::class, 'exportLisensi'])->name('lisensi.export');
+
+        Route::post('/kepatuhan/scan', [ReportController::class, 'runComplianceScan'])->name('kepatuhan.scan');
     });
 
     // Admin-only Mutations

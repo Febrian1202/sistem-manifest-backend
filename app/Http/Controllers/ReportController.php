@@ -265,4 +265,63 @@ class ReportController extends Controller
 
         return Pdf::loadView('reports.pdf.lisensi-pdf', $data)->setPaper('a4', 'portrait')->stream();
     }
+
+    public function runComplianceScan()
+    {
+        $computers = \App\Models\Computer::all();
+        $count = 0;
+
+        foreach ($computers as $computer) {
+            $discoveries = \App\Models\SoftwareDiscovery::where('computer_id', $computer->id)
+                ->with('catalog.licenses')
+                ->get();
+                
+            $unlicensed = [];
+            $blacklisted = [];
+            
+            foreach ($discoveries as $sw) {
+                $catalog = $sw->catalog;
+                if (!$catalog) continue;
+                
+                if ($catalog->status === 'Blacklist') {
+                    $blacklisted[] = ['software_name' => $catalog->normalized_name, 'reason' => 'Blacklisted'];
+                }
+                
+                if ($catalog->category === 'Commercial') {
+                    $hasLicense = $catalog->licenses->count() > 0;
+                    if (!$hasLicense) {
+                        $unlicensed[] = ['software_name' => $catalog->normalized_name, 'reason' => 'No License Found'];
+                    }
+                }
+            }
+            
+            $unlicensedCount = count($unlicensed);
+            $blacklistedCount = count($blacklisted);
+            
+            $status = 'Safe';
+            if ($blacklistedCount > 0) $status = 'Critical';
+            elseif ($unlicensedCount > 3) $status = 'Critical';
+            elseif ($unlicensedCount > 0) $status = 'Warning';
+            
+            \App\Models\ComplianceReport::updateOrCreate(
+                ['computer_id' => $computer->id],
+                [
+                    'status' => $status,
+                    'total_software_installed' => $discoveries->count(),
+                    'unlicensed_count' => $unlicensedCount,
+                    'blacklisted_count' => $blacklistedCount,
+                    'violation_details' => array_merge($unlicensed, $blacklisted),
+                    'scanned_at' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+            $count++;
+        }
+
+        return back()->with([
+            'status' => 'success',
+            'message' => "Berhasil memperbarui data kepatuhan untuk {$count} komputer."
+        ]);
+    }
 }
