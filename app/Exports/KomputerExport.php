@@ -28,15 +28,16 @@ class KomputerExport implements FromCollection, WithHeadings, WithStyles, WithTi
         return $this->computers;
     }
 
+    private int $rowNumber = 0;
+
     public function map($computer): array
     {
-        static $no = 0;
-        $no++;
+        $this->rowNumber++;
         
         $status = $computer->last_seen_at && $computer->last_seen_at->lt(now()->subDays(7)) ? 'Tidak Aktif' : 'Aktif';
 
         return [
-            $no,
+            $this->rowNumber,
             $computer->hostname,
             $computer->ip_address,
             $computer->mac_address,

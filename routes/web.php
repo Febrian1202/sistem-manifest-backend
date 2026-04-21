@@ -30,7 +30,6 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     Route::get('/licenses', [LicenseDataController::class, 'index'])->name('licenses');
     Route::get('/compliance', [ComplianceDataController::class, 'index'])->name('compliance');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports');
-    Route::post('/reports/export', [ReportController::class, 'export'])->name('reports.export');
 
     // New detailed reports
     Route::prefix('reports')->name('reports.')->group(function () {

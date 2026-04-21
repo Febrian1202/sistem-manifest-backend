@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\ReportExport;
-use App\Models\SoftwareCatalog;
 use App\Models\Computer;
 use App\Models\LicenseInventory;
 use App\Models\SoftwareDiscovery;
@@ -177,7 +175,11 @@ class ReportController extends Controller
     public function showKepatuhan(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
-        $reports = ComplianceReport::with('computer')->whereBetween('created_at', [$startDate, $endDate])->orderBy('status', 'desc')->paginate(15)->withQueryString();
+        $reports = ComplianceReport::with('computer')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('status', 'desc')
+            ->orderBy(Computer::select('hostname')->whereColumn('computers.id', 'compliance_reports.computer_id'))
+            ->paginate(15)->withQueryString();
 
         return view('reports.kepatuhan', compact('reports', 'startDate', 'endDate'));
     }
@@ -186,7 +188,11 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         $format = $request->query('format', 'pdf');
-        $reports = ComplianceReport::with('computer')->whereBetween('created_at', [$startDate, $endDate])->orderBy('status', 'desc')->get();
+        $reports = ComplianceReport::with('computer')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('status', 'desc')
+            ->orderBy(Computer::select('hostname')->whereColumn('computers.id', 'compliance_reports.computer_id'))
+            ->get();
 
         if ($format === 'excel') {
             return Excel::download(new KepatuhanExport($reports, $startDate, $endDate), 'kepatuhan-lisensi_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '.xlsx');
@@ -208,18 +214,29 @@ class ReportController extends Controller
     public function showLisensi(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
-        $licenses = LicenseInventory::with('catalog')->whereBetween('created_at', [$startDate, $endDate])->paginate(15)->withQueryString();
-        
-        // Enrich data with usage
-        $licenses->getCollection()->transform(function($license) {
+        $licenses = LicenseInventory::with('catalog')->whereBetween('created_at', [$startDate, $endDate])->get();
+
+        // Enrich data with usage then sort by usage_pct DESC
+        $licenses = $licenses->map(function($license) {
             $usage = SoftwareDiscovery::where('catalog_id', $license->catalog_id)->count();
             $license->used_count = $usage;
             $license->remaining = max(0, $license->quota_limit - $usage);
             $license->usage_pct = $license->quota_limit > 0 ? round(($usage / $license->quota_limit) * 100, 1) : 0;
             return $license;
-        });
+        })->sortByDesc('usage_pct')->values();
 
-        return view('reports.lisensi', compact('licenses', 'startDate', 'endDate'));
+        // Manual pagination
+        $page = request()->get('page', 1);
+        $perPage = 15;
+        $paginatedLicenses = new \Illuminate\Pagination\LengthAwarePaginator(
+            $licenses->forPage($page, $perPage),
+            $licenses->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+        
+        return view('reports.lisensi', ['licenses' => $paginatedLicenses, 'startDate' => $startDate, 'endDate' => $endDate]);
     }
 
     public function exportLisensi(Request $request)

@@ -28,10 +28,11 @@ class KepatuhanExport implements FromCollection, WithHeadings, WithStyles, WithT
         return $this->reports;
     }
 
+    private int $rowNumber = 0;
+
     public function map($report): array
     {
-        static $no = 0;
-        $no++;
+        $this->rowNumber++;
         
         $statusMap = [
             'Safe' => 'Berlisensi',
@@ -39,11 +40,16 @@ class KepatuhanExport implements FromCollection, WithHeadings, WithStyles, WithT
             'Critical' => 'Tidak Berlisensi',
         ];
 
+        // Extract software names from violation_details JSON
+        $swNames = is_array($report->violation_details)
+            ? collect($report->violation_details)->pluck('software_name')->filter()->implode(', ')
+            : '-';
+
         return [
-            $no,
+            $this->rowNumber,
             $report->computer->hostname ?? '-',
             $report->computer->ip_address ?? '-',
-            'Detail Laporan (JSON)', // Simplification for Excel
+            \Illuminate\Support\Str::limit($swNames, 60),
             $statusMap[$report->status] ?? $report->status,
             $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-',
             "Pelanggaran: $report->unlicensed_count | Blacklist: $report->blacklisted_count",
@@ -55,7 +61,7 @@ class KepatuhanExport implements FromCollection, WithHeadings, WithStyles, WithT
         return [
             ['Kepatuhan Lisensi (' . $this->startDate->format('d/m/Y') . ' - ' . $this->endDate->format('d/m/Y') . ')'],
             [],
-            ['No', 'Nama Komputer', 'IP Address', 'Info Laporan', 'Status', 'Tanggal Deteksi', 'Keterangan']
+            ['No', 'Nama Komputer', 'IP Address', 'Nama Software', 'Status', 'Tanggal Deteksi', 'Keterangan']
         ];
     }
 

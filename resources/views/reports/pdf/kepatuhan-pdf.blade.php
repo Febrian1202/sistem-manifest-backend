@@ -57,6 +57,7 @@
                 <th width="30">No</th>
                 <th>Nama Komputer</th>
                 <th>IP Address</th>
+                <th>Nama Software</th>
                 <th width="80">Status</th>
                 <th>Tanggal Deteksi</th>
                 <th>Keterangan</th>
@@ -72,6 +73,14 @@
                 <td class="text-center">{{ $index + 1 }}</td>
                 <td><strong>{{ $report->computer->hostname ?? '-' }}</strong></td>
                 <td>{{ $report->computer->ip_address ?? '-' }}</td>
+                <td style="font-size: 8px;">
+                    @php
+                        $swNames = is_array($report->violation_details) 
+                            ? collect($report->violation_details)->pluck('software_name')->filter()->implode(', ')
+                            : '-';
+                    @endphp
+                    {{ \Illuminate\Support\Str::limit($swNames, 40) }}
+                </td>
                 <td class="text-center">
                     <span class="badge {{ $statusClass }}">{{ $statusText }}</span>
                 </td>

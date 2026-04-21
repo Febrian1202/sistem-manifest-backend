@@ -51,6 +51,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Komputer</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Software</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deteksi Terakhir</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
@@ -58,10 +59,16 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($reports as $index => $report)
+                    @php
+                        $softwareNames = is_array($report->violation_details) 
+                            ? collect($report->violation_details)->pluck('software_name')->filter()->implode(', ')
+                            : '-';
+                    @endphp
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reports->firstItem() + $index }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $report->computer->hostname ?? '-' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ $report->computer->ip_address ?? '-' }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" title="{{ $softwareNames }}">{{ \Illuminate\Support\Str::limit($softwareNames, 50) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($report->status === 'Safe')
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Berlisensi</span>

@@ -28,10 +28,11 @@ class LisensiExport implements FromCollection, WithHeadings, WithStyles, WithTit
         return $this->licenses;
     }
 
+    private int $rowNumber = 0;
+
     public function map($license): array
     {
-        static $no = 0;
-        $no++;
+        $this->rowNumber++;
         
         $status = 'Tersedia';
         if ($license->remaining <= 0) $status = 'Penuh';
@@ -39,7 +40,7 @@ class LisensiExport implements FromCollection, WithHeadings, WithStyles, WithTit
         if ($license->expiry_date && $license->expiry_date->lt(now())) $status = 'Kedaluwarsa';
 
         return [
-            $no,
+            $this->rowNumber,
             $license->catalog->normalized_name ?? '-',
             $license->catalog->category ?? '-',
             $license->quota_limit,

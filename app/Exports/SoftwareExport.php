@@ -28,16 +28,17 @@ class SoftwareExport implements FromCollection, WithHeadings, WithStyles, WithTi
         return $this->softwares;
     }
 
+    private int $rowNumber = 0;
+
     public function map($sw): array
     {
-        static $no = 0;
-        $no++;
+        $this->rowNumber++;
         
         $hasLicense = $sw->catalog && $sw->catalog->licenses->count() > 0;
         $status = $hasLicense ? 'Berlisensi' : 'Tidak Berlisensi';
 
         return [
-            $no,
+            $this->rowNumber,
             $sw->normalized_name,
             $sw->version,
             $sw->computer_count,
