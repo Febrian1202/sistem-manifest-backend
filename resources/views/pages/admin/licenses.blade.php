@@ -119,7 +119,8 @@
             <x-stat-card title="Total Kursi Lisensi" value="{{ number_format($stats['total_licenses']) }}"
                 subtitle="Akumulasi seluruh kuota" icon="fa-solid fa-users" />
             <x-stat-card title="Total Nilai Aset" value="Rp {{ number_format($stats['total_value'], 0, ',', '.') }}"
-                subtitle="Estimasi biaya lisensi" icon="fa-solid fa-rupiah-sign" />
+                subtitle="Estimasi biaya lisensi" icon="fa-solid fa-rupiah-sign" 
+                title-extra='<i class="fa-solid fa-circle-info text-muted-foreground/50 ml-1.5 cursor-help" title="Berdasarkan harga per lisensi × total kuota"></i>' />
             <x-stat-card title="Segera Kedaluwarsa" value="{{ $stats['expiring_soon'] }}"
                 subtitle="Berakhir dalam 30 hari" icon="fa-solid fa-triangle-exclamation"
                 class="border-l-4 border-l-yellow-500" />
@@ -127,21 +128,32 @@
                 icon="fa-solid fa-clock" variant="critical" />
         </div>
 
-        {{-- Pencarian --}}
-        <form method="GET" action="{{ url()->current() }}" enctype="multipart/form-data"
+        {{-- Pencarian & Filter --}}
+        <form method="GET" action="{{ url()->current() }}"
             class="bg-card border border-border p-4 rounded-lg shadow-sm flex flex-col md:flex-row gap-4 items-center">
-            <div class="w-full relative">
+            <div class="w-full relative flex-1">
                 <i
                     class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"></i>
                 <x-form.input name="search" value="{{ request('search') }}"
-                    placeholder="Cari nama software atau Nomor PO..." class="pl-9 w-full md:max-w-md" />
+                    placeholder="Cari nama software atau Nomor PO..." class="pl-9 w-full" />
+            </div>
+
+            <div class="w-full md:w-48">
+                <select name="status" onchange="this.form.submit()"
+                    class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                    <option value="">Semua Status</option>
+                    <option value="Aman" {{ request('status') == 'Aman' ? 'selected' : '' }}>Aman</option>
+                    <option value="Segera Habis" {{ request('status') == 'Segera Habis' ? 'selected' : '' }}>Segera Habis</option>
+                    <option value="Kedaluwarsa" {{ request('status') == 'Kedaluwarsa' ? 'selected' : '' }}>Kedaluwarsa</option>
+                    <option value="Over Limit" {{ request('status') == 'Over Limit' ? 'selected' : '' }}>Over Limit</option>
+                </select>
             </div>
 
             <div class="flex gap-2 w-full md:w-auto">
                 <x-ui.button type="submit">
                     <i class="fa-solid fa-search mr-2"></i> Cari
                 </x-ui.button>
-                @if(request('search'))
+                @if(request('search') || request('status'))
                     <a href="{{ url()->current() }}">
                         <x-ui.button type="button" variant="outline" title="Reset">
                             <i class="fa-solid fa-xmark"></i>

@@ -8,12 +8,13 @@
             $quota = $license->quota_limit;
             $usagePercent = $quota > 0 ? min(($usageCount / $quota) * 100, 100) : 0;
 
-            // Warna Progress Bar
-            $progressColor = 'bg-success'; // Hijau
-            if ($usagePercent > 85)
-                $progressColor = 'bg-destructive'; // Merah
-            elseif ($usagePercent > 70)
-                $progressColor = 'bg-warning'; // Kuning
+            // Warna Progress Bar Dinamis
+            $progressColor = 'bg-success'; // Hijau (0-60)
+            if ($usagePercent > 80) {
+                $progressColor = 'bg-destructive'; // Merah (81-100)
+            } elseif ($usagePercent > 60) {
+                $progressColor = 'bg-warning'; // Kuning (61-80)
+            }
 
             // Cek Kedaluwarsa
             $expiryDate = $license->expiry_date ? \Carbon\Carbon::parse($license->expiry_date) : null;
@@ -65,14 +66,23 @@
                     <x-slot name="content">
                         <x-ui.dropdown-label>Opsi Lisensi</x-ui.dropdown-label>
 
-                        {{-- SHEET DETAIL & EDIT DARI DALAM DROPDOWN --}}
+                        {{-- LINK KE HALAMAN DETAIL --}}
+                        <x-ui.dropdown-item class="p-0">
+                            <a href="{{ route('licenses.show', $license->id) }}"
+                                class="flex w-full items-center justify-start px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
+                                <i class="fa-regular fa-eye mr-2 w-4 text-center opacity-70"></i>
+                                <span>Lihat Detail</span>
+                            </a>
+                        </x-ui.dropdown-item>
+
+                        {{-- SHEET EDIT DARI DALAM DROPDOWN --}}
                         <x-ui.sheet.sheet>
                             <x-ui.sheet.trigger class="w-full block">
                                 <x-ui.dropdown-item class="p-0">
                                     <button type="button"
                                         class="flex w-full items-center justify-start px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
-                                        <i class="fa-regular fa-eye mr-2 w-4 text-center opacity-70"></i>
-                                        <span>Lihat Detail / Edit</span>
+                                        <i class="fa-regular fa-pen-to-square mr-2 w-4 text-center opacity-70"></i>
+                                        <span>Edit Data</span>
                                     </button>
                                 </x-ui.dropdown-item>
                             </x-ui.sheet.trigger>
