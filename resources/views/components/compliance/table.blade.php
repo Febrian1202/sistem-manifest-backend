@@ -15,7 +15,11 @@
 
         <x-ui.table.table-body>
             @forelse($softwares as $software)
-                <x-ui.table.table-row class="{{ !$software->is_compliant ? 'bg-destructive/5' : '' }}">
+                <x-ui.table.table-row 
+                    x-show="activeTab === 'semua' || (activeTab === 'tidak-patuh' && '{{ $software->is_compliant ? 'patuh' : 'tidak-patuh' }}' === 'tidak-patuh') || (activeTab === 'patuh' && '{{ $software->is_compliant ? 'patuh' : 'tidak-patuh' }}' === 'patuh')"
+                    data-status="{{ $software->is_compliant ? 'patuh' : 'tidak-patuh' }}"
+                    class="{{ !$software->is_compliant ? 'bg-destructive/5' : '' }}"
+                >
                     <x-ui.table.table-cell class="font-medium">
                         <div class="flex items-center gap-2">
                             <div
@@ -45,13 +49,13 @@
                     <x-ui.table.table-cell>
                         @if($software->is_compliant)
                             <span
-                                class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-success/10 text-success border border-success/20">
-                                Compliant
+                                class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-700 border border-green-300">
+                                Patuh
                             </span>
                         @else
                             <span
                                 class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/20 animate-pulse">
-                                Non-Compliant
+                                Tidak Patuh
                             </span>
                         @endif
                     </x-ui.table.table-cell>
@@ -142,6 +146,25 @@
                     </x-ui.table.table-cell>
                 </x-ui.table.table-row>
             @endforelse
+
+            {{-- Empty State Alpine.js (Muncul jika filter tidak menghasilkan baris) --}}
+            <x-ui.table.table-row 
+                x-show="activeTab !== 'semua' && $el.parentElement.querySelectorAll('tr[data-status]:not([style*=\'display: none\'])').length === 0"
+                x-cloak
+            >
+                <x-ui.table.table-cell colspan="6" class="text-center py-16 text-gray-400">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-2xl">
+                            ✅
+                        </div>
+                        <p class="font-semibold" x-text="
+                            activeTab === 'tidak-patuh' ? 'Tidak ada software yang melanggar kepatuhan' : 
+                            (activeTab === 'patuh' ? 'Belum ada software yang memenuhi kepatuhan' : 'Belum ada software yang dipantau sistem')
+                        "></p>
+                        <p class="text-sm">Tidak ada pelanggaran lisensi yang terdeteksi.</p>
+                    </div>
+                </x-ui.table.table-cell>
+            </x-ui.table.table-row>
         </x-ui.table.table-body>
     </x-ui.table.table>
 </div>

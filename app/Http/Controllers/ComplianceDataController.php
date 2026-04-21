@@ -58,6 +58,10 @@ class ComplianceDataController extends Controller
         ];
         $stats['non_compliant'] = $stats['total_commercial'] - $stats['compliant'];
 
-        return view('pages.admin.compliance', compact('softwares', 'stats'));
+        $totalCount = $stats['total_commercial'];
+        $nonCompliantCount = $stats['non_compliant'];
+        $compliantCount = $stats['compliant'];
+
+        return view('pages.admin.compliance', compact('softwares', 'stats', 'totalCount', 'nonCompliantCount', 'compliantCount'));
     }
 }
