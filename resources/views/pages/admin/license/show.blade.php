@@ -150,7 +150,7 @@
                     </div>
                     @if($discoveries->hasPages())
                         <div class="p-4 border-t border-border">
-                            {{ $discoveries->links() }}
+                            {{ $discoveries->links('vendor.pagination.shadcn') }}
                         </div>
                     @endif
                 </div>

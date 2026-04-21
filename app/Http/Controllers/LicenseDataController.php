@@ -86,7 +86,7 @@ class LicenseDataController extends Controller
      */
     public function show(LicenseInventory $license)
     {
-        $license->load(['catalog.discoveries.computer']);
+        $license->load(['catalog']);
         
         // Ambil software catalog terkait
         $catalog = $license->catalog;
