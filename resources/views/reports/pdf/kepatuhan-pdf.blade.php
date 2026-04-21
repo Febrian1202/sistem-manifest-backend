@@ -74,17 +74,20 @@
                     $statusClass = $report->status === 'Safe' ? 'badge-safe' : ($report->status === 'Warning' ? 'badge-warning' : 'badge-critical');
                     $statusText = $report->status === 'Safe' ? 'Berlisensi' : ($report->status === 'Warning' ? 'Grace Period' : 'Tidak Berlisensi');
                 }
+                
+                // Software names fallback
+                if ($report && is_array($report->violation_details)) {
+                    $swNames = collect($report->violation_details)->pluck('software_name')->filter()->implode(', ');
+                } else {
+                    $swNames = $computer->softwares->map(fn($s) => $s->catalog->normalized_name ?? $s->raw_name)->unique()->implode(', ');
+                }
+                $swNames = $swNames ?: '-';
             @endphp
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
                 <td><strong>{{ $computer->hostname ?? '-' }}</strong></td>
                 <td>{{ $computer->ip_address ?? '-' }}</td>
                 <td style="font-size: 8px;">
-                    @php
-                        $swNames = $report && is_array($report->violation_details) 
-                            ? collect($report->violation_details)->pluck('software_name')->filter()->implode(', ')
-                            : '-';
-                    @endphp
                     {{ \Illuminate\Support\Str::limit($swNames, 40) }}
                 </td>
                 <td class="text-center">

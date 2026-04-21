@@ -176,7 +176,7 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         
-        $reports = Computer::with(['latestComplianceReport'])
+        $reports = Computer::with(['latestComplianceReport', 'softwares.catalog'])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('hostname')
             ->paginate(15)->withQueryString();
@@ -189,7 +189,7 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $format = $request->query('format', 'pdf');
         
-        $reports = Computer::with(['latestComplianceReport'])
+        $reports = Computer::with(['latestComplianceReport', 'softwares.catalog'])
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('hostname')
             ->get();

@@ -43,16 +43,19 @@ class KepatuhanExport implements FromCollection, WithHeadings, WithStyles, WithT
 
         $status = $report ? ($statusMap[$report->status] ?? $report->status) : 'Belum Diperiksa';
 
-        // Extract software names from violation_details JSON
-        $swNames = $report && is_array($report->violation_details)
-            ? collect($report->violation_details)->pluck('software_name')->filter()->implode(', ')
-            : '-';
+        // Extract software names from violation_details JSON or fallback to discovery
+        if ($report && is_array($report->violation_details)) {
+            $swNames = collect($report->violation_details)->pluck('software_name')->filter()->implode(', ');
+        } else {
+            $swNames = $computer->softwares->map(fn($s) => $s->catalog->normalized_name ?? $s->raw_name)->unique()->implode(', ');
+        }
+        $swNames = $swNames ?: '-';
 
         return [
             $this->rowNumber,
             $computer->hostname ?? '-',
             $computer->ip_address ?? '-',
-            \Illuminate\Support\Str::limit($swNames, 60),
+            \Illuminate\Support\Str::limit($swNames, 100), // Limit but a bit longer for Excel
             $status,
             $report && $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-',
             $report ? "Pelanggaran: $report->unlicensed_count | Blacklist: $report->blacklisted_count" : "-",

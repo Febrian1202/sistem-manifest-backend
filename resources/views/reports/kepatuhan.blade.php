@@ -49,11 +49,11 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Komputer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Komputer</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama Software</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Deteksi Terakhir</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal Deteksi</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Keterangan</th>
                     </tr>
                 </thead>
@@ -61,9 +61,15 @@
                     @foreach($reports as $index => $computer)
                     @php
                         $report = $computer->latestComplianceReport;
-                        $softwareNames = $report && is_array($report->violation_details) 
-                            ? collect($report->violation_details)->pluck('software_name')->filter()->implode(', ')
-                            : '-';
+                        
+                        // If report exists, use violation software. Otherwise, list all discovered software.
+                        if ($report && is_array($report->violation_details)) {
+                            $softwareNames = collect($report->violation_details)->pluck('software_name')->filter()->implode(', ');
+                        } else {
+                            $softwareNames = $computer->softwares->map(fn($s) => $s->catalog->normalized_name ?? $s->raw_name)->unique()->implode(', ');
+                        }
+                        
+                        $softwareNames = $softwareNames ?: '-';
                     @endphp
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reports->firstItem() + $index }}</td>
