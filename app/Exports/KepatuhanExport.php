@@ -30,9 +30,10 @@ class KepatuhanExport implements FromCollection, WithHeadings, WithStyles, WithT
 
     private int $rowNumber = 0;
 
-    public function map($report): array
+    public function map($computer): array
     {
         $this->rowNumber++;
+        $report = $computer->latestComplianceReport;
         
         $statusMap = [
             'Safe' => 'Berlisensi',
@@ -40,19 +41,21 @@ class KepatuhanExport implements FromCollection, WithHeadings, WithStyles, WithT
             'Critical' => 'Tidak Berlisensi',
         ];
 
+        $status = $report ? ($statusMap[$report->status] ?? $report->status) : 'Belum Diperiksa';
+
         // Extract software names from violation_details JSON
-        $swNames = is_array($report->violation_details)
+        $swNames = $report && is_array($report->violation_details)
             ? collect($report->violation_details)->pluck('software_name')->filter()->implode(', ')
             : '-';
 
         return [
             $this->rowNumber,
-            $report->computer->hostname ?? '-',
-            $report->computer->ip_address ?? '-',
+            $computer->hostname ?? '-',
+            $computer->ip_address ?? '-',
             \Illuminate\Support\Str::limit($swNames, 60),
-            $statusMap[$report->status] ?? $report->status,
-            $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-',
-            "Pelanggaran: $report->unlicensed_count | Blacklist: $report->blacklisted_count",
+            $status,
+            $report && $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-',
+            $report ? "Pelanggaran: $report->unlicensed_count | Blacklist: $report->blacklisted_count" : "-",
         ];
     }
 
@@ -75,7 +78,10 @@ class KepatuhanExport implements FromCollection, WithHeadings, WithStyles, WithT
         $lastRow = $sheet->getHighestRow();
 
         // Color-code Status column
-        foreach ($this->reports as $index => $report) {
+        foreach ($this->reports as $index => $computer) {
+            $report = $computer->latestComplianceReport;
+            if (!$report) continue;
+
             $row = $index + 4;
             $cell = 'E' . $row;
             if ($report->status === 'Safe') {
@@ -89,12 +95,15 @@ class KepatuhanExport implements FromCollection, WithHeadings, WithStyles, WithT
 
         // Summary row
         $total = $this->reports->count();
-        $safe = $this->reports->filter(fn($r) => $r->status === 'Safe')->count();
-        $warning = $this->reports->filter(fn($r) => $r->status === 'Warning')->count();
-        $critical = $total - $safe - $warning;
+        $withReport = $this->reports->filter(fn($c) => $c->latestComplianceReport)->count();
+        $safe = $this->reports->filter(fn($c) => $c->latestComplianceReport?->status === 'Safe')->count();
+        $warning = $this->reports->filter(fn($c) => $c->latestComplianceReport?->status === 'Warning')->count();
+        $critical = $withReport - $safe - $warning;
+        $noReport = $total - $withReport;
         
         $summaryRow = $lastRow + 1;
-        $sheet->setCellValue('A' . $summaryRow, "Total: $safe berlisensi | $warning grace period | $critical tidak berlisensi");
+        $summaryText = "Total: $total | $safe berlisensi | $warning grace period | $critical tidak berlisensi | $noReport belum diperiksa";
+        $sheet->setCellValue('A' . $summaryRow, $summaryText);
         $sheet->mergeCells('A' . $summaryRow . ':G' . $summaryRow);
         $sheet->getStyle('A' . $summaryRow)->getFont()->setBold(true);
 

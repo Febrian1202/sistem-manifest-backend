@@ -58,19 +58,22 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($reports as $index => $report)
+                    @foreach($reports as $index => $computer)
                     @php
-                        $softwareNames = is_array($report->violation_details) 
+                        $report = $computer->latestComplianceReport;
+                        $softwareNames = $report && is_array($report->violation_details) 
                             ? collect($report->violation_details)->pluck('software_name')->filter()->implode(', ')
                             : '-';
                     @endphp
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $reports->firstItem() + $index }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $report->computer->hostname ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ $report->computer->ip_address ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $computer->hostname ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{{ $computer->ip_address ?? '-' }}</td>
                         <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" title="{{ $softwareNames }}">{{ \Illuminate\Support\Str::limit($softwareNames, 50) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            @if($report->status === 'Safe')
+                            @if(!$report)
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Belum Diperiksa</span>
+                            @elseif($report->status === 'Safe')
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Berlisensi</span>
                             @elseif($report->status === 'Warning')
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Grace Period</span>
@@ -78,12 +81,18 @@
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Tidak Berlisensi</span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ $report && $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : 'N/A' }}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-500">
-                            <ul class="list-disc list-inside">
-                                <li>Unlicensed: {{ $report->unlicensed_count }}</li>
-                                <li>Blacklist: {{ $report->blacklisted_count }}</li>
-                            </ul>
+                            @if($report)
+                                <ul class="list-disc list-inside">
+                                    <li>Unlicensed: {{ $report->unlicensed_count }}</li>
+                                    <li>Blacklist: {{ $report->blacklisted_count }}</li>
+                                </ul>
+                            @else
+                                <span class="italic text-gray-400">Data belum tersedia</span>
+                            @endif
                         </td>
                     </tr>
                     @endforeach

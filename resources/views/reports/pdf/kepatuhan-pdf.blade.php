@@ -64,18 +64,24 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($reports as $index => $report)
+            @foreach($reports as $index => $computer)
             @php
-                $statusClass = $report->status === 'Safe' ? 'badge-safe' : ($report->status === 'Warning' ? 'badge-warning' : 'badge-critical');
-                $statusText = $report->status === 'Safe' ? 'Berlisensi' : ($report->status === 'Warning' ? 'Grace Period' : 'Tidak Berlisensi');
+                $report = $computer->latestComplianceReport;
+                $statusClass = 'badge-safe'; // Default
+                $statusText = 'Belum Diperiksa';
+                
+                if ($report) {
+                    $statusClass = $report->status === 'Safe' ? 'badge-safe' : ($report->status === 'Warning' ? 'badge-warning' : 'badge-critical');
+                    $statusText = $report->status === 'Safe' ? 'Berlisensi' : ($report->status === 'Warning' ? 'Grace Period' : 'Tidak Berlisensi');
+                }
             @endphp
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
-                <td><strong>{{ $report->computer->hostname ?? '-' }}</strong></td>
-                <td>{{ $report->computer->ip_address ?? '-' }}</td>
+                <td><strong>{{ $computer->hostname ?? '-' }}</strong></td>
+                <td>{{ $computer->ip_address ?? '-' }}</td>
                 <td style="font-size: 8px;">
                     @php
-                        $swNames = is_array($report->violation_details) 
+                        $swNames = $report && is_array($report->violation_details) 
                             ? collect($report->violation_details)->pluck('software_name')->filter()->implode(', ')
                             : '-';
                     @endphp
@@ -84,9 +90,13 @@
                 <td class="text-center">
                     <span class="badge {{ $statusClass }}">{{ $statusText }}</span>
                 </td>
-                <td>{{ $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-' }}</td>
+                <td>{{ $report && $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-' }}</td>
                 <td style="font-size: 8px;">
-                    Unlicensed: {{ $report->unlicensed_count }} | Blacklist: {{ $report->blacklisted_count }}
+                    @if($report)
+                        Unlicensed: {{ $report->unlicensed_count }} | Blacklist: {{ $report->blacklisted_count }}
+                    @else
+                        -
+                    @endif
                 </td>
             </tr>
             @endforeach

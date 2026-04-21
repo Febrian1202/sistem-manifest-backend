@@ -175,10 +175,10 @@ class ReportController extends Controller
     public function showKepatuhan(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
-        $reports = ComplianceReport::with('computer')
+        
+        $reports = Computer::with(['latestComplianceReport'])
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->orderBy('status', 'desc')
-            ->orderBy(Computer::select('hostname')->whereColumn('computers.id', 'compliance_reports.computer_id'))
+            ->orderBy('hostname')
             ->paginate(15)->withQueryString();
 
         return view('reports.kepatuhan', compact('reports', 'startDate', 'endDate'));
@@ -188,10 +188,10 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         $format = $request->query('format', 'pdf');
-        $reports = ComplianceReport::with('computer')
+        
+        $reports = Computer::with(['latestComplianceReport'])
             ->whereBetween('created_at', [$startDate, $endDate])
-            ->orderBy('status', 'desc')
-            ->orderBy(Computer::select('hostname')->whereColumn('computers.id', 'compliance_reports.computer_id'))
+            ->orderBy('hostname')
             ->get();
 
         if ($format === 'excel') {
