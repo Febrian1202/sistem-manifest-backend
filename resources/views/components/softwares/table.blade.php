@@ -94,10 +94,8 @@
                                     <x-ui.sheet.sheet>
                                         <x-ui.sheet.trigger class="w-full block">
                                             {{-- Gunakan dropdown-item langsung tanpa tag <button> lagi di dalamnya --}}
-                                                <x-ui.dropdown-item type="button"
-                                                    class="w-full flex items-center justify-start">
-                                                    <i
-                                                        class="fa-solid fa-pen-to-square mr-2 w-4 text-center opacity-70"></i>
+                                                <x-ui.dropdown-item type="button">
+                                                    <i class="fa-regular fa-pen-to-square mr-2 w-4 text-center opacity-70"></i>
                                                     <span>Edit Detail</span>
                                                 </x-ui.dropdown-item>
                                         </x-ui.sheet.trigger>
@@ -174,8 +172,9 @@
                                         @csrf @method('PUT')
                                         <input type="hidden" name="category" value="{{ $software->category }}">
                                         <input type="hidden" name="status" value="Whitelist">
-                                        <x-ui.dropdown-item onclick="this.closest('form').submit()">
-                                            <i class="fa-solid fa-check mr-2 text-green-600"></i> Set Whitelist
+                                        <x-ui.dropdown-item type="submit">
+                                            <i class="fa-regular fa-circle-check mr-2 w-4 text-center text-green-600 opacity-70"></i>
+                                            <span>Set Whitelist</span>
                                         </x-ui.dropdown-item>
                                     </form>
 
@@ -183,8 +182,9 @@
                                         @csrf @method('PUT')
                                         <input type="hidden" name="category" value="{{ $software->category }}">
                                         <input type="hidden" name="status" value="Blacklist">
-                                        <x-ui.dropdown-item onclick="this.closest('form').submit()">
-                                            <i class="fa-solid fa-ban mr-2 text-red-600"></i> Set Blacklist
+                                        <x-ui.dropdown-item type="submit">
+                                            <i class="fa-solid fa-ban mr-2 w-4 text-center text-red-600 opacity-70"></i>
+                                            <span>Set Blacklist</span>
                                         </x-ui.dropdown-item>
                                     </form>
                                 </x-slot>

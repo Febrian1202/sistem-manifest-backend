@@ -21,9 +21,9 @@
     :description="$description"
     {{ $attributes }}
 >
-    @if($titleExtra)
+    @if(isset($titleExtra) || isset($title_extra))
         <x-slot name="title_extra">
-            {!! $titleExtra !!}
+            {!! $titleExtra ?? $title_extra !!}
         </x-slot>
     @endif
 </x-dashboard.stat-card>

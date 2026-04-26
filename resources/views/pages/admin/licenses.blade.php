@@ -42,6 +42,16 @@
                             </x-ui.select.index>
                         </div>
 
+                        <div class="space-y-1.5" x-data="{ showKey: false }">
+                            <x-form.label>License Key / Product Key</x-form.label>
+                            <div class="relative">
+                                <x-form.input x-bind:type="showKey ? 'text' : 'password'" name="license_key" placeholder="Opsional — akan dienkripsi sebelum disimpan" class="pr-10" />
+                                <button type="button" @click="showKey = !showKey" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                                    <i class="fa-solid" :class="showKey ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                </button>
+                            </div>
+                        </div>
+
                         <div class="space-y-1.5">
                             <x-form.label>Nomor Purchase Order (PO)</x-form.label>
                             <x-form.input name="purchase_order_number" placeholder="Contoh: PO-USN-2026-001" />
@@ -54,7 +64,7 @@
                             </div>
                             <div class="space-y-1.5">
                                 <x-form.label>Harga Per Unit (Rp)</x-form.label>
-                                <x-form.input type="number" name="price_per_unit" placeholder="0" min="0" />
+                                <x-form.input type="number" name="price_per_unit" placeholder="Opsional" min="0" />
                             </div>
                         </div>
 
@@ -70,11 +80,11 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <x-form.label>Tanggal Beli</x-form.label>
-                                <x-form.input type="date" name="purchase_date" />
+                                <x-form.input type="text" name="purchase_date" placeholder="dd/mm/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
                             </div>
                             <div class="space-y-1.5">
                                 <x-form.label>Kedaluwarsa</x-form.label>
-                                <x-form.input type="date" name="expiry_date" />
+                                <x-form.input type="text" name="expiry_date" placeholder="dd/mm/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
                             </div>
                         </div>
 
@@ -118,9 +128,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <x-stat-card title="Total Kursi Lisensi" value="{{ number_format($stats['total_licenses']) }}"
                 subtitle="Akumulasi seluruh kuota" icon="fa-solid fa-users" />
-            <x-stat-card title="Total Nilai Aset" value="Rp {{ number_format($stats['total_value'], 0, ',', '.') }}"
-                subtitle="Estimasi biaya lisensi" icon="fa-solid fa-rupiah-sign" 
-                title-extra='<i class="fa-solid fa-circle-info text-muted-foreground/50 ml-1.5 cursor-help" title="Berdasarkan harga per lisensi × total kuota"></i>' />
+            <x-stat-card title="Total Nilai Aset" value="Rp {{ number_format($stats['total_value'], 0, ',', '.') }}" subtitle="Estimasi biaya lisensi" icon="fa-solid fa-rupiah-sign">
+                <x-slot name="titleExtra">
+                    <i class="fa-solid fa-circle-info text-muted-foreground/50 ml-1.5 cursor-help" title="Berdasarkan harga per lisensi x total kuota"></i>
+                </x-slot>
+            </x-stat-card>
             <x-stat-card title="Segera Kedaluwarsa" value="{{ $stats['expiring_soon'] }}"
                 subtitle="Berakhir dalam 30 hari" icon="fa-solid fa-triangle-exclamation"
                 class="border-l-4 border-l-yellow-500" />

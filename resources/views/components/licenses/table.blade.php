@@ -123,13 +123,10 @@
                                 {{-- EDIT SHEET --}}
                                 <x-ui.sheet.sheet>
                                     <x-ui.sheet.trigger class="w-full block">
-                                        <x-ui.dropdown-item class="p-0">
-                                            <button type="button"
-                                                class="flex w-full items-center justify-start px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground">
-                                                <i class="fa-solid fa-pen-to-square mr-2 w-4 text-center opacity-70"></i>
-                                                <span>Edit Lisensi</span>
-                                            </button>
-                                        </x-ui.dropdown-item>
+                                        <x-ui.dropdown-item>
+                                             <i class="fa-regular fa-pen-to-square mr-2 w-4 text-center opacity-70"></i>
+                                             <span>Edit Lisensi</span>
+                                         </x-ui.dropdown-item>
                                     </x-ui.sheet.trigger>
 
                                     <x-ui.sheet.content side="right">
@@ -157,6 +154,17 @@
                                                 </x-ui.select.index>
                                             </div>
 
+                                            <div class="space-y-1.5" x-data="{ showKey: false }">
+                                                <x-form.label>License Key / Product Key</x-form.label>
+                                                <div class="relative">
+                                                    <x-form.input x-bind:type="showKey ? 'text' : 'password'" name="license_key" placeholder="Opsional — biarkan kosong jika tidak diubah" class="pr-10" />
+                                                    <button type="button" @click="showKey = !showKey" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
+                                                        <i class="fa-solid" :class="showKey ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                                    </button>
+                                                </div>
+                                                <p class="text-[10px] text-muted-foreground italic mt-1">Key saat ini: {{ $license->masked_license_key }}</p>
+                                            </div>
+
                                             <div class="space-y-1.5">
                                                 <x-form.label>Nomor Purchase Order (PO)</x-form.label>
                                                 <x-form.input name="purchase_order_number"
@@ -173,19 +181,19 @@
                                                 <div class="space-y-1.5">
                                                     <x-form.label>Harga Per Unit (Rp)</x-form.label>
                                                     <x-form.input type="number" name="price_per_unit"
-                                                        value="{{ $license->price_per_unit }}" min="0" />
+                                                        value="{{ $license->price_per_unit != 0 ? $license->price_per_unit : '' }}" placeholder="Opsional" min="0" />
                                                 </div>
                                             </div>
 
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div class="space-y-1.5">
                                                     <x-form.label>Tanggal Beli</x-form.label>
-                                                    <x-form.input type="date" name="purchase_date"
+                                                    <x-form.input type="text" name="purchase_date" placeholder="dd/mm/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'"
                                                         value="{{ $license->purchase_date ? \Carbon\Carbon::parse($license->purchase_date)->format('Y-m-d') : '' }}" />
                                                 </div>
                                                 <div class="space-y-1.5">
                                                     <x-form.label>Kedaluwarsa</x-form.label>
-                                                    <x-form.input type="date" name="expiry_date"
+                                                    <x-form.input type="text" name="expiry_date" placeholder="dd/mm/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'"
                                                         value="{{ $license->expiry_date ? \Carbon\Carbon::parse($license->expiry_date)->format('Y-m-d') : '' }}" />
                                                 </div>
                                             </div>
@@ -212,12 +220,9 @@
                                     onsubmit="return confirm('Yakin ingin menghapus data lisensi ini?');">
                                     @csrf
                                     @method('DELETE')
-                                    <x-ui.dropdown-item class="p-0">
-                                        <button type="submit"
-                                            class="flex w-full items-center justify-start px-2 py-1.5 text-sm text-destructive outline-none transition-colors hover:bg-destructive/10 hover:text-destructive">
-                                            <i class="fa-solid fa-trash mr-2 w-4 text-center"></i>
-                                            <span>Hapus Data</span>
-                                        </button>
+                                    <x-ui.dropdown-item destructive type="submit">
+                                        <i class="fa-regular fa-trash-can mr-2 w-4 text-center opacity-70"></i>
+                                        <span>Hapus Data</span>
                                     </x-ui.dropdown-item>
                                 </form>
 
