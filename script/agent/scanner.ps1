@@ -2,8 +2,7 @@ param([string]$Mode = "poll")
 
 # Konfigurasi API
 # $baseUrl        = "http://127.0.0.1:8000/api"
-$baseUrl        = "https://discover-boulder-safe-registration.trycloudflare.com
-/api"
+$baseUrl        = "https://discover-boulder-safe-registration.trycloudflare.com/api"
 $registerUrl    = "$baseUrl/agent/register"
 $scanUrl        = "$baseUrl/scan-result"
 $scanCommandUrl = "$baseUrl/agent/scan-command"
