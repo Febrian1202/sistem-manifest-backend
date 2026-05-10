@@ -43,7 +43,7 @@ test('ScanController updates computer synchronously and dispatches job', functio
         ]
     ];
     
-    $response = $this->actingAs($computer, 'sanctum')
+    $response = \Laravel\Sanctum\Sanctum::actingAs($computer, ['scan:submit'])
         ->postJson('/api/scan-result', $payload);
     
     $response->assertStatus(202);
@@ -86,5 +86,10 @@ test('ProcessScanResultJob processes software correctly via services', function 
     $this->assertDatabaseHas('software_discoveries', [
         'computer_id' => $computer->id,
         'raw_name' => 'KMSPico'
+    ]);
+    
+    $this->assertDatabaseHas('software_discoveries', [
+        'computer_id' => $computer->id,
+        'raw_name' => 'Slack'
     ]);
 });

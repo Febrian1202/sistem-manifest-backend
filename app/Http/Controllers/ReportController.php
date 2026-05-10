@@ -56,7 +56,7 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $data = $this->getEksekutifData($startDate, $endDate);
         $data['print_date'] = now()->format('d/m/Y H:i');
-        $data['printed_by'] = auth()->user()->name . ' (' . auth()->user()->getRoleNames()->first() . ')';
+        $data['printed_by'] = auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')';
         $data['startDateStr'] = $startDate->format('d/m/Y');
         $data['endDateStr'] = $endDate->format('d/m/Y');
 
@@ -122,7 +122,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . auth()->user()->getRoleNames()->first() . ')',
+            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
         ];
 
         return Pdf::loadView('reports.pdf.komputer-pdf', $data)->setPaper('a4', 'landscape')->stream();
@@ -153,7 +153,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . auth()->user()->getRoleNames()->first() . ')',
+            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
         ];
 
         return Pdf::loadView('reports.pdf.software-pdf', $data)->setPaper('a4', 'portrait')->stream();
@@ -213,7 +213,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->roles->first()->name ?? 'User') . ')',
+            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
         ];
 
         return Pdf::loadView('reports.pdf.kepatuhan-pdf', $data)->setPaper('a4', 'portrait')->stream();
