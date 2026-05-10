@@ -14,7 +14,16 @@ class AgentRegisterController extends Controller
      */
     public function register(Request $request)
     {
-        // 1. Validation
+        // 1. Security: Check AGENT_REGISTRATION_KEY from header FIRST
+        $registrationKey = config('app.agent_registration_key');
+        if ($request->header('X-Agent-Key') !== $registrationKey) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized: Invalid Registration Key'
+            ], 401);
+        }
+
+        // 2. Validation
         // Using a standard MAC address regex: 6 pairs of hex digits separated by : or -
         $validator = Validator::make($request->all(), [
             'mac_address' => ['required', 'string', 'regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/'],
@@ -28,15 +37,6 @@ class AgentRegisterController extends Controller
                 'message' => 'Validasi gagal',
                 'errors' => $validator->errors()
             ], 422);
-        }
-
-        // 1.5 Security: Check AGENT_REGISTRATION_KEY from header
-        $registrationKey = config('app.agent_registration_key');
-        if ($request->header('X-Agent-Key') !== $registrationKey) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Unauthorized: Invalid Registration Key'
-            ], 401);
         }
 
         // 2. Find or Create Computer record by mac_address

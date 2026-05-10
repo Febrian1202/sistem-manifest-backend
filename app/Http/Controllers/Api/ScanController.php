@@ -32,7 +32,7 @@ class ScanController extends Controller
             'model'              => 'nullable|string|max:255',
             'serial_number'      => 'nullable|string|max:255',
             'ip_address'         => 'nullable|string|max:45',
-            'mac_address'        => 'nullable|string|max:17',
+            'mac_address'        => 'nullable|string|max:17|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
             'os_name'            => 'nullable|string|max:255',
             'os_version'         => 'nullable|string|max:255',
             'os_architecture'    => 'nullable|string|max:50',

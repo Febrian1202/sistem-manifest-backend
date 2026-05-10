@@ -122,7 +122,7 @@ class GenerateComplianceReportJob implements ShouldQueue
                                 $keterangan = 'Kuota lisensi penuh';
                             } 
                             // 6. CEK HAMPIR EXPIRED (Grace Period)
-                            elseif ($license->expiry_date && $license->expiry_date->lte($today->copy()->addDays(30))) {
+                            elseif ($license->expiry_date && $license->expiry_date->isBetween($today, $today->copy()->addDays(30))) {
                                 $status = 'Grace Period';
                                 $keterangan = 'Lisensi akan segera berakhir';
                             }
@@ -138,7 +138,7 @@ class GenerateComplianceReportJob implements ShouldQueue
                     'status' => $status,
                     'keterangan' => $keterangan,
                     'license_inventory_id' => $licenseId,
-                    'detected_at' => $discovery->detected_at ?? now(),
+                    'detected_at' => $discovery->install_date ?? now(),
                     'scanned_at' => now(),
                     'updated_at' => now(),
                     'created_at' => now(),

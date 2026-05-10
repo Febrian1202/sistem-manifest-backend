@@ -61,7 +61,10 @@ class LicenseDataController extends Controller
             }
         }
 
-        $licenses = $query->orderBy('expiry_date', 'asc')->paginate(12)->withQueryString();
+        $licenses = $query->orderByRaw('expiry_date IS NULL ASC')
+            ->orderBy('expiry_date', 'asc')
+            ->paginate(12)
+            ->withQueryString();
 
         // Menyiapkan data untuk dropdown Tambah Lisensi
         $catalogs = SoftwareCatalog::whereIn('status', ['Whitelist', 'Unreviewed'])
@@ -71,7 +74,7 @@ class LicenseDataController extends Controller
         // Hitung statistik untuk Dashboard Card
         $stats = [
             'total_licenses' => LicenseInventory::sum('quota_limit'),
-            'total_value' => LicenseInventory::sum(\DB::raw('quota_limit * price_per_unit')),
+            'total_value' => LicenseInventory::sum(\DB::raw('quota_limit * COALESCE(price_per_unit, 0)')),
             'expiring_soon' => LicenseInventory::where('expiry_date', '<=', now()->addDays(30))
                 ->where('expiry_date', '>', now())
                 ->count(),

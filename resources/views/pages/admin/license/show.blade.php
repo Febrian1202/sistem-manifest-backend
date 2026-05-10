@@ -96,9 +96,11 @@
 
                                     try {
                                         const response = await fetch('{{ route('licenses.key', $license->id) }}', {
+                                            method: 'POST',
                                             headers: {
                                                 'Accept': 'application/json',
-                                                'X-Requested-With': 'XMLHttpRequest'
+                                                'X-Requested-With': 'XMLHttpRequest',
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                             }
                                         });
 

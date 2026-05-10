@@ -56,7 +56,7 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $data = $this->getEksekutifData($startDate, $endDate);
         $data['print_date'] = now()->format('d/m/Y H:i');
-        $data['printed_by'] = auth()->user()->name . ' (' . auth()->user()->getRoleNames()->first() . ')';
+        $data['printed_by'] = auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')';
         $data['startDateStr'] = $startDate->format('d/m/Y');
         $data['endDateStr'] = $endDate->format('d/m/Y');
 
@@ -122,7 +122,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . auth()->user()->getRoleNames()->first() . ')',
+            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
         ];
 
         return Pdf::loadView('reports.pdf.komputer-pdf', $data)->setPaper('a4', 'landscape')->stream();
@@ -153,7 +153,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . auth()->user()->getRoleNames()->first() . ')',
+            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
         ];
 
         return Pdf::loadView('reports.pdf.software-pdf', $data)->setPaper('a4', 'portrait')->stream();
@@ -163,10 +163,20 @@ class ReportController extends Controller
     {
         return SoftwareDiscovery::whereBetween('software_discoveries.created_at', [$startDate, $endDate])
             ->join('software_catalogs', 'software_discoveries.catalog_id', '=', 'software_catalogs.id')
-            ->select('software_catalogs.normalized_name', 'software_discoveries.version', 'software_catalogs.category', 'software_catalogs.id as catalog_id')
-            ->selectRaw('count(distinct computer_id) as computer_count')
+            ->select(
+                'software_discoveries.catalog_id',
+                'software_discoveries.version',
+                'software_catalogs.normalized_name',
+                'software_catalogs.category'
+            )
+            ->selectRaw('COUNT(DISTINCT software_discoveries.computer_id) as computer_count')
             ->with(['catalog.licenses'])
-            ->groupBy('software_catalogs.normalized_name', 'software_discoveries.version', 'software_catalogs.category', 'software_catalogs.id')
+            ->groupBy(
+                'software_discoveries.catalog_id', 
+                'software_discoveries.version', 
+                'software_catalogs.normalized_name', 
+                'software_catalogs.category'
+            )
             ->orderByDesc('computer_count');
     }
 
@@ -203,7 +213,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->roles->first()->name ?? 'User') . ')',
+            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
         ];
 
         return Pdf::loadView('reports.pdf.kepatuhan-pdf', $data)->setPaper('a4', 'portrait')->stream();
@@ -214,12 +224,15 @@ class ReportController extends Controller
     public function showLisensi(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
-        $licenses = LicenseInventory::with('catalog')->whereBetween('created_at', [$startDate, $endDate])->get();
+        $licenses = LicenseInventory::with('catalog')
+            ->select('*')
+            ->selectRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) as used_count')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
 
-        // Enrich data with usage then sort by usage_pct DESC
+        // Enrich data then sort by usage_pct DESC
         $licenses = $licenses->map(function ($license) {
-            $usage = SoftwareDiscovery::where('catalog_id', $license->catalog_id)->count();
-            $license->used_count = $usage;
+            $usage = $license->used_count;
             $license->remaining = max(0, $license->quota_limit - $usage);
             $license->usage_pct = $license->quota_limit > 0 ? round(($usage / $license->quota_limit) * 100, 1) : 0;
             return $license;
@@ -243,13 +256,18 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         $format = $request->query('format', 'pdf');
-        $licenses = LicenseInventory::with('catalog')->whereBetween('created_at', [$startDate, $endDate])->get()->map(function ($license) {
-            $usage = SoftwareDiscovery::where('catalog_id', $license->catalog_id)->count();
-            $license->used_count = $usage;
-            $license->remaining = max(0, $license->quota_limit - $usage);
-            $license->usage_pct = $license->quota_limit > 0 ? round(($usage / $license->quota_limit) * 100, 1) : 0;
-            return $license;
-        });
+        
+        $licenses = LicenseInventory::with('catalog')
+            ->select('*')
+            ->selectRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) as used_count')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get()
+            ->map(function ($license) {
+                $usage = $license->used_count;
+                $license->remaining = max(0, $license->quota_limit - $usage);
+                $license->usage_pct = $license->quota_limit > 0 ? round(($usage / $license->quota_limit) * 100, 1) : 0;
+                return $license;
+            });
 
         if ($format === 'excel') {
             return Excel::download(new LisensiExport($licenses, $startDate, $endDate), 'status-lisensi_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '.xlsx');
@@ -260,7 +278,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . auth()->user()->getRoleNames()->first() . ')',
+            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
         ];
 
         return Pdf::loadView('reports.pdf.lisensi-pdf', $data)->setPaper('a4', 'portrait')->stream();
@@ -268,16 +286,17 @@ class ReportController extends Controller
 
     public function runComplianceScan()
     {
-        $computers = Computer::all();
-
-        foreach ($computers as $computer) {
-            \App\Jobs\GenerateComplianceReportJob::dispatch($computer)
-                ->onQueue('compliance');
-        }
+        // Optimization for large datasets
+        Computer::select('id', 'hostname')->chunk(100, function ($computers) {
+            foreach ($computers as $computer) {
+                \App\Jobs\GenerateComplianceReportJob::dispatch($computer)
+                    ->onQueue('compliance');
+            }
+        });
 
         return back()->with([
             'status' => 'success',
-            'message' => "Pemeriksaan kepatuhan untuk " . $computers->count() . " komputer telah dijadwalkan di background."
+            'message' => "Pemeriksaan kepatuhan untuk semua komputer telah dijadwalkan di background."
         ]);
     }
 }

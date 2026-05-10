@@ -61,7 +61,7 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
         Route::put('softwares/{software}', [SoftwareDataController::class, 'update'])->name('softwares.update');
         
         Route::post('/licenses', [LicenseDataController::class, 'store'])->name('licenses.store');
-        Route::get('/licenses/{license}/key', [LicenseDataController::class, 'getKey'])->name('licenses.key');
+        Route::post('/licenses/{license}/key', [LicenseDataController::class, 'getKey'])->name('licenses.key')->middleware('throttle:10,1');
         Route::put('/licenses/{license}', [LicenseDataController::class, 'update'])->name('licenses.update');
         Route::delete('/licenses/{license}', [LicenseDataController::class, 'destroy'])->name('licenses.destroy');
     });

@@ -14,7 +14,7 @@ class DashboardController extends Controller
     public function index()
     {
         // --- 1. STATISTIK UTAMA (TTL: 10 Menit) ---
-        $stats = Cache::remember('dashboard.stats', 600, function () {
+        $stats = Cache::remember('dashboard.stats.' . now()->format('Y-m'), 600, function () {
             $totalComputers = Computer::count();
             return [
                 'totalComputers' => $totalComputers,
