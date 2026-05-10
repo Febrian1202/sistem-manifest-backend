@@ -9,20 +9,20 @@ class SoftwareCatalogObserver
 {
     public function created(SoftwareCatalog $catalog): void
     {
-        Cache::forget('dashboard.stats');
+        Cache::forget('dashboard.stats.' . now()->format('Y-m'));
         Cache::forget('dashboard.charts');
     }
 
     public function updated(SoftwareCatalog $catalog): void
     {
         // Many dashboard stats depend on software status (e.g. Blacklist)
-        Cache::forget('dashboard.stats');
+        Cache::forget('dashboard.stats.' . now()->format('Y-m'));
         Cache::forget('dashboard.charts');
     }
 
     public function deleted(SoftwareCatalog $catalog): void
     {
-        Cache::forget('dashboard.stats');
+        Cache::forget('dashboard.stats.' . now()->format('Y-m'));
         Cache::forget('dashboard.charts');
     }
 }

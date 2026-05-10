@@ -9,7 +9,7 @@ Route::get('/ping', function () {
 });
 
 // 1. Public Registration Route (Entry point for agents)
-Route::post('/agent/register', [AgentRegisterController::class, 'register']);
+Route::post('/agent/register', [AgentRegisterController::class, 'register'])->middleware('throttle:5,1');
 
 // 2. Protected Agent Routes
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {

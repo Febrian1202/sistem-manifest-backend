@@ -43,20 +43,25 @@ class ComplianceDataController extends Controller
                 return $software;
             });
 
-        // 2. Hitung Statistik Global (Efisien)
-        $allCommercial = SoftwareCatalog::where('category', 'Commercial')
-            ->withCount(['discoveries' => function ($query) {
-                $query->select(\DB::raw('count(distinct(computer_id))'));
-            }])
-            ->withSum('licenses as owned_count', 'quota_limit')
-            ->get();
+        // 2. Hitung Statistik Global (Efisien dengan Cache)
+        $stats = \Illuminate\Support\Facades\Cache::remember('compliance.global_stats', 300, function () {
+            $allCommercial = SoftwareCatalog::where('category', 'Commercial')
+                ->withCount(['discoveries' => function ($query) {
+                    $query->select(\DB::raw('count(distinct(computer_id))'));
+                }])
+                ->withSum('licenses as owned_count', 'quota_limit')
+                ->get();
 
-        $stats = [
-            'total_commercial' => $allCommercial->count(),
-            'total_deficit' => $allCommercial->sum(fn($s) => max(0, $s->discoveries_count - ($s->owned_count ?? 0))),
-            'compliant' => $allCommercial->where(fn($s) => $s->discoveries_count <= ($s->owned_count ?? 0))->count(),
-        ];
-        $stats['non_compliant'] = $stats['total_commercial'] - $stats['compliant'];
+            $total = $allCommercial->count();
+            $compliant = $allCommercial->where(fn($s) => $s->discoveries_count <= ($s->owned_count ?? 0))->count();
+            
+            return [
+                'total_commercial' => $total,
+                'total_deficit' => $allCommercial->sum(fn($s) => max(0, $s->discoveries_count - ($s->owned_count ?? 0))),
+                'compliant' => $compliant,
+                'non_compliant' => $total - $compliant,
+            ];
+        });
 
         $totalCount = $stats['total_commercial'];
         $nonCompliantCount = $stats['non_compliant'];
