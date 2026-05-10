@@ -45,11 +45,12 @@
                         <div class="space-y-1.5" x-data="{ showKey: false }">
                             <x-form.label>License Key / Product Key</x-form.label>
                             <div class="relative">
-                                <x-form.input x-bind:type="showKey ? 'text' : 'password'" name="license_key" placeholder="Opsional — akan dienkripsi sebelum disimpan" class="pr-10" />
+                                <x-form.input x-bind:type="showKey ? 'text' : 'password'" name="license_key" placeholder="••••••••••••" class="pr-10" />
                                 <button type="button" @click="showKey = !showKey" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                                     <i class="fa-solid" :class="showKey ? 'fa-eye-slash' : 'fa-eye'"></i>
                                 </button>
                             </div>
+                            <p class="text-[10px] text-muted-foreground italic mt-1">Opsional — akan dienkripsi sebelum disimpan</p>
                         </div>
 
                         <div class="space-y-1.5">
