@@ -110,12 +110,12 @@
                                     <div class="space-y-1.5" x-data="{ showKey: false }">
                                         <x-form.label>License Key / Product Key</x-form.label>
                                         <div class="relative">
-                                            <x-form.input x-bind:type="showKey ? 'text' : 'password'" name="license_key" placeholder="Opsional — biarkan kosong jika tidak diubah" class="pr-10" />
+                                            <x-form.input x-bind:type="showKey ? 'text' : 'password'" name="license_key" placeholder="••••••••••••" class="pr-10" />
                                             <button type="button" @click="showKey = !showKey" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                                                 <i class="fa-solid" :class="showKey ? 'fa-eye-slash' : 'fa-eye'"></i>
                                             </button>
                                         </div>
-                                        <p class="text-[10px] text-muted-foreground italic mt-1">Key saat ini: {{ $license->masked_license_key }}</p>
+                                        <p class="text-[10px] text-muted-foreground italic mt-1">Key saat ini: {{ $license->masked_license_key }} (Akan diperbarui jika diisi)</p>
                                     </div>
 
                                     <div class="space-y-1.5">
@@ -133,7 +133,7 @@
                                         <div class="space-y-1.5">
                                             <x-form.label>Harga Satuan (Rp)</x-form.label>
                                             <x-form.input type="number" name="price_per_unit"
-                                                value="{{ $license->price_per_unit != 0 ? $license->price_per_unit : '' }}" placeholder="Opsional" min="0" />
+                                                value="{{ $license->price_per_unit && $license->price_per_unit != 0 ? $license->price_per_unit : '' }}" placeholder="Opsional" min="0" />
                                         </div>
                                     </div>
 

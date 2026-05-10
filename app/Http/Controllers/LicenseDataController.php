@@ -185,4 +185,19 @@ class LicenseDataController extends Controller
             'message' => 'Data inventaris lisensi berhasil dihapus.'
         ]);
     }
+
+    /**
+     * Get the decrypted license key for AJAX request.
+     */
+    public function getKey(LicenseInventory $license)
+    {
+        // Authorize is handled by middleware, but good to double check
+        if (!auth()->user()->hasRole('admin')) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json([
+            'key' => $license->license_key
+        ]);
+    }
 }

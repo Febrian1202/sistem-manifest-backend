@@ -76,14 +76,104 @@
                                     {{ $license->expiry_date ? $license->expiry_date->format('d M Y') : 'Lifetime' }}
                                 </p>
                             </div>
-                            <div>
+                            <div x-data="{
+                                showKey: false,
+                                realKey: null,
+                                loading: false,
+                                copied: false,
+                                error: null,
+                                timer: null,
+
+                                async revealKey() {
+                                    if (this.realKey) {
+                                        this.showKey = true;
+                                        this.startTimer();
+                                        return;
+                                    }
+
+                                    this.loading = true;
+                                    this.error = null;
+
+                                    try {
+                                        const response = await fetch('{{ route('licenses.key', $license->id) }}', {
+                                            headers: {
+                                                'Accept': 'application/json',
+                                                'X-Requested-With': 'XMLHttpRequest'
+                                            }
+                                        });
+
+                                        if (!response.ok) throw new Error('Gagal mengambil data');
+
+                                        const data = await response.json();
+                                        this.realKey = data.key;
+                                        this.showKey = true;
+                                        this.startTimer();
+                                    } catch (e) {
+                                        this.error = e.message;
+                                    } finally {
+                                        this.loading = false;
+                                    }
+                                },
+
+                                hideKey() {
+                                    this.showKey = false;
+                                    if (this.timer) clearTimeout(this.timer);
+                                },
+
+                                startTimer() {
+                                    if (this.timer) clearTimeout(this.timer);
+                                    this.timer = setTimeout(() => {
+                                        this.hideKey();
+                                    }, 30000); // 30 detik
+                                },
+
+                                async copyKey() {
+                                    if (!this.realKey) return;
+                                    try {
+                                        await navigator.clipboard.writeText(this.realKey);
+                                        this.copied = true;
+                                        setTimeout(() => this.copied = false, 2000);
+                                    } catch (err) {
+                                        console.error('Gagal menyalin: ', err);
+                                    }
+                                }
+                            }">
                                 <label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">License Key</label>
                                 <div class="flex items-center gap-2 mt-1">
-                                    <code class="text-xs bg-muted px-2 py-1 rounded border border-border font-mono">
-                                        {{ $license->masked_license_key }}
+                                    <code class="text-xs bg-muted px-2 py-1 rounded border border-border font-mono min-w-[120px] flex items-center justify-center">
+                                        <template x-if="loading">
+                                            <i class="fa-solid fa-circle-notch fa-spin text-primary opacity-50"></i>
+                                        </template>
+                                        <template x-if="!loading">
+                                            <span x-text="showKey ? realKey : '{{ $license->masked_license_key }}'"></span>
+                                        </template>
                                     </code>
-                                    <i class="fa-solid fa-lock text-[10px] text-muted-foreground" title="Key is encrypted in database"></i>
+
+                                    <div class="flex items-center gap-1">
+                                        {{-- Tombol Toggle --}}
+                                        <button type="button" @click="showKey ? hideKey() : revealKey()"
+                                            class="h-8 w-8 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-all focus:outline-none"
+                                            :title="showKey ? 'Sembunyikan' : 'Tampilkan'">
+                                            <i class="fa-solid" :class="showKey ? 'fa-eye-slash text-primary' : 'fa-eye'"></i>
+                                        </button>
+
+                                        {{-- Tombol Copy --}}
+                                        <template x-if="showKey && realKey">
+                                            <button type="button" @click="copyKey()"
+                                                class="h-8 w-8 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-all focus:outline-none"
+                                                :class="copied ? 'text-success' : ''"
+                                                title="Salin ke Clipboard">
+                                                <i class="fa-solid" :class="copied ? 'fa-check' : 'fa-copy'"></i>
+                                            </button>
+                                        </template>
+
+                                        <i x-show="!showKey && !loading" class="fa-solid fa-lock text-[10px] text-muted-foreground" title="Key terenkripsi di database"></i>
+                                    </div>
                                 </div>
+                                {{-- Feedback & Error --}}
+                                <p x-show="error" x-text="error" class="text-[10px] text-destructive mt-1 font-medium"></p>
+                                <p x-show="copied" x-cloak class="text-[10px] text-success mt-1 font-medium italic">Tersalin ke clipboard!</p>
+                                <p x-show="showKey && !copied" x-cloak class="text-[10px] text-muted-foreground mt-1 italic">Otomatis tersembunyi dalam 30 detik</p>
                             </div>
                         </div>
                         @if($license->notes)
