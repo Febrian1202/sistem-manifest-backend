@@ -25,10 +25,6 @@ class ComplianceReport extends Model
         'license_inventory_id',
         'detected_at',
         'scanned_at',
-        'total_software_installed',
-        'unlicensed_count',
-        'blacklisted_count',
-        'violation_details',
     ];
 
     /**
@@ -39,7 +35,6 @@ class ComplianceReport extends Model
     protected $casts = [
         'detected_at' => 'datetime',
         'scanned_at' => 'datetime',
-        'violation_details' => 'array',
     ];
 
     /**
