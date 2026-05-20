@@ -27,6 +27,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('compliance_reports', function (Blueprint $table) {
+            // Kolom-kolom di bawah ini ditambahkan kembali jika rollback diperlukan.
+            // Kolom ini merupakan sisa dari arsitektur lama (per-komputer)
+            // sebelum digantikan oleh arsitektur per-software per-komputer.
             $table->integer('total_software_installed')->default(0);
             $table->integer('unlicensed_count')->default(0);
             $table->integer('blacklisted_count')->default(0);
