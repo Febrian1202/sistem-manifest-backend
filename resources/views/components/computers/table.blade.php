@@ -229,8 +229,8 @@
                                         <div class="mt-6 space-y-6">
                                             {{-- Group: System Info --}}
                                             <div class="space-y-3">
-                                                <h4 class="text-sm font-semibold text-foreground border-b pb-1">System
-                                                    Information</h4>
+                                                <h4 class="text-sm font-semibold text-foreground border-b pb-1">Informasi
+                                                    Sistem</h4>
                                                 <div class="grid gap-3">
 
                                                     {{-- OS --}}
@@ -242,7 +242,7 @@
                                                         <div>
                                                             <p
                                                                 class="text-xs font-medium text-muted-foreground uppercase">
-                                                                Operating System</p>
+                                                                Sistem Operasi</p>
                                                             <p class="text-sm font-medium text-foreground">
                                                                 {{ $computer->os_name ?? '-' }}</p>
                                                             <p class="text-xs text-muted-foreground">
@@ -261,7 +261,7 @@
                                                         <div>
                                                             <p
                                                                 class="text-xs font-medium text-muted-foreground uppercase">
-                                                                Processor</p>
+                                                                Prosesor</p>
                                                             <p class="text-sm font-medium text-foreground">
                                                                 {{ $computer->processor ?? 'Not Detected' }}</p>
                                                         </div>
@@ -276,7 +276,7 @@
                                                         <div>
                                                             <p
                                                                 class="text-xs font-medium text-muted-foreground uppercase">
-                                                                Memory (RAM)</p>
+                                                                Memori (RAM)</p>
                                                             <p class="text-sm font-medium text-foreground">
                                                                 {{ $computer->ram_gb ? $computer->ram_gb . ' GB' : '-' }}
                                                             </p>
@@ -292,7 +292,7 @@
                                                         <div>
                                                             <p
                                                                 class="text-xs font-medium text-muted-foreground uppercase">
-                                                                Storage</p>
+                                                                Penyimpanan</p>
                                                             <p class="text-sm font-medium text-foreground">
                                                                 Total:
                                                                 {{ $computer->disk_total_gb ? $computer->disk_total_gb . ' GB' : '-' }}
@@ -308,8 +308,8 @@
 
                                             {{-- Group: Network --}}
                                             <div class="space-y-3">
-                                                <h4 class="text-sm font-semibold text-foreground border-b pb-1">Network
-                                                    & Identity</h4>
+                                                <h4 class="text-sm font-semibold text-foreground border-b pb-1">Jaringan
+                                                    & Identitas</h4>
                                                 <div
                                                     class="p-4 bg-muted/30 rounded-lg border border-border/50 space-y-3">
                                                     <div class="flex justify-between items-center">

@@ -8,7 +8,7 @@
             <img src="{{ asset('assets/logo-usn.png') }}" class="h-8 w-8 object-contain" alt="Logo USN">
             <div class="flex flex-col justify-center leading-none">
                 <span class="font-bold text-sidebar-foreground text-md tracking-tight">UniLicense</span>
-                <span class="text-sidebar-foreground text-[10px] font-medium opacity-80 tracking-wide">System
+                <span class="text-sidebar-foreground text-[10px] font-medium opacity-80 tracking-wide">Sistem
                     Manifest</span>
             </div>
         </div>
