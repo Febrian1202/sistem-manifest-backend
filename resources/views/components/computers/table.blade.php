@@ -172,17 +172,40 @@
                                     </x-ui.sheet.content>
                                 </x-ui.sheet.sheet>
 
-                                {{-- DELETE BUTTON --}}
-                                <form action="{{ route('computers.destroy', $computer->id) }}" method="POST"
-                                    onsubmit="return confirm('Apakah Anda yakin ingin menghapus komputer {{ $computer->hostname }}? Semua data scan terkait akan ikut terhapus.')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <x-ui.button type="submit" variant="ghost" size="sm"
-                                        class="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                        title="Hapus Komputer">
-                                        <i class="fa-solid fa-trash-can text-xs"></i>
-                                    </x-ui.button>
-                                </form>
+                                 {{-- DELETE BUTTON --}}
+                                 <div @click.stop="$dispatch('open-dialog', 'delete-computer-{{ $computer->id }}')" class="inline-block">
+                                     <x-ui.button type="button" variant="ghost" size="sm"
+                                         class="h-8 w-8 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                         title="Hapus Komputer">
+                                         <i class="fa-solid fa-trash-can text-xs"></i>
+                                     </x-ui.button>
+                                 </div>
+
+                                 <x-ui.dialog.confirm name="delete-computer-{{ $computer->id }}" title="Hapus Komputer" maxWidth="md">
+                                     <div class="flex items-start gap-4">
+                                         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                                             <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                                         </div>
+                                         <div class="space-y-1">
+                                             <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                                 Apakah Anda yakin ingin menghapus komputer <strong>{{ $computer->hostname }}</strong>? Semua data scan terkait akan ikut terhapus dari sistem.
+                                             </p>
+                                         </div>
+                                     </div>
+
+                                     <x-slot name="footer">
+                                         <x-ui.button type="button" variant="outline" x-on:click="show = false" class="w-full sm:w-auto">
+                                             Batal
+                                         </x-ui.button>
+                                         <form action="{{ route('computers.destroy', $computer->id) }}" method="POST" class="w-full sm:w-auto">
+                                             @csrf
+                                             @method('DELETE')
+                                             <x-ui.button type="submit" variant="destructive" class="w-full">
+                                                Hapus Komputer
+                                             </x-ui.button>
+                                         </form>
+                                     </x-slot>
+                                 </x-ui.dialog.confirm>
                                 @endrole
 
 

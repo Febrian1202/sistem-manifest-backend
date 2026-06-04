@@ -12,14 +12,37 @@
 
             {{-- TASK-002: Scan Semua Button --}}
             @role('admin')
-            <form action="{{ route('computers.request-scan-all') }}" method="POST" x-data="{ loading: false }"
-                @submit.prevent="if(confirm('Kirim permintaan scan ke semua perangkat?')) { loading = true; $el.submit(); }">
-                @csrf
-                <x-ui.button type="submit" variant="default" ::disabled="loading">
-                    <i class="fa-solid fa-satellite-dish mr-2" :class="loading ? 'animate-pulse' : ''"></i>
-                    <span x-text="loading ? 'Mengirim Permintaan...' : 'Scan Semua Perangkat'"></span>
+            <div>
+                <x-ui.button type="button" variant="default" @click.stop="$dispatch('open-dialog', 'scan-all-devices')">
+                    <i class="fa-solid fa-satellite-dish mr-2"></i>
+                    <span>Scan Semua Perangkat</span>
                 </x-ui.button>
-            </form>
+
+                <x-ui.dialog.confirm name="scan-all-devices" title="Scan Semua Perangkat" maxWidth="md">
+                    <div class="flex items-start gap-4">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <i class="fa-solid fa-circle-info text-lg"></i>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                Apakah Anda yakin ingin mengirim permintaan scan ke semua perangkat terdaftar? Tindakan ini akan memicu scan pada seluruh perangkat secara paralel.
+                            </p>
+                        </div>
+                    </div>
+
+                    <x-slot name="footer">
+                        <x-ui.button type="button" variant="outline" x-on:click="show = false" class="w-full sm:w-auto">
+                            Batal
+                        </x-ui.button>
+                        <form action="{{ route('computers.request-scan-all') }}" method="POST" class="w-full sm:w-auto">
+                            @csrf
+                            <x-ui.button type="submit" variant="default" class="w-full">
+                                Mulai Scan
+                            </x-ui.button>
+                        </form>
+                    </x-slot>
+                </x-ui.dialog.confirm>
+            </div>
             @endrole
         </div>
 

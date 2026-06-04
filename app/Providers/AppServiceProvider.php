@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Computer;
+use App\Models\LicenseInventory;
+use App\Models\SoftwareCatalog;
+use App\Observers\ComputerObserver;
+use App\Observers\LicenseInventoryObserver;
+use App\Observers\SoftwareCatalogObserver;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -21,9 +27,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Registration of Model Observers for Cache Invalidation
-        \App\Models\Computer::observe(\App\Observers\ComputerObserver::class);
-        \App\Models\SoftwareCatalog::observe(\App\Observers\SoftwareCatalogObserver::class);
-        \App\Models\LicenseInventory::observe(\App\Observers\LicenseInventoryObserver::class);
+        Computer::observe(ComputerObserver::class);
+        SoftwareCatalog::observe(SoftwareCatalogObserver::class);
+        LicenseInventory::observe(LicenseInventoryObserver::class);
 
         Blade::component('components.ui.dropdown', 'dropdown');
         Blade::component('components.ui.dropdown-item', 'dropdown-item');

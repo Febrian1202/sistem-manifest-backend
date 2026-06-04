@@ -172,7 +172,7 @@
                                         @csrf @method('PUT')
                                         <input type="hidden" name="category" value="{{ $software->category }}">
                                         <input type="hidden" name="status" value="Whitelist">
-                                        <x-ui.dropdown-item type="submit">
+                                        <x-ui.dropdown-item type="button" @click.stop="$el.closest('form').submit()">
                                             <i class="fa-regular fa-circle-check mr-2 w-4 text-center text-green-600 opacity-70"></i>
                                             <span>Set Whitelist</span>
                                         </x-ui.dropdown-item>
@@ -182,7 +182,7 @@
                                         @csrf @method('PUT')
                                         <input type="hidden" name="category" value="{{ $software->category }}">
                                         <input type="hidden" name="status" value="Blacklist">
-                                        <x-ui.dropdown-item type="submit">
+                                        <x-ui.dropdown-item type="button" @click.stop="$el.closest('form').submit()">
                                             <i class="fa-solid fa-ban mr-2 w-4 text-center text-red-600 opacity-70"></i>
                                             <span>Set Blacklist</span>
                                         </x-ui.dropdown-item>

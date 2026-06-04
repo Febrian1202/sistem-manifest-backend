@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Computer;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class AgentRegisterController extends Controller
@@ -19,7 +19,7 @@ class AgentRegisterController extends Controller
         if ($request->header('X-Agent-Key') !== $registrationKey) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized: Invalid Registration Key'
+                'message' => 'Unauthorized: Invalid Registration Key',
             ], 401);
         }
 
@@ -35,7 +35,7 @@ class AgentRegisterController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 

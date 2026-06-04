@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateComputerRequest;
 use App\Models\Computer;
 use Illuminate\Http\Request;
-use App\Http\Requests\UpdateComputerRequest;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class ComputerDataController extends Controller
 {
@@ -59,22 +60,24 @@ class ComputerDataController extends Controller
                 'message' => 'Data komputer berhasil diperbarui!',
                 'status' => 'success',
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return back()->withErrors($e->validator)->withInput()->with([
                 'status' => 'destructive',
                 'message' => 'Gagal! Harap periksa kembali isian form Anda.',
             ]);
         } catch (\Exception $e) {
-            Log::error('Computer Update Error: ' . $e->getMessage(), [
+            Log::error('Computer Update Error: '.$e->getMessage(), [
                 'id' => $computer->id,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return back()->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Terjadi kesalahan sistem saat memperbarui data.'
+                'message' => 'Terjadi kesalahan sistem saat memperbarui data.',
             ]);
         }
     }
+
     public function requestScan(Computer $computer)
     {
         $computer->update(['scan_requested' => true]);
@@ -104,16 +107,17 @@ class ComputerDataController extends Controller
 
             return back()->with([
                 'status' => 'success',
-                'message' => "Komputer {$hostname} berhasil dihapus dari sistem."
+                'message' => "Komputer {$hostname} berhasil dihapus dari sistem.",
             ]);
         } catch (\Exception $e) {
-            Log::error('Computer Delete Error: ' . $e->getMessage(), [
+            Log::error('Computer Delete Error: '.$e->getMessage(), [
                 'id' => $computer->id,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return back()->with([
                 'status' => 'destructive',
-                'message' => 'Gagal menghapus komputer.'
+                'message' => 'Gagal menghapus komputer.',
             ]);
         }
     }

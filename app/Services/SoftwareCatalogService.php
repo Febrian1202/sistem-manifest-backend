@@ -17,10 +17,10 @@ class SoftwareCatalogService
     public function syncDiscoveries(Computer $computer, array $cleanSoftware, array $flaggedSoftware): void
     {
         DB::transaction(function () use ($computer, $cleanSoftware, $flaggedSoftware) {
-            // Collect IDs of software currently installed to prune later if needed, 
+            // Collect IDs of software currently installed to prune later if needed,
             // or we can stick to the delete-first approach if we want to be simple.
             // However, Step 2 explicitly says "Use updateOrCreate".
-            
+
             $currentDiscoveryIds = [];
             $flaggedNames = collect($flaggedSoftware)->pluck('name')->toArray();
 

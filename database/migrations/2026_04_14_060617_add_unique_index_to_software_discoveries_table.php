@@ -2,10 +2,11 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -25,8 +26,8 @@ return new class extends Migration {
                 ->where('computer_id', $duplicate->computer_id)
                 ->where('raw_name', $duplicate->raw_name)
                 // Use whereRaw to handle NULL vs empty string match correctly in the cleanup
-                ->where(function($query) use ($duplicate) {
-                    if ($duplicate->version === "") {
+                ->where(function ($query) use ($duplicate) {
+                    if ($duplicate->version === '') {
                         $query->whereNull('version')->orWhere('version', '');
                     } else {
                         $query->where('version', $duplicate->version);

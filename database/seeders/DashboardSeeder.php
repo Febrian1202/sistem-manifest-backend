@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class DashboardSeeder extends Seeder
 {
@@ -27,7 +28,7 @@ class DashboardSeeder extends Seeder
             'Intel(R) Core(TM) i5-12400F CPU @ 2.50GHz',
             'Intel(R) Core(TM) i7-13700K CPU @ 3.40GHz',
             'AMD Ryzen 5 5600X 6-Core Processor',
-            'AMD Ryzen 7 5800H with Radeon Graphics'
+            'AMD Ryzen 7 5800H with Radeon Graphics',
         ];
         $vendors = ['Dell Inc.', 'HP', 'Lenovo', 'ASUSTeK COMPUTER INC.'];
         $locations = ['Lab Komputer 1', 'Lab Komputer 2', 'Ruang Dosen', 'Perpustakaan', 'Server Room'];
@@ -38,14 +39,14 @@ class DashboardSeeder extends Seeder
             $manufacture = $vendors[array_rand($vendors)];
 
             $computers[] = [
-                'hostname' => 'PC-LAB-' . str_pad($i, 3, '0', STR_PAD_LEFT),
+                'hostname' => 'PC-LAB-'.str_pad($i, 3, '0', STR_PAD_LEFT),
 
                 // OS Info
                 'os_name' => $selectedOs['name'],
                 'os_version' => $selectedOs['ver'],
                 'os_architecture' => '64-bit',
                 'os_license_status' => $statuses[array_rand($statuses)],
-                'os_partial_key' => 'XXXXX-XXXXX-XXXXX-' . strtoupper(Str::random(5)),
+                'os_partial_key' => 'XXXXX-XXXXX-XXXXX-'.strtoupper(Str::random(5)),
 
                 // Hardware
                 'processor' => $processors[array_rand($processors)],
@@ -54,11 +55,11 @@ class DashboardSeeder extends Seeder
                 'disk_free_gb' => rand(20, $diskTotal - 50),
 
                 // Identitas
-                'ip_address' => '192.168.1.' . $i,
+                'ip_address' => '192.168.1.'.$i,
                 'mac_address' => implode(':', str_split(strtoupper(bin2hex(random_bytes(6))), 2)),
                 'serial_number' => strtoupper(Str::random(10)),
                 'manufacturer' => $manufacture,
-                'model' => $manufacture . ' Workstation ' . rand(100, 900),
+                'model' => $manufacture.' Workstation '.rand(100, 900),
 
                 // Meta
                 'location' => $locations[array_rand($locations)],
@@ -72,7 +73,6 @@ class DashboardSeeder extends Seeder
 
         // Ambil ID komputer yang baru dibuat
         $computerIds = DB::table('computers')->pluck('id')->toArray();
-
 
         // ==========================================
         // 2. SEED KATALOG SOFTWARE
@@ -105,7 +105,6 @@ class DashboardSeeder extends Seeder
         $catalogRecords = DB::table('software_catalogs')->get();
         $catalogIds = $catalogRecords->pluck('id', 'normalized_name');
 
-
         // ==========================================
         // 3. SEED LISENSI
         // ==========================================
@@ -115,13 +114,13 @@ class DashboardSeeder extends Seeder
             if ($cat->category === 'Commercial') {
                 $licenses[] = [
                     'catalog_id' => $cat->id,
-                    'license_key' => strtoupper(Str::random(5) . '-' . Str::random(5) . '-' . Str::random(5)),
+                    'license_key' => Crypt::encryptString(strtoupper(Str::random(5).'-'.Str::random(5).'-'.Str::random(5))),
                     'quota_limit' => rand(5, 20),
                     'purchase_date' => Carbon::now()->subMonths(rand(6, 24)),
                     'expiry_date' => Carbon::now()->addMonths(rand(-3, 12)), // some expired
                     'price_per_unit' => rand(100, 500),
-                    'purchase_order_number' => 'PO-' . rand(1000, 9999),
-                    'proof_image' => 'dummy_license.jpg',
+                    'purchase_order_number' => 'PO-'.rand(1000, 9999),
+                    'proof_image' => null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -129,7 +128,6 @@ class DashboardSeeder extends Seeder
         }
         DB::table('license_inventories')->insertOrIgnore($licenses);
         $licenseMap = DB::table('license_inventories')->pluck('id', 'catalog_id');
-
 
         // ==========================================
         // 4. SEED DISCOVERY & COMPLIANCE REPORTS
@@ -142,12 +140,12 @@ class DashboardSeeder extends Seeder
         foreach ($computerIds as $compId) {
             $numSoftwares = rand(4, 7);
             $selectedIndices = (array) array_rand($catalogs, $numSoftwares);
-            
+
             foreach ($selectedIndices as $idx) {
                 $selectedCatalog = $catalogs[$idx];
                 $name = $selectedCatalog['normalized_name'];
                 $catId = $catalogIds[$name];
-                $version = 'v' . rand(1, 10) . '.' . rand(0, 9);
+                $version = 'v'.rand(1, 10).'.'.rand(0, 9);
 
                 $discoveries[] = [
                     'computer_id' => $compId,
@@ -169,7 +167,7 @@ class DashboardSeeder extends Seeder
                     $status = 'Tidak Berlisensi';
                     $ket = 'Aplikasi terlarang';
                 } elseif ($selectedCatalog['category'] === 'Commercial') {
-                    if (!$licId) {
+                    if (! $licId) {
                         $status = 'Tidak Berlisensi';
                         $ket = 'Lisensi tidak ditemukan';
                     } else {

@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Computer;
-use App\Models\SoftwareCatalog;
 use App\Models\SoftwareDiscovery;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -14,8 +12,9 @@ class DashboardController extends Controller
     public function index()
     {
         // --- 1. STATISTIK UTAMA (TTL: 10 Menit) ---
-        $stats = Cache::remember('dashboard.stats.' . now()->format('Y-m'), 600, function () {
+        $stats = Cache::remember('dashboard.stats.'.now()->format('Y-m'), 600, function () {
             $totalComputers = Computer::count();
+
             return [
                 'totalComputers' => $totalComputers,
                 'newComputersThisMonth' => Computer::where('created_at', '>=', now()->startOfMonth())->count(),
@@ -112,7 +111,7 @@ class DashboardController extends Controller
                 ->get()
                 ->map(function ($computer) {
                     // Check if computer has any blacklisted software
-                    $hasBlacklist = $computer->softwares->some(fn($s) => $s->catalog && $s->catalog->status === 'Blacklist');
+                    $hasBlacklist = $computer->softwares->some(fn ($s) => $s->catalog && $s->catalog->status === 'Blacklist');
 
                     $status = 'success';
                     $statusText = 'Clean';

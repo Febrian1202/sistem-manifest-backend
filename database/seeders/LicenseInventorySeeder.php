@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\LicenseInventory;
 use App\Models\SoftwareCatalog;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class LicenseInventorySeeder extends Seeder
 {
@@ -20,7 +20,7 @@ class LicenseInventorySeeder extends Seeder
         $nonCompliantSoftwares = [
             'WinRAR',
             'Adobe Photoshop 2022',
-            'Microsoft Office 2019'
+            'Microsoft Office 2019',
         ];
 
         foreach ($nonCompliantSoftwares as $name) {
@@ -61,13 +61,13 @@ class LicenseInventorySeeder extends Seeder
             LicenseInventory::updateOrCreate(
                 ['catalog_id' => $catalog->id],
                 [
-                    'purchase_order_number' => 'PO-' . Str::upper(Str::random(8)),
+                    'purchase_order_number' => 'PO-'.Str::upper(Str::random(8)),
                     'quota_limit' => $lic['quota'],
                     'purchase_date' => Carbon::now()->subMonths(6),
                     'expiry_date' => $lic['expiry'],
                     'price_per_unit' => rand(0, 500000),
                     'license_key' => $this->generateFakeKey(),
-                    'proof_image' => 'dummy_proof.jpg',
+                    'proof_image' => null,
                     'notes' => 'Lisensi resmi untuk operasional.',
                 ]
             );
@@ -82,13 +82,13 @@ class LicenseInventorySeeder extends Seeder
         LicenseInventory::updateOrCreate(
             ['catalog_id' => $graceCatalog->id],
             [
-                'purchase_order_number' => 'PO-' . Str::upper(Str::random(8)),
+                'purchase_order_number' => 'PO-'.Str::upper(Str::random(8)),
                 'quota_limit' => 30,
                 'purchase_date' => Carbon::now()->subYears(2),
                 'expiry_date' => Carbon::now()->addDays(20),
                 'price_per_unit' => 2500000,
                 'license_key' => $this->generateFakeKey(),
-                'proof_image' => 'dummy_proof.jpg',
+                'proof_image' => null,
                 'notes' => 'Perlu pembaruan segera.',
             ]
         );
@@ -103,6 +103,7 @@ class LicenseInventorySeeder extends Seeder
         for ($i = 0; $i < 4; $i++) {
             $parts[] = Str::upper(Str::random(5));
         }
+
         return implode('-', $parts);
     }
 }

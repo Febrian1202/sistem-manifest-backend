@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SoftwareCatalog;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ComplianceDataController extends Controller
 {
@@ -15,7 +15,7 @@ class ComplianceDataController extends Controller
             ->withCount([
                 'discoveries' => function ($query) {
                     $query->select(\DB::raw('count(distinct(computer_id))'));
-                }
+                },
             ])
             ->withSum('licenses as owned_count', 'quota_limit')
             ->with([
@@ -23,12 +23,12 @@ class ComplianceDataController extends Controller
                     // Deduplicate by computer_id to solve BUG-001
                     $query->select('id', 'catalog_id', 'computer_id', 'version', 'created_at')
                         ->whereIn('id', function ($q) {
-                        $q->select(\DB::raw('MAX(id)'))
-                            ->from('software_discoveries')
-                            ->groupBy('computer_id', 'catalog_id');
-                    })
+                            $q->select(\DB::raw('MAX(id)'))
+                                ->from('software_discoveries')
+                                ->groupBy('computer_id', 'catalog_id');
+                        })
                         ->with('computer:id,hostname,ip_address');
-                }
+                },
             ])
             // Urutkan berdasarkan selisih (deficit) secara langsung di level database
             ->orderByRaw('(discoveries_count - COALESCE(owned_count, 0)) DESC')
@@ -48,22 +48,22 @@ class ComplianceDataController extends Controller
             });
 
         // 2. Hitung Statistik Global (Efisien dengan Cache)
-        $stats = \Illuminate\Support\Facades\Cache::remember('compliance.global_stats', 300, function () {
+        $stats = Cache::remember('compliance.global_stats', 300, function () {
             $allCommercial = SoftwareCatalog::where('category', 'Commercial')
                 ->withCount([
                     'discoveries' => function ($query) {
                         $query->select(\DB::raw('count(distinct(computer_id))'));
-                    }
+                    },
                 ])
                 ->withSum('licenses as owned_count', 'quota_limit')
                 ->get();
 
             $total = $allCommercial->count();
-            $compliant = $allCommercial->where(fn($s) => $s->discoveries_count <= ($s->owned_count ?? 0))->count();
+            $compliant = $allCommercial->where(fn ($s) => $s->discoveries_count <= ($s->owned_count ?? 0))->count();
 
             return [
                 'total_commercial' => $total,
-                'total_deficit' => $allCommercial->sum(fn($s) => max(0, $s->discoveries_count - ($s->owned_count ?? 0))),
+                'total_deficit' => $allCommercial->sum(fn ($s) => max(0, $s->discoveries_count - ($s->owned_count ?? 0))),
                 'compliant' => $compliant,
                 'non_compliant' => $total - $compliant,
             ];

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreLicenseRequest;
+use App\Http\Requests\UpdateLicenseRequest;
 use App\Models\LicenseInventory;
 use App\Models\SoftwareCatalog;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreLicenseRequest;
-use App\Http\Requests\UpdateLicenseRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class LicenseDataController extends Controller
 {
@@ -19,7 +20,7 @@ class LicenseDataController extends Controller
         $query = LicenseInventory::with([
             'catalog' => function ($q) {
                 $q->withCount('discoveries'); // Hitung jumlah instalasi
-            }
+            },
         ]);
 
         // Fitur Pencarian
@@ -38,18 +39,18 @@ class LicenseDataController extends Controller
             switch ($request->status) {
                 case 'Aman':
                     // Usage <= Quota DAN Belum Expired
-                    $query->where(function($q) {
+                    $query->where(function ($q) {
                         $q->whereRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) <= license_inventories.quota_limit')
-                          ->where(function($sub) {
-                              $sub->whereNull('expiry_date')->orWhere('expiry_date', '>=', now()->toDateString());
-                          });
+                            ->where(function ($sub) {
+                                $sub->whereNull('expiry_date')->orWhere('expiry_date', '>=', now()->toDateString());
+                            });
                     });
                     break;
                 case 'Segera Habis':
                     // Usage > 80% Quota ATAU Expiring Soon (30 days)
-                    $query->where(function($q) {
+                    $query->where(function ($q) {
                         $q->whereRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) > (license_inventories.quota_limit * 0.8)')
-                          ->orWhereBetween('expiry_date', [now()->toDateString(), now()->addDays(30)->toDateString()]);
+                            ->orWhereBetween('expiry_date', [now()->toDateString(), now()->addDays(30)->toDateString()]);
                     });
                     break;
                 case 'Kedaluwarsa':
@@ -78,9 +79,9 @@ class LicenseDataController extends Controller
             'expiring_soon' => LicenseInventory::where('expiry_date', '<=', now()->addDays(30))
                 ->where('expiry_date', '>', now())
                 ->count(),
-            'expired' => LicenseInventory::where('expiry_date', '<', now())->count()
+            'expired' => LicenseInventory::where('expiry_date', '<', now())->count(),
         ];
-        
+
         return view('pages.admin.licenses', compact('licenses', 'catalogs', 'stats'));
     }
 
@@ -90,10 +91,10 @@ class LicenseDataController extends Controller
     public function show(LicenseInventory $license)
     {
         $license->load(['catalog']);
-        
+
         // Ambil software catalog terkait
         $catalog = $license->catalog;
-        
+
         // Ambil daftar discovery (komputer) yang menggunakan software ini
         $discoveries = $catalog->discoveries()->with('computer')->paginate(10);
 
@@ -117,22 +118,23 @@ class LicenseDataController extends Controller
 
             return back()->with([
                 'status' => 'success',
-                'message' => 'Data inventaris lisensi berhasil ditambahkan!'
+                'message' => 'Data inventaris lisensi berhasil ditambahkan!',
             ]);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             // Jika validasi gagal, kirim pesan error spesifik
             return back()->withErrors($e->validator)->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Gagal menyimpan! Ada kesalahan pada isian form Anda.'
+                'message' => 'Gagal menyimpan! Ada kesalahan pada isian form Anda.',
             ]);
         } catch (\Exception $e) {
-            Log::error('License Store Error: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString()
+            Log::error('License Store Error: '.$e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return back()->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Terjadi kesalahan sistem saat menyimpan data.'
+                'message' => 'Terjadi kesalahan sistem saat menyimpan data.',
             ]);
         }
     }
@@ -154,21 +156,22 @@ class LicenseDataController extends Controller
 
             return back()->with([
                 'status' => 'success',
-                'message' => 'Data lisensi berhasil diperbarui.'
+                'message' => 'Data lisensi berhasil diperbarui.',
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return back()->withErrors($e->validator)->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Gagal! Harap periksa kembali isian form Anda.'
+                'message' => 'Gagal! Harap periksa kembali isian form Anda.',
             ]);
         } catch (\Exception $e) {
-            Log::error('License Update Error: ' . $e->getMessage(), [
+            Log::error('License Update Error: '.$e->getMessage(), [
                 'id' => $license->id,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return back()->withInput()->with([
                 'status' => 'destructive',
-                'message' => 'Gagal memperbarui data lisensi.'
+                'message' => 'Gagal memperbarui data lisensi.',
             ]);
         }
     }
@@ -185,7 +188,7 @@ class LicenseDataController extends Controller
 
         return back()->with([
             'status' => 'success',
-            'message' => 'Data inventaris lisensi berhasil dihapus.'
+            'message' => 'Data inventaris lisensi berhasil dihapus.',
         ]);
     }
 
@@ -195,12 +198,12 @@ class LicenseDataController extends Controller
     public function getKey(LicenseInventory $license)
     {
         // Authorize is handled by middleware, but good to double check
-        if (!auth()->user()->hasRole('admin')) {
+        if (! auth()->user()->hasRole('admin')) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         return response()->json([
-            'key' => $license->license_key
+            'key' => $license->license_key,
         ]);
     }
 }

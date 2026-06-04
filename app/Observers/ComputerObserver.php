@@ -9,19 +9,19 @@ class ComputerObserver
 {
     public function created(Computer $computer): void
     {
-        Cache::forget('dashboard.stats.' . now()->format('Y-m'));
+        Cache::forget('dashboard.stats.'.now()->format('Y-m'));
         Cache::forget('dashboard.charts');
     }
 
     public function updated(Computer $computer): void
     {
-        Cache::forget('dashboard.stats.' . now()->format('Y-m'));
+        Cache::forget('dashboard.stats.'.now()->format('Y-m'));
         Cache::forget('dashboard.charts');
     }
 
     public function deleted(Computer $computer): void
     {
-        Cache::forget('dashboard.stats.' . now()->format('Y-m'));
+        Cache::forget('dashboard.stats.'.now()->format('Y-m'));
         Cache::forget('dashboard.charts');
     }
 }

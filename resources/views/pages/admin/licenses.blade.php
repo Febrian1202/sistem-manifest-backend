@@ -70,22 +70,20 @@
                         </div>
 
                         <div class="space-y-1.5">
-                            <x-form.label>Bukti Pembelian (Gambar) <span
-                                    class="text-destructive">*</span></x-form.label>
-                            <input type="file" name="proof_image" required
+                            <x-form.label>Bukti Pembelian (Gambar)</x-form.label>
+                            <input type="file" name="proof_image" accept="image/jpeg,image/png"
                                 class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium">
-                            <p class="text-[10px] text-muted-foreground italic ">* Wajib mengunggah bukti
-                                dalam format gambar (JPG/PNG)</p>
+                            <p class="text-[10px] text-muted-foreground italic">Opsional — format gambar (JPG/PNG), maks 2MB</p>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <x-form.label>Tanggal Beli</x-form.label>
-                                <x-form.input type="text" name="purchase_date" placeholder="dd/mm/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
+                                <x-form.input type="date" name="purchase_date" />
                             </div>
                             <div class="space-y-1.5">
                                 <x-form.label>Kedaluwarsa</x-form.label>
-                                <x-form.input type="text" name="expiry_date" placeholder="dd/mm/yyyy" onfocus="(this.type='date')" onblur="if(!this.value) this.type='text'" />
+                                <x-form.input type="date" name="expiry_date" />
                             </div>
                         </div>
 
@@ -107,11 +105,11 @@
         </div>
 
         {{-- Menampilkan Pesan Berhasil/Gagal dari Controller --}}
-        @if (session('status'))
-            <x-ui.alert.index variant="{{ session('status') === 'success' ? 'success' : 'destructive' }}" class="mb-6">
-                <x-ui.alert.title>{{ session('status') === 'success' ? 'Berhasil' : 'Peringatan' }}</x-ui.alert.title>
+        @if (session('status') || $errors->any())
+            <x-ui.alert.index variant="{{ (session('status') === 'success') ? 'success' : 'destructive' }}" class="mb-6">
+                <x-ui.alert.title>{{ (session('status') === 'success') ? 'Berhasil' : 'Peringatan' }}</x-ui.alert.title>
                 <x-ui.alert.description>
-                    {{ session('message') }}
+                    {{ session('message') ?? 'Ada kesalahan pada isian form Anda.' }}
 
                     {{-- List detail error validasi jika ada --}}
                     @if ($errors->any())

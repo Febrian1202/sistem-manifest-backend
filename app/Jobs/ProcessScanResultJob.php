@@ -46,7 +46,7 @@ class ProcessScanResultJob implements ShouldQueue
     public function handle(SoftwareFilterService $filterService, SoftwareCatalogService $catalogService): void
     {
         // 1. Log processing start
-        Log::info('Processing scan for computer: ' . $this->computer->hostname);
+        Log::info('Processing scan for computer: '.$this->computer->hostname);
 
         // 2. Filter software into categories
         $filterResult = $filterService->filter($this->softwareList);

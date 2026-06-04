@@ -34,7 +34,7 @@ class AuthController extends Controller
         $remember = $request->boolean('remember');
 
         // Rate limiting: 5 attempts per minute per IP
-        $key = 'login-attempts:' . $request->ip();
+        $key = 'login-attempts:'.$request->ip();
         if (RateLimiter::tooManyAttempts($key, 5)) {
             $seconds = RateLimiter::availableIn($key);
             throw ValidationException::withMessages([

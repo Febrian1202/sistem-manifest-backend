@@ -4,10 +4,11 @@ namespace Database\Factories;
 
 use App\Models\Computer;
 use App\Models\SoftwareCatalog;
+use App\Models\SoftwareDiscovery;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\SoftwareDiscovery>
+ * @extends Factory<SoftwareDiscovery>
  */
 class SoftwareDiscoveryFactory extends Factory
 {

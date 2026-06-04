@@ -217,6 +217,7 @@ class SoftwareFilterService
             if ($isPriority) {
                 $flagged[] = $soft;
                 $clean[] = $soft;
+
                 continue;
             }
 
@@ -230,7 +231,7 @@ class SoftwareFilterService
             }
 
             // --- Step 3: Check Junk Regex Patterns ---
-            if (!$isJunk) {
+            if (! $isJunk) {
                 foreach (self::JUNK_PATTERNS as $pattern) {
                     if (preg_match($pattern, $name)) {
                         $isJunk = true;
@@ -250,4 +251,3 @@ class SoftwareFilterService
         return new FilterResult($clean, $junk, $flagged);
     }
 }
-

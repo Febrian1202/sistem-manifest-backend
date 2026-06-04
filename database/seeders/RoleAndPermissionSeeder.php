@@ -4,8 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class RoleAndPermissionSeeder extends Seeder
 {
@@ -15,7 +16,7 @@ class RoleAndPermissionSeeder extends Seeder
     public function run(): void
     {
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // 1. Create permissions
         Permission::firstOrCreate(['name' => 'access admin panel', 'guard_name' => 'web']);
@@ -24,7 +25,7 @@ class RoleAndPermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'view reports', 'guard_name' => 'web']);
 
         // 2. Create roles and assign permissions
-        
+
         // Admin: Full access
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $adminRole->givePermissionTo(Permission::all());

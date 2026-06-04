@@ -30,7 +30,7 @@ return new class extends Migration
             if ($license->license_key !== null && $license->license_key !== '') {
                 // Eloquent automatically decrypts the key when accessing the property
                 $decryptedKey = $license->license_key;
-                
+
                 // Directly update the database to store it as plaintext, bypassing the model cast
                 DB::table('license_inventories')
                     ->where('id', $license->id)

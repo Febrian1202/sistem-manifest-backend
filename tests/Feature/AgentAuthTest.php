@@ -1,14 +1,13 @@
 <?php
 
 use App\Models\Computer;
-use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 test('agent can register and receive token', function () {
     $mac = 'AA:BB:CC:DD:EE:FF';
-    
+
     $response = $this->postJson('/api/agent/register', [
         'mac_address' => $mac,
         'hostname' => 'TEST-PC',
@@ -32,7 +31,7 @@ test('scan result requires authentication', function () {
 test('authenticated agent can submit scan', function () {
     $computer = Computer::factory()->create([
         'mac_address' => '11:22:33:44:55:66',
-        'hostname' => 'INITIAL-NAME'
+        'hostname' => 'INITIAL-NAME',
     ]);
 
     // Issue token with correct ability
@@ -52,14 +51,14 @@ test('authenticated agent can submit scan', function () {
         'os_name' => 'Windows 11',
         'installed_software' => [
             ['name' => 'Chrome', 'version' => '120', 'vendor' => 'Google'],
-        ]
+        ],
     ];
 
-    $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+    $response = $this->withHeader('Authorization', 'Bearer '.$token)
         ->postJson('/api/scan-result', $payload);
 
     $response->assertStatus(202);
-    
+
     // Verify computer was updated
     $computer->refresh();
     expect($computer->hostname)->toBe('UPDATED-NAME');
@@ -68,14 +67,14 @@ test('authenticated agent can submit scan', function () {
 
 test('agent cannot submit scan without scan:submit ability', function () {
     $computer = Computer::factory()->create();
-    
+
     // Issue token WITHOUT scan:submit ability
     $token = $computer->createToken('agent', ['wrong:ability'])->plainTextToken;
 
-    $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+    $response = $this->withHeader('Authorization', 'Bearer '.$token)
         ->postJson('/api/scan-result', [
             'computer_name' => 'TEST',
-            'installed_software' => []
+            'installed_software' => [],
         ]);
 
     $response->assertStatus(403);

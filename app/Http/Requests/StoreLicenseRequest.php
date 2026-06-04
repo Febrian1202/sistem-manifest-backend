@@ -21,7 +21,7 @@ class StoreLicenseRequest extends FormRequest
             'expiry_date' => 'nullable|date|after_or_equal:purchase_date',
             'price_per_unit' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
-            'proof_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'proof_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'license_key' => 'nullable|string',
         ];
     }
@@ -29,7 +29,7 @@ class StoreLicenseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'proof_image.required' => 'Bukti pembelian berupa gambar wajib diunggah.',
+            'proof_image.uploaded' => 'Gagal mengunggah bukti pembelian. Pastikan ukuran file tidak melebihi 2 MB.',
             'catalog_id.required' => 'Silakan pilih software terlebih dahulu.',
             'quota_limit.min' => 'Kuota lisensi minimal adalah 1.',
         ];

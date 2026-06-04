@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Truncate existing data because the schema change is fundamental 
+        // Truncate existing data because the schema change is fundamental
         // (from per-computer to per-software reports)
         DB::table('compliance_reports')->truncate();
 
@@ -53,7 +53,7 @@ return new class extends Migration
                 'software_version',
                 'keterangan',
                 'license_inventory_id',
-                'detected_at'
+                'detected_at',
             ]);
 
             // Revert status to enum

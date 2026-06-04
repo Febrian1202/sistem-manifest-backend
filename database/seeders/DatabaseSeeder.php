@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
 
         // Buat Akun Admin
         $admin = User::firstOrCreate([
-            'email' => 'admin@usn.ac.id'
+            'email' => 'admin@usn.ac.id',
         ], [
             'name' => 'Administrator',
             'password' => 'password',
@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
 
         // Buat Akun Pimpinan
         $pimpinan = User::firstOrCreate([
-            'email' => 'pimpinan@usn.ac.id'
+            'email' => 'pimpinan@usn.ac.id',
         ], [
             'name' => 'Pimpinan',
             'password' => 'password',

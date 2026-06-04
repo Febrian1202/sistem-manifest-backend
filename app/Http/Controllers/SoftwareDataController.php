@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\SoftwareCatalog;
 use App\Http\Requests\UpdateSoftwareRequest;
+use App\Models\SoftwareCatalog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class SoftwareDataController extends Controller
 {
@@ -57,18 +58,19 @@ class SoftwareDataController extends Controller
 
             return back()->with([
                 'message' => "Software {$software->normalized_name} berhasil diperbarui!",
-                "status" => "success"
+                'status' => 'success',
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return back()->withErrors($e->validator)->withInput()->with([
                 'status' => 'destructive',
                 'message' => 'Gagal memperbarui katalog. Periksa inputan Anda.',
             ]);
         } catch (\Exception $e) {
-            Log::error('Software Catalog Update Error: ' . $e->getMessage(), [
+            Log::error('Software Catalog Update Error: '.$e->getMessage(), [
                 'id' => $software->id,
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return back()->withInput()->with([
                 'status' => 'destructive',
                 'message' => 'Terjadi kesalahan sistem saat memperbarui katalog.',

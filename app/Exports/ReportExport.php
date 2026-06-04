@@ -3,7 +3,7 @@
 namespace App\Exports;
 
 use Illuminate\Contracts\View\View;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
@@ -12,10 +12,10 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class ReportExport implements FromView, ShouldAutoSize, WithStyles
 {
     /**
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
-
     protected $viewName;
+
     protected $data;
 
     public function __construct($viewName, $data)
@@ -28,7 +28,7 @@ class ReportExport implements FromView, ShouldAutoSize, WithStyles
     public function view(): View
     {
         // Menggunakan view blad yang sama dengan PDF
-        return view('exports.' . $this->viewName, $this->data);
+        return view('exports.'.$this->viewName, $this->data);
     }
 
     public function styles(Worksheet $sheet)

@@ -2,12 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Computer;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Spatie\Permission\Models\Role;
 
 class RoleBasedAccessTest extends TestCase
 {
@@ -16,7 +14,7 @@ class RoleBasedAccessTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Seed roles
         $this->artisan('db:seed', ['--class' => 'RoleAndPermissionSeeder']);
     }
@@ -81,13 +79,13 @@ class RoleBasedAccessTest extends TestCase
     public function computers_using_tokens_cannot_access_web_routes()
     {
         $computer = Computer::factory()->create(['mac_address' => '00:11:22:33:44:55']);
-        
+
         // Simulating the agent guard which is for agents, not web users
         $response = $this->actingAs($computer, 'agent')->get('/dashboard');
-        
+
         // Since /dashboard is protected by 'auth' which usually defaults to 'web' session
         // a computer authenticated via 'agent' guard should not be allowed into 'web' routes
         // unless it's explicitly allowed in the middleware.
-        $response->assertStatus(403); 
+        $response->assertStatus(403);
     }
 }

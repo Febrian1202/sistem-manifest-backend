@@ -35,18 +35,18 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     // New detailed reports
     Route::prefix('reports')->name('reports.')->group(function () {
         // Preview pages
-        Route::get('/eksekutif',  [ReportController::class, 'showEksekutif'])->name('eksekutif');
-        Route::get('/komputer',   [ReportController::class, 'showKomputer'])->name('komputer');
-        Route::get('/software',   [ReportController::class, 'showSoftware'])->name('software');
-        Route::get('/kepatuhan',  [ReportController::class, 'showKepatuhan'])->name('kepatuhan');
-        Route::get('/lisensi',    [ReportController::class, 'showLisensi'])->name('lisensi');
+        Route::get('/eksekutif', [ReportController::class, 'showEksekutif'])->name('eksekutif');
+        Route::get('/komputer', [ReportController::class, 'showKomputer'])->name('komputer');
+        Route::get('/software', [ReportController::class, 'showSoftware'])->name('software');
+        Route::get('/kepatuhan', [ReportController::class, 'showKepatuhan'])->name('kepatuhan');
+        Route::get('/lisensi', [ReportController::class, 'showLisensi'])->name('lisensi');
 
         // Export endpoints
-        Route::get('/eksekutif/export',  [ReportController::class, 'exportEksekutif'])->name('eksekutif.export');
-        Route::get('/komputer/export',   [ReportController::class, 'exportKomputer'])->name('komputer.export');
-        Route::get('/software/export',   [ReportController::class, 'exportSoftware'])->name('software.export');
-        Route::get('/kepatuhan/export',  [ReportController::class, 'exportKepatuhan'])->name('kepatuhan.export');
-        Route::get('/lisensi/export',    [ReportController::class, 'exportLisensi'])->name('lisensi.export');
+        Route::get('/eksekutif/export', [ReportController::class, 'exportEksekutif'])->name('eksekutif.export');
+        Route::get('/komputer/export', [ReportController::class, 'exportKomputer'])->name('komputer.export');
+        Route::get('/software/export', [ReportController::class, 'exportSoftware'])->name('software.export');
+        Route::get('/kepatuhan/export', [ReportController::class, 'exportKepatuhan'])->name('kepatuhan.export');
+        Route::get('/lisensi/export', [ReportController::class, 'exportLisensi'])->name('lisensi.export');
 
         Route::post('/kepatuhan/scan', [ReportController::class, 'runComplianceScan'])->name('kepatuhan.scan');
     });
@@ -57,9 +57,9 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
         Route::put('/computers/{computer}', [ComputerDataController::class, 'update'])->name('computers.update');
         Route::delete('/computers/{computer}', [ComputerDataController::class, 'destroy'])->name('computers.destroy');
         Route::post('/computers/{computer}/request-scan', [ComputerDataController::class, 'requestScan'])->name('computers.request-scan');
-        
+
         Route::put('softwares/{software}', [SoftwareDataController::class, 'update'])->name('softwares.update');
-        
+
         Route::post('/licenses', [LicenseDataController::class, 'store'])->name('licenses.store');
         Route::post('/licenses/{license}/key', [LicenseDataController::class, 'getKey'])->name('licenses.key')->middleware('throttle:10,1');
         Route::put('/licenses/{license}', [LicenseDataController::class, 'update'])->name('licenses.update');

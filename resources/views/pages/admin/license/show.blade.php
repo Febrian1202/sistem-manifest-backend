@@ -76,6 +76,8 @@
                                     {{ $license->expiry_date ? $license->expiry_date->format('d M Y') : 'Lifetime' }}
                                 </p>
                             </div>
+                            @role('admin')
+                            {{-- Hanya Admin yang dapat mengungkap License Key --}}
                             <div x-data="{
                                 showKey: false,
                                 realKey: null,
@@ -104,7 +106,10 @@
                                             }
                                         });
 
-                                        if (!response.ok) throw new Error('Gagal mengambil data');
+                                        if (!response.ok) {
+                                            const errData = await response.json().catch(() => ({}));
+                                            throw new Error(errData.message ?? `Error ${response.status}: ${response.statusText}`);
+                                        }
 
                                         const data = await response.json();
                                         this.realKey = data.key;
@@ -177,6 +182,19 @@
                                 <p x-show="copied" x-cloak class="text-[10px] text-success mt-1 font-medium italic">Tersalin ke clipboard!</p>
                                 <p x-show="showKey && !copied" x-cloak class="text-[10px] text-muted-foreground mt-1 italic">Otomatis tersembunyi dalam 30 detik</p>
                             </div>
+                            @else
+                            {{-- Tampilan terkunci untuk Pimpinan --}}
+                            <div>
+                                <label class="text-xs font-bold text-muted-foreground uppercase tracking-wider">License Key</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <code class="text-xs bg-muted px-2 py-1 rounded border border-border font-mono min-w-[120px] flex items-center justify-center">
+                                        <span>{{ $license->masked_license_key }}</span>
+                                    </code>
+                                    <i class="fa-solid fa-lock text-[10px] text-muted-foreground" title="Hanya Admin yang dapat melihat license key"></i>
+                                </div>
+                                <p class="text-[10px] text-muted-foreground mt-1 italic">Hanya Admin yang dapat mengungkap key ini.</p>
+                            </div>
+                            @endrole
                         </div>
                         @if($license->notes)
                             <div class="md:col-span-2">

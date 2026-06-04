@@ -25,4 +25,13 @@ class UpdateLicenseRequest extends FormRequest
             'license_key' => 'nullable|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'proof_image.uploaded' => 'Gagal mengunggah bukti pembelian. Pastikan ukuran file tidak melebihi 2 MB.',
+            'catalog_id.required' => 'Silakan pilih software terlebih dahulu.',
+            'quota_limit.min' => 'Kuota lisensi minimal adalah 1.',
+        ];
+    }
 }

@@ -6,7 +6,7 @@
     selectedLabel: '{{ $placeholder }}',
 }" class="relative w-full" @click.outside="open = false">
     {{-- Input hidden agar bisa dikirim via Form --}}
-    <input type="hidden" name="{{ $name }}" x-model="value">
+    <input type="hidden" name="{{ $name }}" :value="value">
 
     {{ $slot }}
 </div>

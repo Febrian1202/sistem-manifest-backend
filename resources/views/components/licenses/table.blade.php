@@ -216,15 +216,38 @@
                                 <x-ui.dropdown-separator />
 
                                 {{-- DELETE FORM --}}
-                                <form action="{{ route('licenses.destroy', $license->id) }}" method="POST"
-                                    onsubmit="return confirm('Yakin ingin menghapus data lisensi ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <x-ui.dropdown-item destructive type="submit">
+                                <div @click.stop="$dispatch('open-dialog', 'delete-license-table-{{ $license->id }}')" class="w-full">
+                                    <x-ui.dropdown-item destructive type="button">
                                         <i class="fa-regular fa-trash-can mr-2 w-4 text-center opacity-70"></i>
                                         <span>Hapus Data</span>
                                     </x-ui.dropdown-item>
-                                </form>
+                                </div>
+
+                                <x-ui.dialog.confirm name="delete-license-table-{{ $license->id }}" title="Hapus Inventaris Lisensi" maxWidth="md">
+                                    <div class="flex items-start gap-4">
+                                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                                            <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                                Apakah Anda yakin ingin menghapus data lisensi untuk <strong>{{ $license->catalog->normalized_name ?? 'software ini' }}</strong>? Tindakan ini akan menghapus data pembelian dari sistem secara permanen.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <x-slot name="footer">
+                                        <x-ui.button type="button" variant="outline" x-on:click="show = false" class="w-full sm:w-auto">
+                                            Batal
+                                        </x-ui.button>
+                                        <form action="{{ route('licenses.destroy', $license->id) }}" method="POST" class="w-full sm:w-auto">
+                                            @csrf
+                                            @method('DELETE')
+                                            <x-ui.button type="submit" variant="destructive" class="w-full">
+                                                Hapus Data
+                                            </x-ui.button>
+                                        </form>
+                                    </x-slot>
+                                </x-ui.dialog.confirm>
 
                             </x-slot>
                         </x-ui.dropdown>

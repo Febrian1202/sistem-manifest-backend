@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class ComplianceReportSeeder extends Seeder
 {
@@ -18,7 +18,8 @@ class ComplianceReportSeeder extends Seeder
         $licenseMap = DB::table('license_inventories')->pluck('id', 'catalog_id');
 
         if (empty($computerIds) || $catalogs->isEmpty()) {
-            $this->command->warn("Data komputer atau katalog software kosong. Jalankan DashboardSeeder terlebih dahulu.");
+            $this->command->warn('Data komputer atau katalog software kosong. Jalankan DashboardSeeder terlebih dahulu.');
+
             return;
         }
 
@@ -38,7 +39,7 @@ class ComplianceReportSeeder extends Seeder
                     $status = 'Tidak Berlisensi';
                     $ket = 'Software ini masuk dalam daftar hitam (Blocklist).';
                 } elseif ($catalog->category === 'Commercial') {
-                    if (!$licId) {
+                    if (! $licId) {
                         $status = 'Tidak Berlisensi';
                         $ket = 'Software komersial namun lisensi tidak ditemukan di inventaris.';
                     } else {
@@ -61,7 +62,7 @@ class ComplianceReportSeeder extends Seeder
                     'computer_id' => $compId,
                     'software_catalog_id' => $catalog->id,
                     'software_name' => $catalog->normalized_name,
-                    'software_version' => 'v' . rand(1, 15) . '.' . rand(0, 9),
+                    'software_version' => 'v'.rand(1, 15).'.'.rand(0, 9),
                     'status' => $status,
                     'keterangan' => $ket,
                     'license_inventory_id' => $licId,
@@ -76,6 +77,6 @@ class ComplianceReportSeeder extends Seeder
         // Simpan data
         DB::table('compliance_reports')->insertOrIgnore($reports);
 
-        $this->command->info("Berhasil men-seed " . count($reports) . " laporan kepatuhan.");
+        $this->command->info('Berhasil men-seed '.count($reports).' laporan kepatuhan.');
     }
 }

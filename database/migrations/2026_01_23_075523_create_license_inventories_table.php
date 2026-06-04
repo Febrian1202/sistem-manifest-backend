@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -22,11 +23,11 @@ return new class extends Migration {
             $table->date('purchase_date')->nullable();
             $table->date('expiry_date')->nullable();
 
-            // Harga (Opsional) 
+            // Harga (Opsional)
             $table->decimal('price_per_unit', 15, 2)->nullable();
 
             $table->text('notes')->nullable();
-            $table->string('proof_image');
+            $table->string('proof_image')->nullable();
             $table->timestamps();
         });
     }

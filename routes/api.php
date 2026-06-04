@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\ScanController;
+use App\Http\Controllers\Api\AgentCommandController;
 use App\Http\Controllers\Api\AgentRegisterController;
+use App\Http\Controllers\Api\ScanController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', function () {
     return response()->json(['status' => 'success']);
@@ -14,5 +15,5 @@ Route::post('/agent/register', [AgentRegisterController::class, 'register'])->mi
 // 2. Protected Agent Routes
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::post('/scan-result', [ScanController::class, 'store']);
-    Route::get('/agent/scan-command', [\App\Http\Controllers\Api\AgentCommandController::class, 'index']);
+    Route::get('/agent/scan-command', [AgentCommandController::class, 'index']);
 });

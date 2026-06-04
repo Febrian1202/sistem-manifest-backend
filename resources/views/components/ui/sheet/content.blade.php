@@ -29,7 +29,7 @@
 @endphp
 
 <template x-teleport="body">
-    <div x-show="open" style="display: none;">
+    <div x-show="open" x-cloak style="display: none;">
 
         {{-- OVERLAY (Backdrop) --}}
         <div x-show="open" x-transition:enter="transition-opacity ease-linear duration-300"
@@ -46,7 +46,7 @@
             {{ $attributes->merge(['class' => 'fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out duration-300 overflow-y-auto max-h-screen ' . $positionClass]) }}>
 
             {{-- Close Button --}}
-            <button @click="open = false"
+            <button type="button" @click="open = false"
                 class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
                 <i class="fa-solid fa-xmark h-4 w-4"></i>
                 <span class="sr-only">Close</span>
@@ -57,3 +57,4 @@
 
     </div>
 </template>
+

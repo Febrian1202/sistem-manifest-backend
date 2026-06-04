@@ -3,17 +3,20 @@
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithMapping;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class LisensiExport implements FromCollection, WithHeadings, WithStyles, WithTitle, ShouldAutoSize, WithMapping
+class LisensiExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     protected $licenses;
+
     protected $startDate;
+
     protected $endDate;
 
     public function __construct($licenses, $startDate, $endDate)
@@ -33,11 +36,16 @@ class LisensiExport implements FromCollection, WithHeadings, WithStyles, WithTit
     public function map($license): array
     {
         $this->rowNumber++;
-        
+
         $status = 'Tersedia';
-        if ($license->remaining <= 0) $status = 'Penuh';
-        elseif ($license->usage_pct >= 80) $status = 'Hampir Habis';
-        if ($license->expiry_date && $license->expiry_date->lt(now())) $status = 'Kedaluwarsa';
+        if ($license->remaining <= 0) {
+            $status = 'Penuh';
+        } elseif ($license->usage_pct >= 80) {
+            $status = 'Hampir Habis';
+        }
+        if ($license->expiry_date && $license->expiry_date->lt(now())) {
+            $status = 'Kedaluwarsa';
+        }
 
         return [
             $this->rowNumber,
@@ -46,7 +54,7 @@ class LisensiExport implements FromCollection, WithHeadings, WithStyles, WithTit
             $license->quota_limit,
             $license->used_count,
             $license->remaining,
-            $license->usage_pct . '%',
+            $license->usage_pct.'%',
             $status,
             $license->expiry_date ? $license->expiry_date->format('d/m/Y') : '-',
         ];
@@ -55,9 +63,9 @@ class LisensiExport implements FromCollection, WithHeadings, WithStyles, WithTit
     public function headings(): array
     {
         return [
-            ['Status Lisensi (' . $this->startDate->format('d/m/Y') . ' - ' . $this->endDate->format('d/m/Y') . ')'],
+            ['Status Lisensi ('.$this->startDate->format('d/m/Y').' - '.$this->endDate->format('d/m/Y').')'],
             [],
-            ['No', 'Nama Software', 'Tipe Lisensi', 'Total Seat', 'Terpakai', 'Sisa', '% Penggunaan', 'Status', 'Expired']
+            ['No', 'Nama Software', 'Tipe Lisensi', 'Total Seat', 'Terpakai', 'Sisa', '% Penggunaan', 'Status', 'Expired'],
         ];
     }
 
@@ -70,16 +78,21 @@ class LisensiExport implements FromCollection, WithHeadings, WithStyles, WithTit
     {
         foreach ($this->licenses as $index => $license) {
             $row = $index + 4;
-            
+
             $status = 'Tersedia';
-            if ($license->remaining <= 0) $status = 'Penuh';
-            elseif ($license->usage_pct >= 80) $status = 'Hampir Habis';
-            if ($license->expiry_date && $license->expiry_date->lt(now())) $status = 'Kedaluwarsa';
+            if ($license->remaining <= 0) {
+                $status = 'Penuh';
+            } elseif ($license->usage_pct >= 80) {
+                $status = 'Hampir Habis';
+            }
+            if ($license->expiry_date && $license->expiry_date->lt(now())) {
+                $status = 'Kedaluwarsa';
+            }
 
             if ($status === 'Penuh' || $status === 'Kedaluwarsa') {
-                $sheet->getStyle('A' . $row . ':I' . $row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('FEE2E2');
+                $sheet->getStyle('A'.$row.':I'.$row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FEE2E2');
             } elseif ($status === 'Hampir Habis') {
-                $sheet->getStyle('A' . $row . ':I' . $row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setRGB('FEF9C3');
+                $sheet->getStyle('A'.$row.':I'.$row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FEF9C3');
             }
         }
 
@@ -88,7 +101,7 @@ class LisensiExport implements FromCollection, WithHeadings, WithStyles, WithTit
             3 => [
                 'font' => ['bold' => true],
                 'fill' => [
-                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'fillType' => Fill::FILL_SOLID,
                     'startColor' => ['rgb' => 'DBEAFE'],
                 ],
             ],

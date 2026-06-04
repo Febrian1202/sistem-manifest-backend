@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\KepatuhanExport;
+use App\Exports\KomputerExport;
+use App\Exports\LisensiExport;
+use App\Exports\SoftwareExport;
+use App\Jobs\GenerateComplianceReportJob;
+use App\Models\ComplianceReport;
 use App\Models\Computer;
 use App\Models\LicenseInventory;
 use App\Models\SoftwareDiscovery;
-use App\Models\ComplianceReport;
-use App\Exports\KomputerExport;
-use App\Exports\SoftwareExport;
-use App\Exports\KepatuhanExport;
-use App\Exports\LisensiExport;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -56,12 +58,13 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $data = $this->getEksekutifData($startDate, $endDate);
         $data['print_date'] = now()->format('d/m/Y H:i');
-        $data['printed_by'] = auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')';
+        $data['printed_by'] = auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')';
         $data['startDateStr'] = $startDate->format('d/m/Y');
         $data['endDateStr'] = $endDate->format('d/m/Y');
 
         $pdf = Pdf::loadView('reports.pdf.eksekutif-pdf', $data)->setPaper('a4', 'portrait');
-        return $pdf->stream('laporan-eksekutif_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '.pdf');
+
+        return $pdf->stream('laporan-eksekutif_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.pdf');
     }
 
     private function getEksekutifData($startDate, $endDate)
@@ -114,7 +117,7 @@ class ReportController extends Controller
         $computers = Computer::withCount('softwares')->whereBetween('created_at', [$startDate, $endDate])->orderBy('hostname')->get();
 
         if ($format === 'excel') {
-            return Excel::download(new KomputerExport($computers, $startDate, $endDate), 'inventaris-komputer_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '.xlsx');
+            return Excel::download(new KomputerExport($computers, $startDate, $endDate), 'inventaris-komputer_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
         }
 
         $data = [
@@ -122,7 +125,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
+            'printed_by' => auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')',
         ];
 
         return Pdf::loadView('reports.pdf.komputer-pdf', $data)->setPaper('a4', 'landscape')->stream();
@@ -145,7 +148,7 @@ class ReportController extends Controller
         $softwares = $this->getSoftwareData($startDate, $endDate)->get();
 
         if ($format === 'excel') {
-            return Excel::download(new SoftwareExport($softwares, $startDate, $endDate), 'inventaris-software_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '.xlsx');
+            return Excel::download(new SoftwareExport($softwares, $startDate, $endDate), 'inventaris-software_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
         }
 
         $data = [
@@ -153,7 +156,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
+            'printed_by' => auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')',
         ];
 
         return Pdf::loadView('reports.pdf.software-pdf', $data)->setPaper('a4', 'portrait')->stream();
@@ -172,9 +175,9 @@ class ReportController extends Controller
             ->selectRaw('COUNT(DISTINCT software_discoveries.computer_id) as computer_count')
             ->with(['catalog.licenses'])
             ->groupBy(
-                'software_discoveries.catalog_id', 
-                'software_discoveries.version', 
-                'software_catalogs.normalized_name', 
+                'software_discoveries.catalog_id',
+                'software_discoveries.version',
+                'software_catalogs.normalized_name',
                 'software_catalogs.category'
             )
             ->orderByDesc('computer_count');
@@ -205,7 +208,7 @@ class ReportController extends Controller
             ->get();
 
         if ($format === 'excel') {
-            return Excel::download(new KepatuhanExport($reports, $startDate, $endDate), 'kepatuhan-lisensi_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '.xlsx');
+            return Excel::download(new KepatuhanExport($reports, $startDate, $endDate), 'kepatuhan-lisensi_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
         }
 
         $data = [
@@ -213,7 +216,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
+            'printed_by' => auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')',
         ];
 
         return Pdf::loadView('reports.pdf.kepatuhan-pdf', $data)->setPaper('a4', 'portrait')->stream();
@@ -235,13 +238,14 @@ class ReportController extends Controller
             $usage = $license->used_count;
             $license->remaining = max(0, $license->quota_limit - $usage);
             $license->usage_pct = $license->quota_limit > 0 ? round(($usage / $license->quota_limit) * 100, 1) : 0;
+
             return $license;
         })->sortByDesc('usage_pct')->values();
 
         // Manual pagination
         $page = request()->get('page', 1);
         $perPage = 15;
-        $paginatedLicenses = new \Illuminate\Pagination\LengthAwarePaginator(
+        $paginatedLicenses = new LengthAwarePaginator(
             $licenses->forPage($page, $perPage),
             $licenses->count(),
             $perPage,
@@ -256,7 +260,7 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         $format = $request->query('format', 'pdf');
-        
+
         $licenses = LicenseInventory::with('catalog')
             ->select('*')
             ->selectRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) as used_count')
@@ -266,11 +270,12 @@ class ReportController extends Controller
                 $usage = $license->used_count;
                 $license->remaining = max(0, $license->quota_limit - $usage);
                 $license->usage_pct = $license->quota_limit > 0 ? round(($usage / $license->quota_limit) * 100, 1) : 0;
+
                 return $license;
             });
 
         if ($format === 'excel') {
-            return Excel::download(new LisensiExport($licenses, $startDate, $endDate), 'status-lisensi_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '.xlsx');
+            return Excel::download(new LisensiExport($licenses, $startDate, $endDate), 'status-lisensi_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
         }
 
         $data = [
@@ -278,7 +283,7 @@ class ReportController extends Controller
             'startDateStr' => $startDate->format('d/m/Y'),
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
-            'printed_by' => auth()->user()->name . ' (' . (auth()->user()->getRoleNames()->first() ?? 'User') . ')',
+            'printed_by' => auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')',
         ];
 
         return Pdf::loadView('reports.pdf.lisensi-pdf', $data)->setPaper('a4', 'portrait')->stream();
@@ -289,14 +294,14 @@ class ReportController extends Controller
         // Optimization for large datasets
         Computer::select('id', 'hostname')->chunk(100, function ($computers) {
             foreach ($computers as $computer) {
-                \App\Jobs\GenerateComplianceReportJob::dispatch($computer)
+                GenerateComplianceReportJob::dispatch($computer)
                     ->onQueue('compliance');
             }
         });
 
         return back()->with([
             'status' => 'success',
-            'message' => "Pemeriksaan kepatuhan untuk semua komputer telah dijadwalkan di background."
+            'message' => 'Pemeriksaan kepatuhan untuk semua komputer telah dijadwalkan di background.',
         ]);
     }
 }

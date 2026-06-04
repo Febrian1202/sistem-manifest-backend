@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class LicenseInventory extends Model
 {
@@ -34,17 +34,23 @@ class LicenseInventory extends Model
      */
     public function getMaskedLicenseKeyAttribute()
     {
-        if (empty($this->license_key)) {
+        try {
+            $key = $this->license_key;
+        } catch (\Exception $e) {
+            return 'Error Decrypting';
+        }
+
+        if (empty($key)) {
             return '-';
         }
 
-        $segments = explode('-', $this->license_key);
+        $segments = explode('-', $key);
         $count = count($segments);
 
         $masked = [];
         for ($i = 0; $i < $count; $i++) {
             if ($i < 2) {
-                $masked[] = $segments[$i];
+                $masked[] = $segments[$i] ?? '****';
             } else {
                 $masked[] = '****';
             }

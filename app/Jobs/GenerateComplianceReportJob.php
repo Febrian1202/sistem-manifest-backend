@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\Computer;
 use App\Models\ComplianceReport;
+use App\Models\Computer;
 use App\Models\SoftwareDiscovery;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -54,7 +54,7 @@ class GenerateComplianceReportJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            Log::info('Generating compliance report for computer: ' . $this->computer->hostname);
+            Log::info('Generating compliance report for computer: '.$this->computer->hostname);
 
             // STEP 1 — Load Data
             $discoveries = SoftwareDiscovery::with(['catalog', 'catalog.licenses'])
@@ -67,13 +67,13 @@ class GenerateComplianceReportJob implements ShouldQueue
 
             // STEP 2 — Process Setiap Software
             foreach ($discoveries as $discovery) {
-                if (!$discovery->catalog) {
+                if (! $discovery->catalog) {
                     continue;
                 }
 
                 $catalog = $discovery->catalog;
                 $currentCatalogIds[] = $catalog->id;
-                
+
                 $status = 'Berlisensi';
                 $keterangan = 'Lisensi aktif dan valid';
                 $licenseId = null;
@@ -90,37 +90,35 @@ class GenerateComplianceReportJob implements ShouldQueue
                 if ($isBlocked) {
                     $status = 'Tidak Berlisensi';
                     $keterangan = 'Aplikasi terlarang terdeteksi';
-                } 
+                }
                 // 2. CEK KATEGORI NON-COMMERCIAL
                 elseif ($catalog->category !== 'Commercial') {
                     $status = 'Berlisensi';
                     $keterangan = 'Software gratis, tidak memerlukan lisensi';
-                } 
-                else {
+                } else {
                     // Software is Commercial, need to check license
                     $license = $catalog->licenses->first(); // Assuming one primary license record per catalog for simplicity as per instructions
 
                     // 3. CEK LISENSI ADA ATAU TIDAK
-                    if (!$license) {
+                    if (! $license) {
                         $status = 'Tidak Berlisensi';
                         $keterangan = 'Lisensi tidak ditemukan dalam sistem';
-                    } 
-                    else {
+                    } else {
                         $licenseId = $license->id;
                         $today = now()->startOfDay();
 
                         // 4. CEK EXPIRED
-                        if ($license->expiry_date && $license->expiry_date->isPast() && !$license->expiry_date->isToday()) {
+                        if ($license->expiry_date && $license->expiry_date->isPast() && ! $license->expiry_date->isToday()) {
                             $status = 'Tidak Berlisensi';
                             $keterangan = 'Lisensi telah kedaluwarsa';
-                        } 
+                        }
                         // 5. CEK KUOTA
                         else {
                             $installationCount = SoftwareDiscovery::where('catalog_id', $catalog->id)->count();
                             if ($license->quota_limit > 0 && $installationCount > $license->quota_limit) {
                                 $status = 'Tidak Berlisensi';
                                 $keterangan = 'Kuota lisensi penuh';
-                            } 
+                            }
                             // 6. CEK HAMPIR EXPIRED (Grace Period)
                             elseif ($license->expiry_date && $license->expiry_date->isBetween($today, $today->copy()->addDays(30))) {
                                 $status = 'Grace Period';
@@ -146,10 +144,10 @@ class GenerateComplianceReportJob implements ShouldQueue
             }
 
             // STEP 3 — Upsert ke Database
-            if (!empty($records)) {
+            if (! empty($records)) {
                 // MySQL upsert
-                ComplianceReport::upsert($records, 
-                    ['computer_id', 'software_catalog_id'], 
+                ComplianceReport::upsert($records,
+                    ['computer_id', 'software_catalog_id'],
                     ['status', 'keterangan', 'license_inventory_id', 'software_version', 'detected_at', 'scanned_at', 'updated_at']
                 );
             }
@@ -162,7 +160,7 @@ class GenerateComplianceReportJob implements ShouldQueue
             // STEP 5 — Clear Cache
             Cache::forget('dashboard_metrics');
 
-            Log::info('Compliance report generation completed for computer: ' . $this->computer->hostname);
+            Log::info('Compliance report generation completed for computer: '.$this->computer->hostname);
 
         } catch (\Throwable $e) {
             Log::error('GenerateComplianceReportJob failed', [
