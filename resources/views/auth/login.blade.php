@@ -14,8 +14,8 @@
             {{-- Top: Logo --}}
             <div class="relative z-10 flex items-center gap-3">
                 <div
-                    class="flex h-11 w-11 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15 backdrop-blur">
-                    <i class="fa-solid fa-graduation-cap text-white text-xl"></i>
+                    class="flex h-11 w-11 items-center justify-center rounded-lg bg-white p-1.5 ring-1 ring-white/15 backdrop-blur">
+                    <img src="{{ asset('assets/logo-usn.png') }}" class="h-9 w-9 object-contain" alt="Logo USN">
                 </div>
                 <div class="flex flex-col leading-tight">
                     <span class="text-sm font-semibold tracking-wide text-white">USN Kolaka</span>
@@ -57,8 +57,8 @@
                 {{-- Mobile logo --}}
                 <div class="flex items-center gap-3 lg:hidden">
                     <div
-                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+                        class="flex h-10 w-10 items-center justify-center rounded-lg bg-white border border-border p-1">
+                        <img src="{{ asset('assets/logo-usn.png') }}" class="h-8 w-8 object-contain" alt="Logo USN">
                     </div>
                     <span class="text-base font-semibold text-foreground">USN Manifest</span>
                 </div>

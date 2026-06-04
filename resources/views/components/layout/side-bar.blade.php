@@ -5,7 +5,7 @@
     <div class="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
 
         <div class="flex items-center gap-3 overflow-hidden whitespace-nowrap" x-show="sidebarOpen">
-            <i class="fa-solid fa-graduation-cap text-sidebar-foreground text-2xl tracking-tight"></i>
+            <img src="{{ asset('assets/logo-usn.png') }}" class="h-8 w-8 object-contain" alt="Logo USN">
             <div class="flex flex-col justify-center leading-none">
                 <span class="font-bold text-sidebar-foreground text-md tracking-tight">UniLicense</span>
                 <span class="text-sidebar-foreground text-[10px] font-medium opacity-80 tracking-wide">System
@@ -13,9 +13,9 @@
             </div>
         </div>
 
-        <i class="flex items-center justify-center fa-solid fa-graduation-cap text-sidebar-foreground text-2xl tracking-tight "
-            x-show="!sidebarOpen">
-        </i>
+        <div class="w-full flex justify-center" x-show="!sidebarOpen">
+            <img src="{{ asset('assets/logo-usn.png') }}" class="h-7 w-7 object-contain" alt="Logo USN">
+        </div>
 
     </div>
 

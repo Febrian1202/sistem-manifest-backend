@@ -34,7 +34,7 @@
 </head>
 <body>
     <div class="header">
-        <div class="logo-box">[LOGO USN KOLAKA]</div>
+        <img src="{{ public_path('assets/logo-usn.png') }}" style="height: 60px; width: auto; margin-bottom: 10px;" alt="Logo USN">
         <h1 class="institution">Universitas Sembilanbelas November Kolaka</h1>
         <p class="system-name">Sistem Manifest — Laporan Ringkasan Eksekutif</p>
     </div>
