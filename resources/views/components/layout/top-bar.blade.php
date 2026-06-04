@@ -90,7 +90,7 @@
                     <x-dropdown-item onclick="event.preventDefault(); this.closest('form').submit();"
                         class="text-destructive focus:bg-destructive/10 focus:text-destructive">
                         <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>
-                        Log Out
+                        Keluar
                     </x-dropdown-item>
                 </form>
             </x-slot>

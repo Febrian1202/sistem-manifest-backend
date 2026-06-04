@@ -27,7 +27,7 @@
             } elseif ($isExpiringSoon) {
                 $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-warning/10 text-warning border border-warning/20"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Segera Habis</span>';
             } elseif ($usageCount > $quota) {
-                $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/20"><i class="fa-solid fa-ban mr-1.5"></i> Over Limit</span>';
+                $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/20"><i class="fa-solid fa-ban mr-1.5"></i> Melebihi Batas</span>';
             } else {
                 $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-success/10 text-success border border-success/20"><i class="fa-solid fa-circle-check mr-1.5"></i> Aman</span>';
             }
@@ -252,7 +252,7 @@
                         Date</span>
                     <span
                         class="text-xs {{ $isExpired ? 'text-destructive font-semibold' : 'text-foreground font-medium' }}">
-                        {{ $expiryDate ? $expiryDate->format('d M Y') : 'Lifetime (Selamanya)' }}
+                        {{ $expiryDate ? $expiryDate->format('d M Y') : 'Selamanya' }}
                     </span>
                 </div>
                 <div>

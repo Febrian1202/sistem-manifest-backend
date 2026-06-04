@@ -36,13 +36,13 @@
 
                     // Badge Status
                     if ($isExpired) {
-                        $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/20"><i class="fa-solid fa-clock mr-1.5"></i> Expired</span>';
+                        $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/20"><i class="fa-solid fa-clock mr-1.5"></i> Kedaluwarsa</span>';
                     } elseif ($isExpiringSoon) {
-                        $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-warning/10 text-warning border border-warning/20"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Expiring Soon</span>';
+                        $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-warning/10 text-warning border border-warning/20"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Segera Habis</span>';
                     } elseif ($usageCount > $quota) {
-                        $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/20"><i class="fa-solid fa-ban mr-1.5"></i> Over Limit</span>';
+                        $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/20"><i class="fa-solid fa-ban mr-1.5"></i> Melebihi Batas</span>';
                     } else {
-                        $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-success/10 text-success border border-success/20"><i class="fa-solid fa-circle-check mr-1.5"></i> Active</span>';
+                        $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-success/10 text-success border border-success/20"><i class="fa-solid fa-circle-check mr-1.5"></i> Aktif</span>';
                     }
                 @endphp
 
@@ -82,7 +82,7 @@
                     {{-- Expiry Date --}}
                     <x-ui.table.table-cell
                         class="text-xs {{ $isExpired ? 'text-destructive font-semibold' : 'text-muted-foreground' }}">
-                        {{ $expiryDate ? $expiryDate->format('d M Y') : 'Lifetime' }}
+                        {{ $expiryDate ? $expiryDate->format('d M Y') : 'Selamanya' }}
                     </x-ui.table.table-cell>
 
                     {{-- Status --}}
@@ -105,7 +105,7 @@
                                 </div>
                             </a>
                         @else
-                            <span class="text-xs text-muted-foreground italic">No image</span>
+                            <span class="text-xs text-muted-foreground italic">Tidak ada gambar</span>
                         @endif
                     </x-ui.table.table-cell>
 
@@ -118,7 +118,7 @@
                                 </x-ui.button>
                             </x-slot>
                             <x-slot name="content">
-                                <x-ui.dropdown-label>Actions</x-ui.dropdown-label>
+                                <x-ui.dropdown-label>Aksi</x-ui.dropdown-label>
 
                                 {{-- EDIT SHEET --}}
                                 <x-ui.sheet.sheet>

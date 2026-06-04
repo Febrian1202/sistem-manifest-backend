@@ -6,8 +6,8 @@
             <x-ui.table.table-row>
                 <x-ui.table.table-head>Software</x-ui.table.table-head>
                 <x-ui.table.table-head>Publisher/Vendor</x-ui.table.table-head>
-                <x-ui.table.table-head>Version</x-ui.table.table-head>
-                <x-ui.table.table-head class="text-center">Install Count</x-ui.table.table-head>
+                <x-ui.table.table-head>Versi</x-ui.table.table-head>
+                <x-ui.table.table-head class="text-center">Jumlah Instalasi</x-ui.table.table-head>
                 <x-ui.table.table-head>Kategori</x-ui.table.table-head>
                 <x-ui.table.table-head>Status</x-ui.table.table-head>
                 <x-ui.table.table-head class="text-right">Aksi</x-ui.table.table-head>
@@ -57,7 +57,7 @@
                     <x-ui.table.table-cell class="text-center">
                         <span
                             class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-muted text-foreground">
-                            {{ $software->discoveries_count }} Device
+                            {{ $software->discoveries_count }} Perangkat
                         </span>
                     </x-ui.table.table-cell>
 
@@ -86,7 +86,7 @@
                                     </x-ui.button>
                                 </x-slot>
                                 <x-slot name="content">
-                                    <x-ui.dropdown-label>Actions</x-ui.dropdown-label>
+                                    <x-ui.dropdown-label>Aksi</x-ui.dropdown-label>
 
                                     <x-ui.dropdown-separator />
 
@@ -191,7 +191,7 @@
                             </x-ui.dropdown>
                         </div>
                         @else
-                        <span class="text-xs text-muted-foreground italic">Read Only</span>
+                        <span class="text-xs text-muted-foreground italic">Hanya Baca</span>
                         @endrole
                     </x-ui.table.table-cell>
                 </x-ui.table.table-row>

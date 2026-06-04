@@ -73,6 +73,12 @@
                             $hasLicense = $sw->catalog && $sw->catalog->licenses->count() > 0;
                             $isCommercial = $sw->category === 'Commercial';
                             $isCritical = $isCommercial && !$hasLicense;
+                            $categoryLabel = match ($sw->category) {
+                                'Commercial' => 'Komersial',
+                                'Open Source' => 'Sumber Terbuka',
+                                'Freeware' => 'Gratis (Freeware)',
+                                default => $sw->category ?? '-',
+                            };
                         @endphp
                         <tr class="{{ $isCritical ? 'bg-red-50' : '' }}">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -98,7 +104,7 @@
                                         / Tidak Perlu</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $sw->category }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $categoryLabel }}</td>
                         </tr>
                     @endforeach
                 </tbody>

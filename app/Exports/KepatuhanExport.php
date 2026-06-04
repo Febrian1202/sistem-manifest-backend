@@ -43,7 +43,7 @@ class KepatuhanExport implements FromCollection, ShouldAutoSize, WithHeadings, W
 
         $statusMap = [
             'Berlisensi' => 'Berlisensi',
-            'Grace Period' => 'Grace Period',
+            'Grace Period' => 'Masa Tenggang',
             'Tidak Berlisensi' => 'Tidak Berlisensi',
         ];
 
@@ -65,7 +65,7 @@ class KepatuhanExport implements FromCollection, ShouldAutoSize, WithHeadings, W
         return [
             ['Kepatuhan Lisensi ('.$this->startDate->format('d/m/Y').' - '.$this->endDate->format('d/m/Y').')'],
             [],
-            ['No', 'Nama Komputer', 'IP Address', 'Nama Software', 'Status', 'Tanggal Deteksi', 'Keterangan'],
+            ['No', 'Nama Komputer', 'Alamat IP', 'Nama Software', 'Status', 'Tanggal Deteksi', 'Keterangan'],
         ];
     }
 
@@ -98,7 +98,7 @@ class KepatuhanExport implements FromCollection, ShouldAutoSize, WithHeadings, W
         $critical = $this->reports->where('status', 'Tidak Berlisensi')->count();
 
         $summaryRow = $lastRow + 1;
-        $summaryText = "Total Temuan: $total | $safe berlisensi | $warning grace period | $critical tidak berlisensi";
+        $summaryText = "Total Temuan: $total | $safe berlisensi | $warning masa tenggang | $critical tidak berlisensi";
         $sheet->setCellValue('A'.$summaryRow, $summaryText);
         $sheet->mergeCells('A'.$summaryRow.':G'.$summaryRow);
         $sheet->getStyle('A'.$summaryRow)->getFont()->setBold(true);

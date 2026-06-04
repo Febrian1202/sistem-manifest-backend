@@ -135,7 +135,7 @@
                         enabled: true,
                         y: {
                             formatter: function(val) {
-                                return val + " Installs"
+                                return val + " Unit"
                             }
                         }
                     }

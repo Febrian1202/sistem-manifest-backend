@@ -79,7 +79,7 @@
                 <td>{{ $report->software_name }}</td>
                 <td class="text-center">{{ $report->software_version ?? '-' }}</td>
                 <td class="text-center">
-                    <span class="badge {{ $statusClass }}">{{ $report->status }}</span>
+                    <span class="badge {{ $statusClass }}">{{ $report->status === 'Grace Period' ? 'Masa Tenggang' : $report->status }}</span>
                 </td>
                 <td>{{ $report->scanned_at ? $report->scanned_at->format('d/m/Y H:i') : '-' }}</td>
                 <td style="font-size: 8px;">{{ $report->keterangan }}</td>

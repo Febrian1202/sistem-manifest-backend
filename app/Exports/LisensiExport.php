@@ -47,10 +47,18 @@ class LisensiExport implements FromCollection, ShouldAutoSize, WithHeadings, Wit
             $status = 'Kedaluwarsa';
         }
 
+        $category = $license->catalog->category ?? '-';
+        $categoryLabel = match ($category) {
+            'Commercial' => 'Komersial',
+            'Open Source' => 'Sumber Terbuka',
+            'Freeware' => 'Gratis (Freeware)',
+            default => $category,
+        };
+
         return [
             $this->rowNumber,
             $license->catalog->normalized_name ?? '-',
-            $license->catalog->category ?? '-',
+            $categoryLabel,
             $license->quota_limit,
             $license->used_count,
             $license->remaining,
@@ -65,7 +73,7 @@ class LisensiExport implements FromCollection, ShouldAutoSize, WithHeadings, Wit
         return [
             ['Status Lisensi ('.$this->startDate->format('d/m/Y').' - '.$this->endDate->format('d/m/Y').')'],
             [],
-            ['No', 'Nama Software', 'Tipe Lisensi', 'Total Seat', 'Terpakai', 'Sisa', '% Penggunaan', 'Status', 'Expired'],
+            ['No', 'Nama Software', 'Tipe Lisensi', 'Total Kuota', 'Terpakai', 'Sisa', '% Penggunaan', 'Status', 'Kedaluwarsa'],
         ];
     }
 

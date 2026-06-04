@@ -101,13 +101,13 @@
                         <x-ui.select.content>
                             <x-ui.select.item value="All">Semua Status</x-ui.select.item>
                             <x-ui.select.item value="Licensed" class="text-green-600">
-                                <i class="fa-solid fa-circle-check mr-2"></i> Licensed
+                                <i class="fa-solid fa-circle-check mr-2"></i> Berlisensi
                             </x-ui.select.item>
                             <x-ui.select.item value="Grace Period" class="text-yellow-600">
-                                <i class="fa-solid fa-triangle-exclamation mr-2"></i> Grace Period
+                                <i class="fa-solid fa-triangle-exclamation mr-2"></i> Masa Tenggang
                             </x-ui.select.item>
                             <x-ui.select.item value="Unlicensed" class="text-red-600">
-                                <i class="fa-solid fa-circle-xmark mr-2"></i> Unlicensed
+                                <i class="fa-solid fa-circle-xmark mr-2"></i> Tidak Berlisensi
                             </x-ui.select.item>
                         </x-ui.select.content>
                     </x-ui.select.index>

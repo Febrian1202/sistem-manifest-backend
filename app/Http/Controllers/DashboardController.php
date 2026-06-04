@@ -114,14 +114,14 @@ class DashboardController extends Controller
                     $hasBlacklist = $computer->softwares->some(fn ($s) => $s->catalog && $s->catalog->status === 'Blacklist');
 
                     $status = 'success';
-                    $statusText = 'Clean';
+                    $statusText = 'Aman';
 
                     if ($hasBlacklist) {
                         $status = 'destructive';
-                        $statusText = 'Software Issue';
+                        $statusText = 'Masalah Software';
                     } elseif ($computer->os_license_status !== 'Licensed') {
                         $status = 'warning';
-                        $statusText = 'OS Issue';
+                        $statusText = 'Masalah OS';
                     }
 
                     return [
@@ -145,7 +145,7 @@ class DashboardController extends Controller
 
         $osLabels = $data['osLabels'];
         $osSeries = $data['osSeries'];
-        $licenseLabelsChart = ['Licensed', 'Grace Period', 'Action Required'];
+        $licenseLabelsChart = ['Berlisensi', 'Masa Tenggang', 'Perlu Tindakan'];
         $licenseSeries = $data['licenseSeries'];
         $recentActivities = $data['recentActivities'];
         $topSoftware = $data['topSoftware'];

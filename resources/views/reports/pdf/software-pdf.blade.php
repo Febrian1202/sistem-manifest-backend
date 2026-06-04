@@ -61,6 +61,12 @@
                 $hasLicense = $sw->catalog && $sw->catalog->licenses->count() > 0;
                 $isCommercial = $sw->category === 'Commercial';
                 $isCritical = $isCommercial && !$hasLicense;
+                $categoryLabel = match ($sw->category) {
+                    'Commercial' => 'Komersial',
+                    'Open Source' => 'Sumber Terbuka',
+                    'Freeware' => 'Gratis (Freeware)',
+                    default => $sw->category ?? '-',
+                };
             @endphp
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
@@ -74,7 +80,7 @@
                         Gratis / Tidak Perlu
                     @endif
                 </td>
-                <td>{{ $sw->category }}</td>
+                <td>{{ $categoryLabel }}</td>
             </tr>
             @endforeach
         </tbody>

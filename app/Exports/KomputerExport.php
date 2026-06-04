@@ -58,7 +58,7 @@ class KomputerExport implements FromCollection, ShouldAutoSize, WithHeadings, Wi
         return [
             ['Inventaris Komputer ('.$this->startDate->format('d/m/Y').' - '.$this->endDate->format('d/m/Y').')'],
             [],
-            ['No', 'Hostname', 'IP Address', 'MAC Address', 'CPU', 'RAM', 'OS', 'Status', 'Last Seen', 'Jumlah Software'],
+            ['No', 'Hostname', 'Alamat IP', 'MAC Address', 'CPU', 'RAM', 'OS', 'Status', 'Terakhir Terlihat', 'Jumlah Software'],
         ];
     }
 

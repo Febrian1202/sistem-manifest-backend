@@ -81,9 +81,9 @@ class ReportController extends Controller
         })->whereBetween('created_at', [$startDate, $endDate])->count();
 
         $breakdown = [
-            ['status' => 'Licensed', 'count' => $licensed, 'pct' => $totalComputers > 0 ? round(($licensed / $totalComputers) * 100, 1) : 0],
-            ['status' => 'Grace Period', 'count' => Computer::where('os_license_status', 'Grace Period')->count(), 'pct' => $totalComputers > 0 ? round((Computer::where('os_license_status', 'Grace Period')->count() / $totalComputers) * 100, 1) : 0],
-            ['status' => 'Action Required', 'count' => Computer::whereNotIn('os_license_status', ['Licensed', 'Grace Period'])->count(), 'pct' => $totalComputers > 0 ? round((Computer::whereNotIn('os_license_status', ['Licensed', 'Grace Period'])->count() / $totalComputers) * 100, 1) : 0],
+            ['status' => 'Berlisensi', 'count' => $licensed, 'pct' => $totalComputers > 0 ? round(($licensed / $totalComputers) * 100, 1) : 0],
+            ['status' => 'Masa Tenggang', 'count' => Computer::where('os_license_status', 'Grace Period')->count(), 'pct' => $totalComputers > 0 ? round((Computer::where('os_license_status', 'Grace Period')->count() / $totalComputers) * 100, 1) : 0],
+            ['status' => 'Perlu Tindakan', 'count' => Computer::whereNotIn('os_license_status', ['Licensed', 'Grace Period'])->count(), 'pct' => $totalComputers > 0 ? round((Computer::whereNotIn('os_license_status', ['Licensed', 'Grace Period'])->count() / $totalComputers) * 100, 1) : 0],
         ];
 
         $topUnlicensed = SoftwareDiscovery::whereHas('catalog', function ($q) {

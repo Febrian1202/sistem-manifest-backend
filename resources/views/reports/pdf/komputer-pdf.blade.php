@@ -59,7 +59,7 @@
                 <th width="40">RAM</th>
                 <th>OS</th>
                 <th width="50">Status</th>
-                <th>Last Seen</th>
+                <th>Terakhir Terlihat</th>
                 <th width="40">Soft.</th>
             </tr>
         </thead>

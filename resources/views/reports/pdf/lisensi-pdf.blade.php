@@ -52,12 +52,12 @@
             <tr>
                 <th width="30">No</th>
                 <th>Nama Software</th>
-                <th width="40" class="text-center">Quota</th>
-                <th width="40" class="text-center">Used</th>
+                <th width="40" class="text-center">Kuota</th>
+                <th width="40" class="text-center">Terpakai</th>
                 <th width="40" class="text-center">Sisa</th>
                 <th width="50" class="text-center">%</th>
                 <th>Status</th>
-                <th>Expired</th>
+                <th>Kedaluwarsa</th>
             </tr>
         </thead>
         <tbody>

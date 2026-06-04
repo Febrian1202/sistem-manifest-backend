@@ -45,13 +45,20 @@ class SoftwareExport implements FromCollection, ShouldAutoSize, WithHeadings, Wi
             $status = 'Gratis / Tidak Perlu';
         }
 
+        $categoryLabel = match ($sw->category) {
+            'Commercial' => 'Komersial',
+            'Open Source' => 'Sumber Terbuka',
+            'Freeware' => 'Gratis (Freeware)',
+            default => $sw->category ?? '-',
+        };
+
         return [
             $this->rowNumber,
             $sw->normalized_name,
             $sw->version,
             $sw->computer_count,
             $status,
-            $sw->category,
+            $categoryLabel,
         ];
     }
 

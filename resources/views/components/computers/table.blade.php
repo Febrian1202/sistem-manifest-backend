@@ -5,13 +5,13 @@
             <x-ui.table.table-header>
                 <x-ui.table.table-row>
                     <x-ui.table.table-head>Hostname</x-ui.table.table-head>
-                    <x-ui.table.table-head>IP Address</x-ui.table.table-head>
-                    <x-ui.table.table-head>OS Info</x-ui.table.table-head>
+                    <x-ui.table.table-head>Alamat IP</x-ui.table.table-head>
+                    <x-ui.table.table-head>Info OS</x-ui.table.table-head>
                     {{-- [BARU] Kolom Location --}}
-                    <x-ui.table.table-head>Location</x-ui.table.table-head>
-                    <x-ui.table.table-head>License Status</x-ui.table.table-head>
+                    <x-ui.table.table-head>Lokasi</x-ui.table.table-head>
+                    <x-ui.table.table-head>Status Lisensi</x-ui.table.table-head>
                     <x-ui.table.table-head>Scan Terakhir</x-ui.table.table-head>
-                    <x-ui.table.table-head class="text-right">Actions</x-ui.table.table-head>
+                    <x-ui.table.table-head class="text-right">Aksi</x-ui.table.table-head>
                 </x-ui.table.table-row>
             </x-ui.table.table-header>
 
@@ -19,6 +19,13 @@
                 @forelse($computers as $computer)
                     @php
                         $status = $computer->os_license_status;
+                        $statusLabel = match ($status) {
+                            'Licensed' => 'Berlisensi',
+                            'Grace Period' => 'Masa Tenggang',
+                            'Unlicensed' => 'Tidak Berlisensi',
+                            'Non-Genuine' => 'Tidak Asli',
+                            default => $status ?? 'Tidak Diketahui',
+                        };
                         $badgeClass = match ($status) {
                             'Licensed' => 'bg-success/10 text-success border-success/20',
                             'Grace Period' => 'bg-warning/10 text-warning border-warning/20',
@@ -73,7 +80,7 @@
                         <x-ui.table.table-cell>
                             <div class="flex items-center gap-1.5 text-xs text-muted-foreground">
                                 <i class="fa-solid fa-location-dot text-[10px] opacity-70"></i>
-                                <span>{{ $computer->location ?? 'Not Set' }}</span>
+                                <span>{{ $computer->location ?? 'Belum Diatur' }}</span>
                             </div>
                         </x-ui.table.table-cell>
 
@@ -82,7 +89,7 @@
                             <span
                                 class="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold {{ $badgeClass }}">
                                 <i class="fa-solid {{ $icon }} mr-1.5"></i>
-                                {{ $status ?? 'Unknown' }}
+                                {{ $statusLabel }}
                             </span>
                         </x-ui.table.table-cell>
 
@@ -107,7 +114,7 @@
                                         $isPending = (bool) $computer->scan_requested;
                                     @endphp
                                     <x-ui.button type="submit" variant="outline" size="sm" class="h-8 w-8 p-0"
-                                        title="{{ $isPending ? 'Scan Pending...' : 'Request Scan' }}"
+                                        title="{{ $isPending ? 'Scan Tertunda...' : 'Minta Scan' }}"
                                         ::disabled="loading || {{ $isPending ? 'true' : 'false' }}">
                                         <i class="fa-solid fa-rotate text-xs {{ $isPending ? 'animate-spin text-yellow-500' : '' }}"
                                             :class="loading ? 'animate-spin' : ''"></i>
