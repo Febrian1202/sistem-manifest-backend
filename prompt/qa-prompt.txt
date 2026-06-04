@@ -1,0 +1,30 @@
+Peran: Bertindaklah sebagai Quality Assurance (QA) Engineer senior yang ahli dalam pengujian perangkat lunak akademik dan sistem arsitektur Klien-Server.
+
+Konteks Sistem: Saya sedang mengembangkan "Sistem Informasi Manifest Lisensi Software" untuk mendeteksi perangkat lunak yang terinstal beserta status lisensinya di komputer laboratorium kampus. Arsitektur sistem terdiri dari:
+
+    Sisi Klien: Berupa skrip (PowerShell/WMI) yang berjalan otomatis di PC Klien untuk mengekstrak data aplikasi yang terinstal dan status lisensinya.
+
+    Sisi Server: Aplikasi web berbasis Laravel dan database MySQL yang menerima data dari klien via API, mengolahnya, dan menyajikan laporan rekapitulasi.
+    Aktor utama: Admin (mengelola sistem) dan Pimpinan (melihat laporan untuk keputusan pengadaan lisensi).
+
+Tugas Anda:
+Buatkan saya dokumen skenario pengujian perangkat lunak yang komprehensif mencakup dua metode berikut:
+
+Bagian 1: Black Box Testing (Pengujian Fungsionalitas)
+Fokuskan pengujian tidak hanya pada antarmuka pengguna (UI) seperti klik tombol atau login, tetapi juga pada aliran data Klien-Server. Buatkan skenario pengujian dalam bentuk tabel dengan kolom: [ID Test, Fitur/Fungsi yang Diuji, Skenario Pengujian, Hasil yang Diharapkan, Status Validasi].
+Pastikan menyertakan skenario berikut:
+
+    Keberhasilan skrip klien membaca data WMI.
+
+    Keberhasilan skrip klien mengirimkan muatan (payload) JSON via API ke server.
+
+    Penanganan error saat jaringan klien terputus.
+
+    Akurasi server dalam membedakan dan menyimpan status lisensi (asli/bajakan) berdasarkan data masuk.
+
+Bagian 2: User Acceptance Testing (UAT)
+Fokuskan pengujian pada sudut pandang pengguna akhir (Pimpinan dan Admin IT). Buatkan kuesioner atau ceklis pengujian dalam bentuk tabel dengan kolom: [ID UAT, Skenario Kebutuhan Pengguna, Langkah Pengujian, Kriteria Diterima (Acceptance Criteria)].
+Pastikan menyertakan kriteria bahwa laporan rekapitulasi yang dihasilkan mudah dibaca dan dapat dijadikan dasar penentuan keputusan pembelian lisensi.
+
+Format Output: Gunakan bahasa Indonesia formal dan akademis. Gunakan tabel Markdown agar rapi dan langsung bisa saya salin ke dalam laporan skripsi saya.
+Directory output: ./markdown/qa-testing-scenarios.md
