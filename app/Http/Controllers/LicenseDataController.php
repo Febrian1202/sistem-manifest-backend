@@ -202,6 +202,12 @@ class LicenseDataController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        activity()
+            ->performedOn($license)
+            ->causedBy(auth()->user())
+            ->withProperties(['software' => $license->catalog->normalized_name ?? 'N/A'])
+            ->log('Melihat license key');
+
         return response()->json([
             'key' => $license->license_key,
         ]);

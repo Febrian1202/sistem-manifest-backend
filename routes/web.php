@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplianceDataController;
 use App\Http\Controllers\ComputerDataController;
@@ -73,5 +74,8 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
         Route::put('/accounts/{user}', [AccountController::class, 'update'])->name('accounts.update');
         Route::delete('/accounts/{user}', [AccountController::class, 'destroy'])->name('accounts.destroy');
         Route::put('/accounts/{user}/reset-password', [AccountController::class, 'resetPassword'])->name('accounts.reset-password');
+
+        // Activity Log
+        Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs');
     });
 });

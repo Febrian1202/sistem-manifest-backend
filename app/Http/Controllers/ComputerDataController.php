@@ -82,6 +82,11 @@ class ComputerDataController extends Controller
     {
         $computer->update(['scan_requested' => true]);
 
+        activity()
+            ->performedOn($computer)
+            ->causedBy(auth()->user())
+            ->log("Meminta scan ulang komputer {$computer->hostname}");
+
         return back()->with([
             'message' => 'Permintaan scan dikirim. Agent akan memproses pada polling berikutnya.',
             'status' => 'success',
@@ -92,6 +97,11 @@ class ComputerDataController extends Controller
     {
         $updated = Computer::where('scan_requested', false)
             ->update(['scan_requested' => true]);
+
+        activity()
+            ->causedBy(auth()->user())
+            ->withProperties(['affected_count' => $updated])
+            ->log("Meminta scan ulang ke {$updated} komputer");
 
         return back()->with([
             'message' => "Permintaan scan dikirim ke {$updated} komputer.",

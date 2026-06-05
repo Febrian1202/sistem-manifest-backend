@@ -105,6 +105,15 @@
                 <span class="font-medium whitespace-nowrap transition-opacity duration-200"
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Manajemen Akun</span>
             </a>
+
+            <a href="/activity-logs"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('activity-logs*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-list-check text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Log Aktivitas</span>
+            </a>
         @endrole
 
         @role('admin|pimpinan')

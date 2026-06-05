@@ -182,6 +182,11 @@ class AccountController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
+            activity()
+                ->performedOn($user)
+                ->causedBy(auth()->user())
+                ->log("Mereset password akun {$user->name}");
+
             return back()->with([
                 'message' => "Password untuk {$user->name} berhasil di-reset!",
                 'status' => 'success',
@@ -209,6 +214,11 @@ class AccountController extends Controller
             $user->update([
                 'password' => Hash::make($request->password),
             ]);
+
+            activity()
+                ->performedOn($user)
+                ->causedBy($user)
+                ->log('Mengganti password sendiri');
 
             return back()->with([
                 'message' => 'Password Anda berhasil diubah!',
