@@ -246,7 +246,7 @@
                                                         <div class="p-2 bg-primary/10 rounded-md text-primary">
                                                             <i class="fa-brands fa-windows text-lg"></i>
                                                         </div>
-                                                        <div>
+                                                        <div class="flex-1">
                                                             <p
                                                                 class="text-xs font-medium text-muted-foreground uppercase">
                                                                 Sistem Operasi</p>
@@ -255,6 +255,50 @@
                                                             <p class="text-xs text-muted-foreground">
                                                                 {{ $computer->os_version }}
                                                                 ({{ $computer->os_architecture }})
+                                                            </p>
+                                                            <div class="mt-2 pt-2 border-t border-border/50 grid grid-cols-2 gap-2 text-xs">
+                                                                <div>
+                                                                    <span class="text-muted-foreground block">Status Lisensi:</span>
+                                                                    @php
+                                                                        $osStatus = $computer->os_license_status;
+                                                                        $osStatusLabel = match ($osStatus) {
+                                                                            'Licensed' => 'Berlisensi',
+                                                                            'Grace Period' => 'Masa Tenggang',
+                                                                            'Unlicensed' => 'Tidak Berlisensi',
+                                                                            'Non-Genuine' => 'Tidak Asli',
+                                                                            default => $osStatus ?? 'Tidak Diketahui',
+                                                                        };
+                                                                        $osStatusClass = match ($osStatus) {
+                                                                            'Licensed' => 'text-green-600 font-semibold',
+                                                                            'Grace Period' => 'text-yellow-600 font-semibold',
+                                                                            'Unlicensed', 'Non-Genuine' => 'text-red-600 font-semibold',
+                                                                            default => 'text-muted-foreground',
+                                                                        };
+                                                                    @endphp
+                                                                    <span class="{{ $osStatusClass }}">{{ $osStatusLabel }}</span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="text-muted-foreground block">Kunci Sebagian:</span>
+                                                                    <span class="font-mono font-semibold">{{ $computer->os_partial_key ?? '-' }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {{-- Pabrikan & Model --}}
+                                                    <div
+                                                        class="flex items-start gap-3 p-3 bg-muted/30 rounded-lg border border-border/50">
+                                                        <div class="p-2 bg-indigo-500/10 rounded-md text-indigo-600">
+                                                            <i class="fa-solid fa-laptop text-lg"></i>
+                                                        </div>
+                                                        <div>
+                                                            <p
+                                                                class="text-xs font-medium text-muted-foreground uppercase">
+                                                                Pabrikan & Model</p>
+                                                            <p class="text-sm font-medium text-foreground">
+                                                                {{ $computer->manufacturer ?? '-' }}</p>
+                                                            <p class="text-xs text-muted-foreground">
+                                                                Model: {{ $computer->model ?? '-' }}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -333,6 +377,30 @@
                                                         <span class="text-xs text-muted-foreground">Serial Number</span>
                                                         <span
                                                             class="text-sm font-mono font-medium">{{ $computer->serial_number ?? '-' }}</span>
+                                                    </div>
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="text-xs text-muted-foreground">Lokasi</span>
+                                                        <span
+                                                            class="text-sm font-medium">{{ $computer->location ?? 'Belum Diatur' }}</span>
+                                                    </div>
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="text-xs text-muted-foreground">Terakhir Terlihat</span>
+                                                        <span
+                                                            class="text-sm font-medium text-right" title="{{ $computer->last_seen_at ? $computer->last_seen_at->format('d/m/Y H:i:s') : '-' }}">
+                                                            {{ $computer->last_seen_at ? $computer->last_seen_at->diffForHumans() : '-' }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="flex justify-between items-center">
+                                                        <span class="text-xs text-muted-foreground">Status Pemindaian</span>
+                                                        @if($computer->scan_requested)
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 animate-pulse">
+                                                                <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Menunggu Pemindaian
+                                                            </span>
+                                                        @else
+                                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                                <i class="fa-solid fa-check mr-1"></i> Terkini
+                                                            </span>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </div>
