@@ -23,6 +23,7 @@ class RoleAndPermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'manage computers', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'manage licenses', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'view reports', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'manage users', 'guard_name' => 'web']);
 
         // 2. Create roles and assign permissions
 

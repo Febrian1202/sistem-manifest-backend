@@ -1,4 +1,4 @@
-@props(['name', 'title' => '', 'maxWidth' => 'lg'])
+@props(['name', 'title' => '', 'maxWidth' => 'lg', 'theme' => 'auto'])
 
 @php
 $maxWidth = [
@@ -8,6 +8,11 @@ $maxWidth = [
     'xl' => 'sm:max-w-xl',
     '2xl' => 'sm:max-w-2xl',
 ][$maxWidth];
+
+$panelClasses = 'relative w-full ' . $maxWidth . ' p-6 mx-4 bg-white border rounded-lg shadow-lg';
+if ($theme === 'auto') {
+    $panelClasses .= ' dark:bg-zinc-950 dark:border-zinc-800';
+}
 @endphp
 
 <div
@@ -35,10 +40,10 @@ $maxWidth = [
         x-transition:leave="ease-in duration-200"
         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        class="relative w-full {{ $maxWidth }} p-6 mx-4 bg-white border rounded-lg shadow-lg dark:bg-zinc-950 dark:border-zinc-800"
+        class="{{ $panelClasses }}"
     >
         <!-- Tombol Close (X) -->
-        <button x-on:click="show = false" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 dark:focus:ring-zinc-300">
+        <button x-on:click="show = false" class="absolute top-4 right-4 text-zinc-500 hover:text-zinc-900 {{ $theme === 'auto' ? 'dark:hover:text-zinc-50' : '' }} transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 {{ $theme === 'auto' ? 'dark:focus:ring-zinc-300' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
             <span class="sr-only">Close</span>
         </button>
@@ -46,14 +51,14 @@ $maxWidth = [
         <!-- Header -->
         @if($title)
             <div class="flex flex-col space-y-1.5 text-center sm:text-left mb-4">
-                <h2 class="text-lg font-semibold leading-none tracking-tight text-zinc-950 dark:text-zinc-50">
+                <h2 class="text-lg font-semibold leading-none tracking-tight text-zinc-950 {{ $theme === 'auto' ? 'dark:text-zinc-50' : '' }}">
                     {{ $title }}
                 </h2>
             </div>
         @endif
 
         <!-- Konten Body -->
-        <div class="text-sm text-zinc-500 dark:text-zinc-400">
+        <div class="text-sm text-zinc-900 {{ $theme === 'auto' ? 'dark:text-zinc-400' : '' }}">
             {{ $slot }}
         </div>
         

@@ -78,18 +78,17 @@
                 <div class="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Akun Saya
                 </div>
-                {{-- Temporarily hidden until profile feature is implemented --}}
-                {{-- 
-                <x-dropdown-item href="/profile">
-                    <i class="fa-regular fa-user mr-2 text-muted-foreground"></i>
-                    Profil
+                
+                <x-dropdown-item href="#" @click.prevent="$dispatch('open-dialog', 'change-password')">
+                    <i class="fa-solid fa-key mr-2 text-muted-foreground text-xs"></i>
+                    Ganti Password
                 </x-dropdown-item>
-                --}}
-                <form method="POST" action="{{ route('logout') }}">
+
+                <form method="POST" action="{{ route('logout') }}" class="border-t border-border mt-1 pt-1">
                     @csrf
                     <x-dropdown-item onclick="event.preventDefault(); this.closest('form').submit();"
                         class="text-destructive focus:bg-destructive/10 focus:text-destructive">
-                        <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>
+                        <i class="fa-solid fa-arrow-right-from-bracket mr-2 text-xs"></i>
                         Keluar
                     </x-dropdown-item>
                 </form>

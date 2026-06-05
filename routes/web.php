@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplianceDataController;
 use App\Http\Controllers\ComputerDataController;
@@ -20,6 +21,7 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::put('/account/password', [AccountController::class, 'changePassword'])->name('account.change-password');
 });
 
 Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
@@ -64,5 +66,12 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
         Route::post('/licenses/{license}/key', [LicenseDataController::class, 'getKey'])->name('licenses.key')->middleware('throttle:10,1');
         Route::put('/licenses/{license}', [LicenseDataController::class, 'update'])->name('licenses.update');
         Route::delete('/licenses/{license}', [LicenseDataController::class, 'destroy'])->name('licenses.destroy');
+
+        // Manajemen Akun
+        Route::get('/accounts', [AccountController::class, 'index'])->name('accounts');
+        Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.store');
+        Route::put('/accounts/{user}', [AccountController::class, 'update'])->name('accounts.update');
+        Route::delete('/accounts/{user}', [AccountController::class, 'destroy'])->name('accounts.destroy');
+        Route::put('/accounts/{user}/reset-password', [AccountController::class, 'resetPassword'])->name('accounts.reset-password');
     });
 });

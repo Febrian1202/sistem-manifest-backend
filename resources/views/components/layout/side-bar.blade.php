@@ -90,6 +90,21 @@
                 <span class="font-medium whitespace-nowrap transition-opacity duration-200"
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Audit Kepatuhan</span>
             </a>
+
+            <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
+                :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
+                Pengaturan
+            </div>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
+
+            <a href="/accounts"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('accounts*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-users-gear text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Manajemen Akun</span>
+            </a>
         @endrole
 
         @role('admin|pimpinan')
