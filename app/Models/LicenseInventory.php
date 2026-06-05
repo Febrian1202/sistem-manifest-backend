@@ -4,11 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class LicenseInventory extends Model
 {
     //
-    use HasFactory;
+    use HasFactory, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['catalog_id', 'purchase_order_number', 'quota_limit', 'purchase_date', 'expiry_date', 'price_per_unit', 'notes'])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges()
+            ->setDescriptionForEvent(function (string $eventName) {
+                $softwareName = $this->catalog->normalized_name ?? 'N/A';
+
+                return "Lisensi untuk software {$softwareName} (PO: {$this->purchase_order_number}) telah di-{$eventName}";
+            });
+    }
 
     protected $fillable = [
         'catalog_id',
