@@ -26,7 +26,7 @@
             $inactiveClass = 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground';
         @endphp
 
-        <a href="/dashboard"
+        <a href="{{ route('dashboard') }}"
             class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('dashboard') ? $activeClass : $inactiveClass }}">
             <div class="w-6 flex justify-center">
                 <i class="fa-solid fa-house text-lg"></i>
@@ -47,7 +47,7 @@
             </div>
             <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
 
-            <a href="/computers"
+            <a href="{{ route('computers') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('computers*') ? $activeClass : $inactiveClass }}">
                 <div class="w-6 flex justify-center">
                     <i class="fa-solid fa-desktop text-lg"></i>
@@ -56,7 +56,7 @@
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Data Komputer</span>
             </a>
 
-            <a href="/softwares"
+            <a href="{{ route('softwares') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('softwares*') ? $activeClass : $inactiveClass }}">
                 <div class="w-6 flex justify-center">
                     <i class="fa-solid fa-database text-lg"></i>
@@ -73,7 +73,7 @@
             </div>
             <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
 
-            <a href="/licenses"
+            <a href="{{ route('licenses') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('licenses*') ? $activeClass : $inactiveClass }}">
                 <div class="w-6 flex justify-center">
                     <i class="fa-solid fa-file-contract text-lg"></i>
@@ -82,7 +82,7 @@
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Inventaris Lisensi</span>
             </a>
 
-            <a href="/compliance"
+            <a href="{{ route('compliance') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('compliance*') ? $activeClass : $inactiveClass }}">
                 <div class="w-6 flex justify-center">
                     <i class="fa-solid fa-shield-halved text-lg"></i>
@@ -97,7 +97,7 @@
             </div>
             <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
 
-            <a href="/accounts"
+            <a href="{{ route('accounts') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('accounts*') ? $activeClass : $inactiveClass }}">
                 <div class="w-6 flex justify-center">
                     <i class="fa-solid fa-users-gear text-lg"></i>
@@ -106,7 +106,7 @@
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Manajemen Akun</span>
             </a>
 
-            <a href="/activity-logs"
+            <a href="{{ route('activity-logs') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('activity-logs*') ? $activeClass : $inactiveClass }}">
                 <div class="w-6 flex justify-center">
                     <i class="fa-solid fa-list-check text-lg"></i>
