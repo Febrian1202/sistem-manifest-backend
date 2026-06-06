@@ -6,6 +6,7 @@ use App\Models\Computer;
 use App\Models\LicenseInventory;
 use App\Models\SoftwareCatalog;
 use App\Models\SoftwareDiscovery;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,16 @@ use Tests\TestCase;
 class PerformanceCacheTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected $admin;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->artisan('db:seed', ['--class' => 'RoleAndPermissionSeeder']);
+        $this->admin = User::factory()->create();
+        $this->admin->assignRole('admin');
+    }
 
     public function test_compliance_query_calculates_deficit_correctly()
     {
@@ -24,9 +35,9 @@ class PerformanceCacheTest extends TestCase
             'status' => 'Unreviewed',
         ]);
 
-        // 5 installations
-        $computer = Computer::create(['hostname' => 'PC-01']);
+        // 5 installations on 5 different computers
         for ($i = 0; $i < 5; $i++) {
+            $computer = Computer::create(['hostname' => 'PC-0'.$i]);
             SoftwareDiscovery::create([
                 'computer_id' => $computer->id,
                 'catalog_id' => $software->id,
@@ -42,7 +53,7 @@ class PerformanceCacheTest extends TestCase
         ]);
 
         // 2. Perform Request
-        $response = $this->get('/compliance');
+        $response = $this->actingAs($this->admin)->get('/compliance');
 
         // 3. Assert Results
         $response->assertStatus(200);
@@ -61,13 +72,13 @@ class PerformanceCacheTest extends TestCase
         Computer::create(['hostname' => 'PC-CACHE-TEST']);
 
         // Warm up cache
-        $this->get('/dashboard');
+        $this->actingAs($this->admin)->get('/dashboard');
 
         // Enable query log
         DB::enableQueryLog();
 
         // 2nd request - should hit cache
-        $this->get('/dashboard');
+        $this->actingAs($this->admin)->get('/dashboard');
 
         // Assert no database queries were made for the statistics
         $queryCount = count(DB::getQueryLog());
@@ -81,9 +92,11 @@ class PerformanceCacheTest extends TestCase
     {
         config(['cache.default' => 'array']);
 
+        $cacheKey = 'dashboard.stats.'.now()->format('Y-m');
+
         // Warm up cache
-        $this->get('/dashboard');
-        $this->assertTrue(Cache::has('dashboard.stats'));
+        $this->actingAs($this->admin)->get('/dashboard');
+        $this->assertTrue(Cache::has($cacheKey));
 
         // Trigger invalidation via SoftwareCatalog status update
         $software = SoftwareCatalog::create([
@@ -93,6 +106,6 @@ class PerformanceCacheTest extends TestCase
         ]);
 
         // Assert cache is empty after creation
-        $this->assertFalse(Cache::has('dashboard.stats'));
+        $this->assertFalse(Cache::has($cacheKey));
     }
 }

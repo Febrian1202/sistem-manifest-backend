@@ -26,8 +26,10 @@ class ClearDashboardCache extends Command
      */
     public function handle()
     {
-        Cache::forget('dashboard.stats');
+        Cache::forget('dashboard.stats.'.now()->format('Y-m'));
+        Cache::forget('dashboard.stats.'.now()->subMonth()->format('Y-m'));
         Cache::forget('dashboard.charts');
-        $this->info('Dashboard cache cleared successfully.');
+        Cache::forget('compliance.global_stats');
+        $this->info('Dashboard and compliance cache cleared successfully.');
     }
 }

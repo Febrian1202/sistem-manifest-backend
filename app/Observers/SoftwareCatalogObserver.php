@@ -11,6 +11,7 @@ class SoftwareCatalogObserver
     {
         Cache::forget('dashboard.stats.'.now()->format('Y-m'));
         Cache::forget('dashboard.charts');
+        Cache::forget('compliance.global_stats');
     }
 
     public function updated(SoftwareCatalog $catalog): void
@@ -18,11 +19,13 @@ class SoftwareCatalogObserver
         // Many dashboard stats depend on software status (e.g. Blacklist)
         Cache::forget('dashboard.stats.'.now()->format('Y-m'));
         Cache::forget('dashboard.charts');
+        Cache::forget('compliance.global_stats');
     }
 
     public function deleted(SoftwareCatalog $catalog): void
     {
         Cache::forget('dashboard.stats.'.now()->format('Y-m'));
         Cache::forget('dashboard.charts');
+        Cache::forget('compliance.global_stats');
     }
 }

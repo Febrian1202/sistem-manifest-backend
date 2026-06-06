@@ -43,8 +43,8 @@ test('ScanController updates computer synchronously and dispatches job', functio
         ],
     ];
 
-    $response = Sanctum::actingAs($computer, ['scan:submit'])
-        ->postJson('/api/scan-result', $payload);
+    Sanctum::actingAs($computer, ['scan:submit']);
+    $response = $this->postJson('/api/scan-result', $payload);
 
     $response->assertStatus(202);
 

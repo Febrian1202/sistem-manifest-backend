@@ -33,6 +33,8 @@ test('license_key is encrypted at rest', function () {
 test('license_key is correctly decrypted when accessed via model', function () {
     $catalog = SoftwareCatalog::create([
         'normalized_name' => 'Test Software',
+        'category' => 'Commercial',
+        'status' => 'Whitelist',
     ]);
 
     $rawKey = 'DEFG-5678-HIJK-9012';
