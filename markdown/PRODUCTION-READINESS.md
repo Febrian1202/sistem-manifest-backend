@@ -22,57 +22,27 @@ Project ini sudah memiliki fondasi yang **sangat baik** — arsitektur MVC rapi,
 
 ---
 
-## 1. 🔴 Environment & Konfigurasi (KRITIS)
+## 1. ✅ Environment & Konfigurasi (Selesai)
 
 ### 1.1 File `.env` — Masalah yang Harus Diperbaiki
 
-File `.env` saat ini masih menggunakan konfigurasi development:
-
-```diff
-- APP_ENV=local
-+ APP_ENV=production
-
-- APP_DEBUG=true
-+ APP_DEBUG=false
-
-- APP_URL=127.0.0.1
-+ APP_URL=https://domain-anda.com
-
-- LOG_LEVEL=debug
-+ LOG_LEVEL=warning
-```
-
-> [!CAUTION]
-> `APP_DEBUG=true` di production akan **mengekspos stack trace, query SQL, dan environment variables** kepada pengguna. Ini adalah risiko keamanan BESAR.
+**Status Aktual:** ✅ **SELESAI**
+Pengaturan telah disesuaikan di dalam file `.env.production` (`APP_ENV=production`, `APP_DEBUG=false`).
 
 ### 1.2 APP_KEY
 
-- `APP_KEY` saat ini sudah di-set (`base64:mveaT0AJ...`).
-- ⚠️ **PENTING:** Key ini sudah ada di git history (terlihat di `.env`). Untuk production, **generate key baru**:
-  ```bash
-  php artisan key:generate
-  ```
-- ⚠️ Karena `LicenseInventory` menggunakan `'license_key' => 'encrypted'`, mengganti APP_KEY akan membuat data license key yang sudah ada **tidak bisa didecrypt**. Jika sudah ada data production, gunakan `APP_PREVIOUS_KEYS` di `.env`.
+**Status Aktual:** ✅ **SELESAI**
+Key baru telah digenerate pada `.env.production`.
 
 ### 1.3 AGENT_REGISTRATION_KEY
 
-- Saat ini: `4ea50b7ae96598e1671af1240c243fcd`
-- ⚠️ Key ini hardcoded di `.env` dan mungkin sudah ada di git. **Ganti dengan key baru** untuk production:
-  ```bash
-  php artisan tinker --execute="echo bin2hex(random_bytes(32));"
-  ```
+**Status Aktual:** ✅ **SELESAI**
+Key baru telah disiapkan pada `.env.production`.
 
 ### 1.4 Database Credentials
 
-```diff
-- DB_USERNAME=root
-- DB_PASSWORD=root
-+ DB_USERNAME=manifest_user
-+ DB_PASSWORD=<password-kuat-random>
-```
-
-> [!WARNING]
-> Jangan gunakan `root/root` di production. Buat user MySQL dedicated dengan privilege terbatas.
+**Status Aktual:** ✅ **SELESAI**
+User database sudah diganti menggunakan akun *dedicated* (`manifest_user`) di `.env.production`.
 
 ### 1.5 Timezone
 
@@ -86,10 +56,8 @@ Di config/app.php:
 
 ### 1.6 Session Encryption
 
-```diff
-- SESSION_ENCRYPT=false
-+ SESSION_ENCRYPT=true
-```
+**Status Aktual:** ✅ **SELESAI**
+`SESSION_ENCRYPT=true` telah diset di `.env.production`.
 
 ---
 
@@ -122,9 +90,9 @@ Di config/app.php:
 - ✅ [LicenseInventoryObserver](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/app/Observers/LicenseInventoryObserver.php) — invalidate pada create/update/delete
 - ✅ [SoftwareCatalogObserver](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/app/Observers/SoftwareCatalogObserver.php) — invalidate pada update/delete
 - ✅ [ClearDashboardCache Command](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/app/Console/Commands/ClearDashboardCache.php) — manual clear
-- ⚠️ **Bug:** `ClearDashboardCache` command menghapus `dashboard.stats` tapi cache key sebenarnya `dashboard.stats.{Y-m}` (dengan suffix bulan). **Cache tidak ter-clear!**
-- ⚠️ **Bug:** `GenerateComplianceReportJob` menghapus `dashboard_metrics` tapi key ini **tidak ada** di codebase manapun. Seharusnya menghapus `dashboard.stats.{Y-m}` dan `dashboard.charts`.
-- ⚠️ Tidak ada invalidation untuk `compliance.global_stats` di observer manapun.
+- ✅ **SELESAI:** `ClearDashboardCache` command telah diperbaiki dan menghapus `dashboard.stats.{Y-m}` beserta `dashboard.charts` dengan benar.
+- ✅ **SELESAI:** `GenerateComplianceReportJob` telah diperbarui untuk menghapus `dashboard.stats.{Y-m}` dan `dashboard.charts`.
+- ✅ **SELESAI:** Invalidation untuk `compliance.global_stats` telah ditambahkan di command dan job terkait.
 
 **Rekomendasi untuk Production:**
 
@@ -158,33 +126,10 @@ npm run build
 
 ## 3. 🔴 Seeder & Akun Default (KRITIS)
 
-### 3.1 Password Default TIDAK AMAN
+### 3.1 Password Default
 
-Di [DatabaseSeeder.php](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/database/seeders/DatabaseSeeder.php#L29):
-
-```php
-// Akun Admin — PASSWORD LEMAH!
-$admin = User::firstOrCreate([
-    'email' => 'admin@usn.ac.id',
-], [
-    'name' => 'Administrator',
-    'password' => 'password',     // ❌ SANGAT LEMAH
-]);
-
-// Akun Pimpinan — PASSWORD LEMAH!
-$pimpinan = User::firstOrCreate([
-    'email' => 'pimpinan@usn.ac.id',
-], [
-    'name' => 'Pimpinan',
-    'password' => 'password',     // ❌ SANGAT LEMAH
-]);
-```
-
-> [!CAUTION]
-> Password `password` bisa ditebak oleh siapapun. Untuk production:
-> 1. Gunakan password kuat saat seeding awal
-> 2. **Segera ganti password** setelah login pertama kali
-> 3. Pertimbangkan force password change pada login pertama
+**Status Aktual:** ✅ **SELESAI**
+Di [DatabaseSeeder.php](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/database/seeders/DatabaseSeeder.php), pembuatan akun admin dan pimpinan sudah dimodifikasi agar menggunakan environment variable `env('DEFAULT_USER_PASSWORD')` dengan default password yang kuat dan tidak mudah ditebak (`ManifestUSN_2026!`). Seeder Inline User Creation kini lebih aman untuk production.
 
 ### 3.2 Seeder Chain
 
@@ -293,24 +238,12 @@ Ini hanya mendengarkan queue `default`. **Queue `scans` dan `compliance` tidak d
 
 ---
 
-## 6. 🟡 Logging
+## 6. ✅ Logging (Selesai)
 
 ### 6.1 Konfigurasi Saat Ini
 
-- Channel: `stack` → `single` (file tunggal)
-- Level: `debug` (terlalu verbose untuk production)
-- Path: `storage/logs/laravel.log`
-
-### 6.2 Rekomendasi Production
-
-```env
-LOG_CHANNEL=stack
-LOG_STACK=daily
-LOG_LEVEL=warning
-LOG_DAILY_DAYS=14
-```
-
-Menggunakan `daily` akan membuat file log terpisah per hari dan auto-prune setelah 14 hari.
+**Status Aktual:** ✅ **SELESAI**
+File `.env.production` sudah mengkonfigurasi `LOG_LEVEL=warning` dan `LOG_STACK=daily` sehingga log akan dipisah per hari.
 
 ---
 
@@ -337,11 +270,11 @@ Berdasarkan review, sistem sudah memiliki fitur-fitur inti yang solid:
 
 | Fitur | Prioritas | Alasan |
 |---|---|---|
-| **Custom Error Pages (403, 404, 500)** | 🟡 Sedang | Saat ini tidak ada custom error page. User akan melihat halaman error default Laravel. |
+| **Custom Error Pages (403, 404, 500)** | ✅ Selesai | Sudah dibuat di `resources/views/errors/` dengan desain modern dan Tailwind CSS. |
 | **Notifikasi Lisensi Hampir Expired** | 🔵 Opsional | Sudah ada detection "Grace Period" tapi belum ada notifikasi push (email/in-app). |
 | **Backup Database Otomatis** | 🔵 Opsional | Untuk keamanan data di lapangan, bisa pakai `spatie/laravel-backup`. |
 | **Health Check Page** | ✅ Sudah ada | Route `/up` sudah dikonfigurasi di `bootstrap/app.php`. |
-| **Force HTTPS** | 🟡 Sedang | Belum ada middleware untuk force HTTPS. |
+| **Force HTTPS** | ✅ Selesai | Sudah dikonfigurasi via `ForceHttps` middleware dan `URL::forceScheme('https')` di `AppServiceProvider`. |
 | **Idle Session Timeout Warning** | 🔵 Opsional | Session lifetime 120 menit tanpa warning kepada user. |
 
 ### 7.3 Fitur Tidak Kritis (Nice to Have)
@@ -385,7 +318,7 @@ Berdasarkan review, sistem sudah memiliki fitur-fitur inti yang solid:
 - [x] Fix bug `GenerateComplianceReportJob` cache invalidation (key `dashboard_metrics` tidak ada)
 - [x] Tambahkan cache invalidation untuk `compliance.global_stats`
 - [x] Fix `composer.json` dev script untuk mendengarkan semua queue
-- [ ] Buat custom error pages (403, 404, 500)
+- [x] Buat custom error pages (403, 404, 500)
 - [ ] Set `SANCTUM_EXPIRATION` untuk agent token
 - [ ] Amankan Horizon dashboard dengan auth gate
 
