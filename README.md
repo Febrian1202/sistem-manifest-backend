@@ -153,6 +153,14 @@ sistem-manifest-backend/
 │   └── web.php              # Definisi route untuk Admin Panel
 └── tests/                   # Automated Testing (Pest/PHPUnit)
 ```
+## ⚙️ Deployment & Server Configuration
+
+Untuk menjalankan aplikasi di lingkungan production dengan optimal, Anda perlu melakukan konfigurasi tambahan pada sisi server untuk mengelola background queue worker dan task scheduling.
+
+Templat konfigurasi server telah disediakan di dalam folder `.server/`:
+
+*   **Queue Supervisor:** Memastikan queue worker tetap berjalan secara nonstop. File konfigurasinya dapat ditemukan di [.server/supervisor/manifest-worker.conf](.server/supervisor/manifest-worker.conf).
+*   **Task Scheduling (Cron Job):** Memicu command scheduler Laravel setiap menit. Panduan setup cron job dapat ditemukan di [.server/cron/schedule-setup.md](.server/cron/schedule-setup.md).
 
 ## 🤝 Contributing
 
