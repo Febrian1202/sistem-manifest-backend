@@ -1,6 +1,6 @@
 # USN Manifest - Task Scheduler Setup Script
-# IT admin: Sesuaikan path scanner.ps1 di bawah ini
-$agentPath = "C:\Scripts\USNManifest\scanner.ps1"
+# IT admin: Anda dapat meletakkan folder ini di mana saja (disarankan di root C:\ atau folder permanen)
+$agentPath = "$PSScriptRoot\scanner.ps1"
 
 # 1. Cek Hak Akses Administrator
 $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()

@@ -12,7 +12,12 @@
 
             {{-- TASK-002: Scan Semua Button --}}
             @role('admin')
-            <div>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('agent.download') }}" class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    <i class="fa-solid fa-download mr-2"></i>
+                    <span>Download Agent Installer</span>
+                </a>
+
                 <x-ui.button type="button" variant="default" @click.stop="$dispatch('open-dialog', 'scan-all-devices')">
                     <i class="fa-solid fa-satellite-dish mr-2"></i>
                     <span>Scan Semua Perangkat</span>
