@@ -158,7 +158,10 @@ class GenerateComplianceReportJob implements ShouldQueue
                 ->delete();
 
             // STEP 5 — Clear Cache
-            Cache::forget('dashboard_metrics');
+            Cache::forget('dashboard.stats.'.now()->format('Y-m'));
+            Cache::forget('dashboard.stats.'.now()->subMonth()->format('Y-m'));
+            Cache::forget('dashboard.charts');
+            Cache::forget('compliance.global_stats');
 
             Log::info('Compliance report generation completed for computer: '.$this->computer->hostname);
 

@@ -8,11 +8,12 @@ uses(RefreshDatabase::class);
 test('agent can register and receive token', function () {
     $mac = 'AA:BB:CC:DD:EE:FF';
 
-    $response = $this->postJson('/api/agent/register', [
-        'mac_address' => $mac,
-        'hostname' => 'TEST-PC',
-        'serial_number' => 'SN123',
-    ]);
+    $response = $this->withHeader('X-Agent-Key', config('app.agent_registration_key'))
+        ->postJson('/api/agent/register', [
+            'mac_address' => $mac,
+            'hostname' => 'TEST-PC',
+            'serial_number' => 'SN123',
+        ]);
 
     $response->assertStatus(201)
         ->assertJsonStructure(['token', 'computer_id', 'hostname']);
@@ -38,7 +39,7 @@ test('authenticated agent can submit scan', function () {
     $token = $computer->createToken('agent', ['scan:submit'])->plainTextToken;
 
     $payload = [
-        'computer_name' => 'UPDATED-NAME',
+        'hostname' => 'UPDATED-NAME',
         'processor' => 'Intel i7',
         'ram_gb' => 16,
         'disk_total_gb' => 512,

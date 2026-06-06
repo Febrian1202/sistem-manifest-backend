@@ -11,6 +11,7 @@ Sistem ini bertugas untuk mengelola pendaftaran agen (komputer klien), menerima 
 - **Autentikasi Agen (API Security):** Laravel Sanctum.
   Menggunakan model *Per-device token authentication*. Masing-masing agen akan melakukan pendaftaran pertama kali dengan kombinasi Hardware ID (MAC Address / Serial Number) untuk mendapatkan sebuah token unik yang bersifat permanen, lalu digunakan untuk seluruh `request` selanjutnya.
 - **Proses Latar Belakang / Queue:** Laravel Horizon dengan Redis (memastikan rekapitulasi data lisensi atau scan massal tidak membebani web server utama).
+- **Log Audit / Audit Trail:** `spatie/laravel-activitylog` v5.0 (menyimpan riwayat aktivitas penting pengguna).
 - **Ekspor Data:** 
   - `barryvdh/laravel-dompdf` (Untuk *generate* laporan dokumen PDF)
   - `maatwebsite/excel` (Untuk *generate* laporan/ekspor data berbasis Excel)
@@ -25,6 +26,7 @@ Projek ini berjalan di atas beberapa entitas data utama:
 4. **`SoftwareDiscovery`**: Data relasi atau log temuan yang mengikat bahwa aplikasi X ditemukan pada Komputer Y.
 5. **`LicenseInventory`**: Pencatatan lisensi dan sisa kuota kapasitas lisensi.
 6. **`ComplianceReport`**: Catatan status kepatuhan (compliance) granular per-software per-komputer dalam sistem, melacak status seperti berlisensi, tidak berlisensi, grace period, atau terlarang.
+7. **`ActivityLog`** (Spatie): Menyimpan riwayat perubahan model, aktivitas audit manual, dan deskripsi event sistem.
 
 ---
 
@@ -53,11 +55,38 @@ Alurnya adalah:
 
 ---
 
-## Fitur Kunci Lainnya & Observers
+## Fitur Kunci Lainnya, Observers & Jobs
 - **`LicenseInventoryObserver`**: Terdapat kapabilitas keamanan seperti `encrypt_existing_license_keys` dan pemantauan otomatis apabila ada kalkulasi sisa *seat* (kuota) lisensi yang terambil berdasarkan laporan *software discovery* terkini.
 - **`SoftwareCatalogObserver`**: Menjaga integritas data saat direktori perangkat lunak diperbarui. Semua perubahan ini memanfaatkan sistem antrean.
 - **`GenerateComplianceReportJob`**: Pekerja latar belakang (background job) otomatis yang mengevaluasi status kepatuhan setiap perangkat lunak yang diinstal oleh klien berdasarkan blokir dan ketersediaan lisensi secara granular (upsert ke tabel `compliance_reports`).
 - **`DashboardController`**: Menyajikan matriks pada UI berbasis cache agar efisien. *(Command: `ClearDashboardCache` digunakan untuk mengatur cache analitik secara manual).*
+
+---
+
+## Fitur Manajemen & Audit Terkini
+
+### 1. Manajemen Akun Pengguna (User Account Management)
+- **Fungsi CRUD**: Administrator dapat membuat, memperbarui, dan menghapus akun pengguna (dengan role `admin` atau `pimpinan`).
+- **Ganti Password**:
+  - **Reset Password oleh Admin**: Administrator dapat mengatur ulang password pengguna lain secara paksa.
+  - **Ganti Password Mandiri**: Pengguna yang sedang login dapat mengganti password mereka sendiri dari dropdown profil dengan melakukan verifikasi password lama.
+- **Aturan Keamanan Tambahan**:
+  - Mencegah *self-deletion* (tidak bisa menghapus akun sendiri).
+  - Mencegah *self-demotion* (tidak bisa mengubah role sendiri yang berdampak menurunkan hak akses sendiri).
+  - Validasi *minimum 1 admin* untuk memastikan sistem tidak terkunci tanpa administrator.
+
+### 2. Activity Log & Audit Trail
+- **Pencatatan Otomatis Model**: Melacak event `created`, `updated`, dan `deleted` pada model `User`, `Computer`, `LicenseInventory`, dan `SoftwareCatalog`. Detail nilai sebelum (*old*) dan setelah (*new*) perubahan direkam secara terstruktur pada kolom `attribute_changes`.
+- **Perekaman Aktivitas Manual**:
+  - Pencatatan saat admin mereset password pengguna lain.
+  - Pencatatan saat pengguna mengganti password-nya sendiri.
+  - Pencatatan saat administrator mengakses/melihat *License Key* terenkripsi.
+  - Pencatatan saat administrator memicu pemindaian ulang (*scan request*) secara individu atau massal.
+- **Keamanan Data**:
+  - Kolom data sensitif seperti **`password`** dan **`license_key`** secara ketat disaring keluar agar tidak pernah tersimpan di dalam database log audit.
+- **Otorisasi**: Halaman log aktivitas hanya dapat diakses oleh role `admin` (di bawah rute `/activity-logs`).
+- **Antarmuka Interaktif**: Menyediakan panel monitoring log lengkap dengan pemfilteran (pelaku, entitas, rentang tanggal), pencarian teks deskripsi, pagination, serta ekspansi baris data untuk melihat visualisasi perbandingan nilai lama vs baru secara detail.
+- **Pembersihan Log Otomatis**: Konfigurasi masa retensi log selama **90 hari** (`clean_after_days`) dan scheduler Artisan command `activitylog:clean` dijalankan secara harian (`daily()`).
 
 ---
 
