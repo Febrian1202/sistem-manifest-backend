@@ -76,14 +76,12 @@ File `.env` saat ini masih menggunakan konfigurasi development:
 
 ### 1.5 Timezone
 
-Di [config/app.php](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/config/app.php#L70):
-```php
-'timezone' => 'UTC',
-```
+**Status Aktual:** ✅ **SELESAI (Issue #43 / PR #44)**
+Konfigurasi timezone telah diperbarui menjadi `Asia/Makassar`.
 
-Karena ini untuk USN Kolaka (Sulawesi Tenggara), seharusnya:
+Di config/app.php:
 ```php
-'timezone' => 'Asia/Makassar',  // WITA (UTC+8)
+'timezone' => env('APP_TIMEZONE', 'Asia/Makassar'),
 ```
 
 ### 1.6 Session Encryption
@@ -245,18 +243,12 @@ php artisan tinker
 
 ### 4.2 Hal yang Perlu Diperhatikan ⚠️
 
-- **Sanctum Token Expiration:** Saat ini `null` di `config/sanctum.php`. Agent token tidak pernah expire. 
-  **Catatan:** Karena fitur *Dynamic Agent Download* (Issue #39/PR #40), script agent (`scanner.ps1`) sudah menangani kode error `401 Unauthorized` dengan menghapus token lama dan melakukan registrasi ulang menggunakan `registrationKey` di `config.json`. Oleh karena itu, **sangat aman** jika kita menambahkan expiration (misalnya 30 hari) di `config/sanctum.php` atau `.env`:
-  ```php
-  'expiration' => 43200, // 30 hari dalam menit
-  ```
+- **Sanctum Token Expiration:** ✅ **SELESAI (Issue #43 / PR #44)**
+  Expiration telah diatur ke `43200` menit (30 hari). 
+  **Catatan:** Karena fitur *Dynamic Agent Download* (Issue #39/PR #40), script agent (`scanner.ps1`) sudah menangani kode error `401 Unauthorized` dengan menghapus token lama dan melakukan registrasi ulang menggunakan `registrationKey` di `config.json`. Oleh karena itu, **sangat aman** token ditambahkan expiration.
 
-- **Horizon Dashboard:** Saat ini accessible tanpa auth tambahan. Di production, tambahkan gate authorization di `HorizonServiceProvider`:
-  ```php
-  Horizon::auth(function ($request) {
-      return $request->user()?->hasRole('admin');
-  });
-  ```
+- **Horizon Dashboard:** ✅ **SELESAI (Issue #43 / PR #44)**
+  Gate authorization telah ditambahkan di `HorizonServiceProvider` sehingga hanya user dengan role `admin` yang bisa mengaksesnya.
 
 ---
 
@@ -535,7 +527,7 @@ Di `Computer.php`, data sensitif seperti `mac_address`, `serial_number`, dan `ip
 
 ---
 
-## 12. 🟡 Temuan Frontend & Asset
+## 12. ✅ Temuan Frontend & Asset (Selesai - Issue #45)
 
 ### 12.1 Font Awesome Dimuat 2x (Duplikat)
 
@@ -545,37 +537,28 @@ CDN untuk `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/f
 
 ### 12.2 Dependencies CDN Eksternal
 
-Layout utama memuat library dari CDN:
-- ApexCharts (`cdn.jsdelivr.net`)
-- Chart.js (`cdn.jsdelivr.net`)
-- Alpine.js (`cdn.jsdelivr.net`)
-
-Ini berarti **jika internet mati, dashboard charts tidak akan bekerja**. Untuk lingkungan USN Kolaka yang mungkin koneksi tidak stabil, pertimbangkan bundling via NPM.
+**Status Aktual:** ✅ **SELESAI (Issue #45)**
+ApexCharts, Chart.js, dan Alpine.js telah dimigrasikan ke NPM dan di-bundle via Vite untuk memastikan fungsionalitas tetap berjalan stabil di lingkungan dengan koneksi internet terbatas.
 
 ### 12.3 File Localization Belum Diterjemahkan
 
-File `lang/id/*.php` masih berisi teks bahasa Inggris (copy-paste dari `lang/en/`). Contoh:
-```php
-// lang/id/auth.php — masih English:
-'failed' => 'These credentials do not match our records.',
-```
-
-Seharusnya:
-```php
-'failed' => 'Kredensial ini tidak cocok dengan catatan kami.',
-```
+**Status Aktual:** ✅ **SELESAI (Issue #45)**
+File localization di `lang/id/*.php` (auth, pagination, passwords, validation) telah diterjemahkan sepenuhnya ke Bahasa Indonesia yang baku dan informatif.
 
 ### 12.4 Sidebar Link Hardcoded
 
-Di [side-bar.blade.php](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/resources/views/components/layout/side-bar.blade.php), link navigasi menggunakan path hardcoded (`href="/dashboard"`) alih-alih `{{ route('dashboard') }}`. Ini fragile jika route berubah.
+**Status Aktual:** ✅ **SELESAI (Issue #45)**
+Semua link navigasi di sidebar (`side-bar.blade.php`) telah diperbarui untuk menggunakan helper `route()` bawaan Laravel.
 
 ### 12.5 Typo di Layout
 
-Di `app.blade.php`: `x-trasition.opacity` seharusnya `x-transition.opacity` (huruf 'n' hilang).
+**Status Aktual:** ✅ **SELESAI (Issue #45)**
+Typo `x-trasition.opacity` di layout `app.blade.php` telah diperbaiki menjadi `x-transition.opacity`.
 
 ### 12.6 Package `@fontsource/inter` Tidak Digunakan
 
-Di `package.json`, `@fontsource/inter` terinstall tapi CSS hanya import `@fontsource/poppins`. Bisa dihapus untuk mengurangi ukuran bundle.
+**Status Aktual:** ✅ **SELESAI (Issue #45)**
+Package `@fontsource/inter` telah dihapus dari `package.json` dan `package-lock.json` via `npm uninstall`.
 
 ---
 
