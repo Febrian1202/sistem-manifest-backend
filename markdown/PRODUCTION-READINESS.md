@@ -245,7 +245,8 @@ php artisan tinker
 
 ### 4.2 Hal yang Perlu Diperhatikan ⚠️
 
-- **Sanctum Token Expiration:** Saat ini `null` di [config/sanctum.php](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/config/sanctum.php#L53). Agent token tidak pernah expire. Pertimbangkan menambahkan expiration (misalnya 30 hari):
+- **Sanctum Token Expiration:** Saat ini `null` di `config/sanctum.php`. Agent token tidak pernah expire. 
+  **Catatan:** Karena fitur *Dynamic Agent Download* (Issue #39/PR #40), script agent (`scanner.ps1`) sudah menangani kode error `401 Unauthorized` dengan menghapus token lama dan melakukan registrasi ulang menggunakan `registrationKey` di `config.json`. Oleh karena itu, **sangat aman** jika kita menambahkan expiration (misalnya 30 hari) di `config/sanctum.php` atau `.env`:
   ```php
   'expiration' => 43200, // 30 hari dalam menit
   ```
@@ -524,16 +525,13 @@ Backend secara otomatis akan membuat file `config.json` di dalam `.zip` tersebut
 
 ### 11.3 Model `LicenseInventory` — License Key Bisa Terexpose
 
-Di [LicenseInventory.php](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/app/Models/LicenseInventory.php), `license_key` diencrypt via cast tapi **TIDAK ada di `$hidden`**. Jika model di-serialize ke JSON, key akan muncul dalam bentuk terdekripsi.
-
-```php
-// Tambahkan $hidden:
-protected $hidden = ['license_key'];
-```
+**Status Aktual:** ✅ **SELESAI (Issue #41 / PR #42)**
+Di `LicenseInventory.php`, `license_key` sekarang sudah ditambahkan ke dalam properti `$hidden` sehingga tidak ikut terserialisasi jika tidak didefinisikan secara eksplisit.
 
 ### 11.4 Model `Computer` — Data Sensitif Tidak Di-hide
 
-Di [Computer.php](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/app/Models/Computer.php), tidak ada `$hidden`. Field seperti `mac_address`, `serial_number`, `ip_address` bisa terexpose jika model di-serialize.
+**Status Aktual:** ✅ **SELESAI (Issue #41 / PR #42)**
+Di `Computer.php`, data sensitif seperti `mac_address`, `serial_number`, dan `ip_address` sudah ditambahkan ke dalam `$hidden` untuk mencegah data exposure.
 
 ---
 
