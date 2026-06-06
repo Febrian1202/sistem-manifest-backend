@@ -1,13 +1,29 @@
 param([string]$Mode = "poll")
 
-# Konfigurasi API
-# $baseUrl        = "http://127.0.0.1:8000/api"
-$baseUrl        = "https://discover-boulder-safe-registration.trycloudflare.com/api"
+# ---------------------------------------------------------
+# Konfigurasi API via config.json
+# ---------------------------------------------------------
+$configFile = "$PSScriptRoot\config.json"
+
+if (-not (Test-Path $configFile)) {
+    Write-Host " [!] File config.json tidak ditemukan di folder agent!" -ForegroundColor Red
+    Write-Host "     Silakan salin dari config.example.json dan lengkapi datanya." -ForegroundColor Yellow
+    exit 1
+}
+
+try {
+    $config = Get-Content $configFile | ConvertFrom-Json
+    $baseUrl = $config.baseUrl
+    $registrationKey = $config.registrationKey
+} catch {
+    Write-Host " [!] Format config.json tidak valid (bukan JSON yang benar)." -ForegroundColor Red
+    exit 1
+}
+
 $registerUrl    = "$baseUrl/agent/register"
 $scanUrl        = "$baseUrl/scan-result"
 $scanCommandUrl = "$baseUrl/agent/scan-command"
 $tokenFile      = "$PSScriptRoot\agent_token.txt"
-$registrationKey = "4ea50b7ae96598e1671af1240c243fcd" # Ganti dengan AGENT_REGISTRATION_KEY dari file .env backend
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
