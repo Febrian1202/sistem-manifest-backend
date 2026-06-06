@@ -386,12 +386,12 @@ Berdasarkan review, sistem sudah memiliki fitur-fitur inti yang solid:
 
 ### Direkomendasikan (🟡)
 
-- [ ] Install dan konfigurasi Redis, lalu set `CACHE_STORE=redis` dan `QUEUE_CONNECTION=redis`
+- [x] Install dan konfigurasi Redis, lalu set `CACHE_STORE=redis` dan `QUEUE_CONNECTION=redis`
 - [ ] Ubah `LOG_LEVEL=warning` dan `LOG_STACK=daily`
-- [ ] Fix bug `ClearDashboardCache` command (key mismatch)
-- [ ] Fix bug `GenerateComplianceReportJob` cache invalidation (key `dashboard_metrics` tidak ada)
-- [ ] Tambahkan cache invalidation untuk `compliance.global_stats`
-- [ ] Fix `composer.json` dev script untuk mendengarkan semua queue
+- [x] Fix bug `ClearDashboardCache` command (key mismatch)
+- [x] Fix bug `GenerateComplianceReportJob` cache invalidation (key `dashboard_metrics` tidak ada)
+- [x] Tambahkan cache invalidation untuk `compliance.global_stats`
+- [x] Fix `composer.json` dev script untuk mendengarkan semua queue
 - [ ] Buat custom error pages (403, 404, 500)
 - [ ] Set `SANCTUM_EXPIRATION` untuk agent token
 - [ ] Amankan Horizon dashboard dengan auth gate
@@ -616,7 +616,7 @@ Di `package.json`, `@fontsource/inter` terinstall tapi CSS hanya import `@fontso
 > 2. 🔴 Ubah `.env` ke production mode
 > 3. 🔴 Ganti password default akun admin
 > 4. 🔴 Update URL dan key di `scanner.ps1`
-> 5. 🟡 Pertimbangkan Redis untuk cache & queue
-> 6. 🟡 Fix cache key bugs
+> 5. ✅ Pertimbangkan Redis untuk cache & queue (Selesai)
+> 6. ✅ Fix cache key bugs (Selesai)
 >
 > **Setelah checklist di atas selesai, aplikasi siap di-deploy ke lapangan.**
