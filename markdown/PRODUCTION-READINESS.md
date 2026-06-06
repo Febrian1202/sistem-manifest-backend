@@ -613,8 +613,8 @@ Di `package.json`, `@fontsource/inter` terinstall tapi CSS hanya import `@fontso
 
 > **Kode dan arsitektur sudah sangat siap production.** Perbaikan utama yang dibutuhkan:
 > 1. ✅ Hapus `public/hot` (Selesai)
-> 2. 🔴 Ubah `.env` ke production mode
-> 3. 🔴 Ganti password default akun admin
+> 2. ✅ Ubah `.env` ke production mode (Selesai)
+> 3. ✅ Ganti password default akun admin (Selesai)
 > 4. ✅ Update URL dan key di `scanner.ps1` (Selesai)
 > 5. ✅ Pertimbangkan Redis untuk cache & queue (Selesai)
 > 6. ✅ Fix cache key bugs (Selesai)

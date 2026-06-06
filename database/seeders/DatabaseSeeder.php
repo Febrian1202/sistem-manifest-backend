@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@usn.ac.id',
         ], [
             'name' => 'Administrator',
-            'password' => 'password',
+            'password' => env('DEFAULT_USER_PASSWORD', 'ManifestUSN_2026!'),
         ]);
         $admin->assignRole('admin');
 
@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'pimpinan@usn.ac.id',
         ], [
             'name' => 'Pimpinan',
-            'password' => 'password',
+            'password' => env('DEFAULT_USER_PASSWORD', 'ManifestUSN_2026!'),
         ]);
         $pimpinan->assignRole('pimpinan');
     }
