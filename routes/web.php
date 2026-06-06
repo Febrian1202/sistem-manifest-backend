@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\AgentDownloadController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplianceDataController;
 use App\Http\Controllers\ComputerDataController;
@@ -56,6 +57,7 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
 
     // Admin-only Mutations
     Route::middleware(['role:admin'])->group(function () {
+        Route::get('/agent/download', [AgentDownloadController::class, 'download'])->name('agent.download');
         Route::post('/computers/request-scan-all', [ComputerDataController::class, 'requestScanAll'])->name('computers.request-scan-all');
         Route::put('/computers/{computer}', [ComputerDataController::class, 'update'])->name('computers.update');
         Route::delete('/computers/{computer}', [ComputerDataController::class, 'destroy'])->name('computers.destroy');
