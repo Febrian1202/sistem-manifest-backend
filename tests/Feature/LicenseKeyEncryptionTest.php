@@ -59,3 +59,26 @@ test('masked accessor returns correct format', function () {
     // Expected format: ABCD-1234-****-****
     expect($license->masked_license_key)->toBe('ABCD-1234-****-****');
 });
+
+test('license_key is hidden from array and json serialization', function () {
+    $catalog = SoftwareCatalog::create([
+        'normalized_name' => 'Test Software',
+        'category' => 'Commercial',
+        'status' => 'Whitelist',
+    ]);
+
+    $rawKey = 'ABCD-1234-EFGH-5678';
+
+    $license = LicenseInventory::create([
+        'catalog_id' => $catalog->id,
+        'license_key' => $rawKey,
+        'proof_image' => 'test.jpg',
+    ]);
+
+    $array = $license->toArray();
+    $json = $license->toJson();
+
+    expect($array)->not->toHaveKey('license_key');
+    expect($json)->not->toContain('license_key');
+    expect($json)->not->toContain($rawKey);
+});

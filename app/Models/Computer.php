@@ -44,6 +44,12 @@ class Computer extends Authenticatable
 
     protected $casts = ['last_seen_at' => 'datetime'];
 
+    protected $hidden = [
+        'mac_address',
+        'serial_number',
+        'ip_address',
+    ];
+
     public function softwares()
     {
         return $this->hasMany(SoftwareDiscovery::class);

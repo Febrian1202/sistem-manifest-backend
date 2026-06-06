@@ -515,27 +515,12 @@ echo "public/hot" >> .gitignore  # Pastikan tidak ter-commit lagi
 
 ### 11.2 Hardcoded URL di `scanner.ps1`
 
-Di [script/agent/scanner.ps1](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/script/agent/scanner.ps1):
+Di [script/agent/scanner.ps1](file:///home/ridaz/Development/Laravel/sistem-manifest-backend/script/agent/scanner.ps1), tadinya URL dan registration key di-hardcode.
 
-```powershell
-# URL yang aktif saat ini:
-$baseUrl = "https://discover-boulder-safe-registration.trycloudflare.com/api"
+**Status Aktual:** ✅ **SELESAI (Issue #39 / PR #40)**
+Solusi yang diimplementasikan adalah fitur **Dynamic Agent Download** di mana admin dapat mendownload file `.zip` dari halaman Admin Computers.
+Backend secara otomatis akan membuat file `config.json` di dalam `.zip` tersebut yang berisi `baseUrl` (diambil dari config `app.url`) dan `registrationKey` (dari konfigurasi sistem). Script `setup_tasks.ps1` dan `scanner.ps1` telah dimodifikasi agar secara otomatis dan dinamis membaca file `config.json` ini. Dengan pendekatan ini, admin tidak perlu lagi mengedit file konfigurasi atau URL secara manual.
 
-# Registration key hardcoded:
-$registrationKey = "4ea50b7ae96598e1671af1240c243fcd"
-```
-
-**Masalah:**
-- Cloudflare quick tunnel URL **berubah setiap restart**
-- Registration key hardcoded langsung di script
-
-**Solusi:** Buat file konfigurasi terpisah atau gunakan parameter:
-```powershell
-# Baca dari config file
-$config = Get-Content "C:\Scripts\USNManifest\config.json" | ConvertFrom-Json
-$baseUrl = $config.baseUrl
-$registrationKey = $config.registrationKey
-```
 
 ### 11.3 Model `LicenseInventory` — License Key Bisa Terexpose
 
@@ -556,10 +541,9 @@ Di [Computer.php](file:///home/ridaz/Development/Laravel/sistem-manifest-backend
 
 ### 12.1 Font Awesome Dimuat 2x (Duplikat)
 
-- **Via NPM bundle**: `@import '@fortawesome/fontawesome-free/css/all.min.css'` di `app.css`
-- **Via CDN**: `<link>` tag di layout
+**Status Aktual:** ✅ **SELESAI**
+CDN untuk `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/...` sudah dikomentari di `app.blade.php`, sehingga FontAwesome hanya diload melalui NPM bundle dan tidak lagi duplikat.
 
-Hapus salah satu (sebaiknya hapus CDN, pakai yang di-bundle via Vite).
 
 ### 12.2 Dependencies CDN Eksternal
 
@@ -611,12 +595,12 @@ Di `package.json`, `@fontsource/inter` terinstall tapi CSS hanya import `@fontso
 
 ### Verdict
 
-> **Kode dan arsitektur sudah sangat siap production.** Perbaikan utama yang dibutuhkan:
-> 1. ✅ Hapus `public/hot` (Selesai)
-> 2. ✅ Ubah `.env` ke production mode (Selesai)
-> 3. ✅ Ganti password default akun admin (Selesai)
-> 4. ✅ Update URL dan key di `scanner.ps1` (Selesai)
-> 5. ✅ Pertimbangkan Redis untuk cache & queue (Selesai)
-> 6. ✅ Fix cache key bugs (Selesai)
+> **Kode dan arsitektur sudah sangat siap production.** Perbaikan utama yang telah diimplementasikan:
+> 1. ✅ Hapus `public/hot` — *Selesai (Sudah di-ignore oleh `.gitignore` sehingga tidak akan masuk ke production).*
+> 2. ⚠️ Ubah `.env` ke production mode — *Masih perlu di-set saat deploy (`APP_ENV=production` dan `APP_DEBUG=false`).*
+> 3. ✅ Ganti password default akun admin — *Selesai (Menggunakan env `DEFAULT_USER_PASSWORD` dengan default yang kuat).*
+> 4. ✅ Update URL dan key di `scanner.ps1` — *Selesai (Fitur Dynamic Agent Download via Zip telah diselesaikan di Issue #39 / PR #40).*
+> 5. ✅ Pertimbangkan Redis untuk cache & queue — *Selesai.*
+> 6. ✅ Fix cache key bugs — *Selesai (Command `ClearDashboardCache` dan `GenerateComplianceReportJob` sudah fix).*
 >
-> **Setelah checklist di atas selesai, aplikasi siap di-deploy ke lapangan.**
+> **Setelah setting environment (poin 2) diatur saat deploy, aplikasi siap dijalankan di production.**
