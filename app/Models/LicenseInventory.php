@@ -43,6 +43,10 @@ class LicenseInventory extends Model
         'expiry_date' => 'date',
     ];
 
+    protected $hidden = [
+        'license_key',
+    ];
+
     /**
      * Get the masked license key.
      * Format: XXXX-XXXX-****-**** (Show first 2 segments, mask the rest)
