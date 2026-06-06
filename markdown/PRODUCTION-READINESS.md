@@ -326,7 +326,7 @@ Berdasarkan review, sistem sudah memiliki fitur-fitur inti yang solid:
 
 - [ ] Konfigurasi mail driver (SMTP) untuk notifikasi
 - [x] Setup scheduled task: `php artisan schedule:run` di crontab
-- [ ] Buat backup strategy
+- [x] Buat backup strategy
 - [x] Setup supervisor untuk queue worker persistent
 
 ---
