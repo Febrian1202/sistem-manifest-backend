@@ -78,6 +78,17 @@ class AgentDownloadController extends Controller
 
 PENTING: Jangan memisahkan scanner.ps1 dengan config.json, karena skrip membutuhkan 
 konfigurasi integrasi dari file tersebut!
+
+=========================================================
+      CARA MENGHAPUS / UNINSTALL SCHEDULER AGENT
+=========================================================
+
+Jika Anda ingin menghentikan agent agar tidak berjalan otomatis lagi, Anda dapat menghapus tugas yang sudah didaftarkan di Task Scheduler.
+1. Buka aplikasi PowerShell sebagai Administrator.
+2. Salin dan jalankan kedua perintah berikut:
+
+   Unregister-ScheduledTask -TaskName "USN-Manifest-DailyScan" -Confirm:$false
+   Unregister-ScheduledTask -TaskName "USN-Manifest-Polling" -Confirm:$false
 TEXT;
 
         $zip->addFromString('instruksi.txt', $instructions);
