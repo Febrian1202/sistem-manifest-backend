@@ -1,10 +1,16 @@
 @props(['breadcrumbs' => []])
 
 <header
-    class="relative z-50 h-16 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-border flex items-center justify-between px-6">
+    class="relative z-30 h-16 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-border flex items-center justify-between px-6">
 
     {{-- Kiri: Toggle & Breadcrumb --}}
     <div class="flex items-center gap-4">
+
+        {{-- Mobile Sidebar Toggle --}}
+        <button @click="sidebarOpen = !sidebarOpen"
+            class="md:hidden p-2 -ml-2 rounded-md text-muted-foreground hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+            <i class="fa-solid fa-bars text-lg"></i>
+        </button>
 
         {{-- Breadcrumb --}}
         <nav class="flex items-center text-sm font-medium">
@@ -13,23 +19,21 @@
             @else
                 <ol class="flex items-center">
                     @foreach ($breadcrumbs as $item)
-                        <li>
-                            <div class="flex items-center">
-                                @if (!$loop->first)
-                                    <i class="fa-solid fa-chevron-right text-muted-foreground text-xs mx-2"></i>
-                                @endif
+                        <li class="{{ $loop->last ? 'flex' : 'hidden md:flex' }} items-center">
+                            @if (!$loop->first)
+                                <i class="fa-solid fa-chevron-right text-muted-foreground text-xs mx-2 {{ $loop->last ? 'hidden md:block' : '' }}"></i>
+                            @endif
 
-                                @if ($loop->last)
-                                    <span class="text-foreground font-bold text-md">
-                                        {{ $item['name'] }}
-                                    </span>
-                                @else
-                                    <a href="{{ $item['url'] ?? '#' }}"
-                                        class="text-muted-foreground hover:text-foreground transition-colors">
-                                        {{ $item['name'] }}
-                                    </a>
-                                @endif
-                            </div>
+                            @if ($loop->last)
+                                <span class="text-foreground font-bold text-md">
+                                    {{ $item['name'] }}
+                                </span>
+                            @else
+                                <a href="{{ $item['url'] ?? '#' }}"
+                                    class="text-muted-foreground hover:text-foreground transition-colors">
+                                    {{ $item['name'] }}
+                                </a>
+                            @endif
                         </li>
                     @endforeach
                 </ol>

@@ -32,9 +32,52 @@ Sebelum menjalankan proyek ini, pastikan sistem Anda telah menginstal perangkat 
 - **Database** (MySQL atau SQLite)
 - **Git**
 
-## 🚀 Instalasi
+## 🚀 Instalasi (Docker / Direkomendasikan)
 
-Ikuti langkah-langkah berikut untuk menjalankan proyek di lingkungan lokal:
+Ikuti langkah-langkah berikut untuk menjalankan proyek di lingkungan lokal menggunakan Docker secara otomatis:
+
+1. **Clone repositori:**
+
+    ```bash
+    git clone https://github.com/Febrian1202/sistem-manifest-backend.git
+    cd sistem-manifest-backend
+    ```
+
+2. **Salin file konfigurasi _environment_:**
+
+    ```bash
+    cp .env.example .env
+    ```
+
+3. **Build dan Jalankan Container Docker:**
+
+    ```bash
+    docker compose up -d --build
+    ```
+
+4. **Generate Application Key:**
+
+    > **Catatan Penting:** Karena adanya batasan permission mount (seperti SELinux) dari file lokal ke dalam container, sangat disarankan untuk me-generate *key* menggunakan flag `--show` lalu menambahkannya ke `.env` secara manual:
+
+    ```bash
+    docker compose exec app php artisan key:generate --show
+    ```
+    *Salin teks output `base64:...` tersebut, buka file `.env`, lalu tempelkan pada bagian `APP_KEY=...`*
+
+5. **Jalankan Migrasi dan Seeder (untuk membuat tabel dan data awal):**
+
+    ```bash
+    docker compose exec app php artisan migrate --seed
+    ```
+
+6. **Akses Aplikasi:**
+    Aplikasi sekarang berjalan dan dapat diakses melalui `http://localhost`. Worker dan cron-job sudah berjalan secara otomatis di belakang layar.
+
+---
+
+## 🚀 Instalasi Manual (Tanpa Docker)
+
+Jika Anda tidak menggunakan Docker, ikuti langkah berikut:
 
 1. **Clone repositori:**
 

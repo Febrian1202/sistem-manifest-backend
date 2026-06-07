@@ -52,17 +52,18 @@
 
         {{-- 2. SEARCH & FILTER --}}
         <form method="GET" action="{{ url()->current() }}"
-            class="bg-card border border-border p-4 rounded-lg shadow-sm flex flex-col md:flex-row gap-4 items-end md:items-center">
+            class="flex flex-col md:flex-row md:items-center gap-4 bg-card p-4 rounded-lg border border-border shadow-sm">
 
-            {{-- Input Search --}}
-            <div class="w-full md:flex-1 relative">
-                <div class="relative">
-                    <i
-                        class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"></i>
-                    <x-form.input name="search" value="{{ request('search') }}" placeholder="Cari nama software..."
-                        class="pl-9 w-full" />
-                </div>
+            {{-- LEFT: Search --}}
+            <div class="relative flex-1 w-full md:max-w-md">
+                <i
+                    class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"></i>
+                <x-form.input name="search" value="{{ request('search') }}" placeholder="Cari nama software..."
+                    class="pl-9 w-full" />
             </div>
+
+            {{-- RIGHT: Filters + Actions --}}
+            <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 md:ml-auto w-full md:w-auto">
 
             {{-- Filter Kategori --}}
             <div class="w-full md:w-48">
@@ -96,18 +97,20 @@
                 </x-ui.select.index>
             </div>
 
-            {{-- Action Buttons --}}
-            <div class="flex gap-2">
-                <x-ui.button type="submit">
-                    <i class="fa-solid fa-filter mr-2"></i> Filter
-                </x-ui.button>
-                @if (request()->hasAny(['search', 'category', 'status']))
-                    <a href="{{ url()->current() }}">
-                        <x-ui.button type="button" variant="outline" title="Reset">
-                            <i class="fa-solid fa-xmark"></i>
-                        </x-ui.button>
-                    </a>
-                @endif
+                {{-- Action Buttons --}}
+                <div class="flex justify-end items-center gap-2 w-full md:w-auto">
+                    <x-ui.button type="submit">
+                        <i class="fa-solid fa-filter mr-2"></i> Filter
+                    </x-ui.button>
+                    @if (request()->hasAny(['search', 'category', 'status']))
+                        <a href="{{ url()->current() }}">
+                            <x-ui.button type="button" variant="outline" title="Reset">
+                                <i class="fa-solid fa-xmark"></i>
+                            </x-ui.button>
+                        </a>
+                    @endif
+                </div>
+
             </div>
         </form>
 

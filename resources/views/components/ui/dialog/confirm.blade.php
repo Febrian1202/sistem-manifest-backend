@@ -64,7 +64,7 @@ if ($theme === 'auto') {
         
         <!-- Footer (Opsional untuk Action Buttons) -->
         @if(isset($footer))
-            <div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 mt-6">
+            <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-6">
                 {{ $footer }}
             </div>
         @endif

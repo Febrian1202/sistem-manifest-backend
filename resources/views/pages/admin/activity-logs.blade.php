@@ -55,7 +55,7 @@
                 </div>
             </div>
 
-            <div class="flex justify-end gap-2 pt-2 border-t border-border/50">
+            <div class="flex justify-end items-center gap-2 pt-4 border-t border-border/50">
                 @if(request()->anyFilled(['search', 'user_id', 'entity_type', 'start_date', 'end_date']))
                     <a href="{{ route('activity-logs') }}">
                         <x-ui.button type="button" variant="outline">

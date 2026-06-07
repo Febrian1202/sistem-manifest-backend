@@ -54,7 +54,7 @@ class AuthController extends Controller
         RateLimiter::hit($key, 60);
 
         return back()->withErrors([
-            'email' => 'Kredensial tidak valid.',
+            'email' => 'Email atau password yang Anda masukkan salah.',
         ])->onlyInput('email');
     }
 

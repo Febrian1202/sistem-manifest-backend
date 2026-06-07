@@ -69,7 +69,7 @@
                         Selamat Datang
                     </h2>
                     <p class="text-sm text-muted-foreground">
-                        Silakan masukkan kredensial Anda untuk mengakses dashboard.
+                        Silakan masukkan email dan password Anda untuk mengakses dashboard.
                     </p>
                 </div>
 

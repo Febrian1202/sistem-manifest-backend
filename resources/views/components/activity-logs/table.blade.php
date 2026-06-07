@@ -1,6 +1,6 @@
 @props(['logs'])
 
-<div class="relative overflow-x-auto rounded-lg border border-border bg-card shadow-sm" x-data="{ expanded: null }">
+<div class="relative overflow-x-auto rounded-lg border border-border bg-card shadow-sm w-full" x-data="{ expanded: null }">
     <table class="w-full text-left text-sm">
         <thead class="bg-muted/50 text-muted-foreground text-xs uppercase border-b border-border">
             <tr>

@@ -1,14 +1,14 @@
 <x-layout.app title="Laporan Kepatuhan" :breadcrumbs="[['name' => 'Dashboard', 'url' => route('dashboard')], ['name' => 'Pusat Laporan', 'url' => route('reports')], ['name' => 'Laporan Kepatuhan', 'url' => null]]">
     <div class="p-6">
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">Laporan Kepatuhan</h1>
                 <p class="text-gray-600">Detail status kepatuhan perangkat lunak per software.</p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                 <a href="{{ route('reports.kepatuhan.export', ['format' => 'pdf', 'start_date' => $startDate->toDateString(), 'end_date' => $endDate->toDateString()]) }}"
                     target="_blank"
-                    class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors duration-200">
+                    class="inline-flex justify-center items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors duration-200 w-full sm:w-auto">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
@@ -17,7 +17,7 @@
                     Export PDF
                 </a>
                 <a href="{{ route('reports.kepatuhan.export', ['format' => 'excel', 'start_date' => $startDate->toDateString(), 'end_date' => $endDate->toDateString()]) }}"
-                    class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors duration-200">
+                    class="inline-flex justify-center items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md shadow-sm transition-colors duration-200 w-full sm:w-auto">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
@@ -30,24 +30,24 @@
 
         <!-- Filter Form -->
         <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6">
-            <form action="{{ route('reports.kepatuhan') }}" method="GET" class="flex flex-wrap items-end gap-4">
-                <div>
+            <form action="{{ route('reports.kepatuhan') }}" method="GET" class="flex flex-col md:flex-row items-stretch md:items-end gap-4">
+                <div class="w-full md:flex-1">
                     <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal Mulai</label>
                     <input type="date" name="start_date" value="{{ $startDate->toDateString() }}"
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                 </div>
-                <div>
+                <div class="w-full md:flex-1">
                     <label class="block text-xs font-medium text-gray-700 mb-1">Tanggal Selesai</label>
                     <input type="date" name="end_date" value="{{ $endDate->toDateString() }}"
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                 </div>
-                <div class="flex gap-2">
+                <div class="flex justify-end items-center gap-2 w-full md:w-auto">
                     <button type="submit"
-                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md">
+                        class="inline-flex justify-center items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md">
                         Terapkan Filter
                     </button>
                     <a href="{{ route('reports.kepatuhan') }}"
-                        class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-md">
+                        class="inline-flex justify-center items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium rounded-md">
                         Reset
                     </a>
                 </div>
@@ -87,7 +87,8 @@
         </div>
 
         <div class="bg-white shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200">
+            <div class="overflow-x-auto w-full">
+                <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No
@@ -151,6 +152,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
                 {{ $reports->links() }}
             </div>

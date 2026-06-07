@@ -120,7 +120,7 @@
                 </select>
             </div>
 
-            <div class="flex gap-2 w-full md:w-auto">
+            <div class="flex justify-end gap-2 w-full md:w-auto">
                 <x-ui.button type="submit">
                     <i class="fa-solid fa-search mr-2"></i> Cari
                 </x-ui.button>

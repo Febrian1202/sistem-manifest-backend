@@ -31,7 +31,16 @@ This document provides essential context and instructions for AI agents working 
 
 ## Important Commands
 
-### Development Setup
+### Development Setup (Docker)
+```bash
+cp .env.example .env
+docker compose up -d --build
+# Key generation (manual copy to .env due to mount permissions)
+docker compose exec app php artisan key:generate --show
+docker compose exec app php artisan migrate --seed
+```
+
+### Development Setup (Manual)
 ```bash
 composer install
 npm install

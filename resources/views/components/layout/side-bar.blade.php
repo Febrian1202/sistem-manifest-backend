@@ -1,5 +1,5 @@
 <aside
-    class="flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out h-screen fixed md:static z-30"
+    class="flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out h-screen fixed md:static z-50"
     :class="sidebarOpen ? 'w-64 translate-x-0' : 'w-18 -translate-x-full md:translate-x-0'">
 
     <div class="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">
@@ -134,7 +134,7 @@
         @endrole
     </nav>
 
-    <div class="p-3 border-t border-sidebar-border justify-center flex">
+    <div class="p-3 border-t border-sidebar-border justify-center hidden md:flex">
         <x-button @click=" sidebarOpen=!sidebarOpen" class="transition-colors w-full" variant="outline">
         <i class="fa-solid fa-angle-right text-xl transition-transform duration-300"
             :class="sidebarOpen ? 'rotate-180' : 'rotate-0'"></i>

@@ -27,7 +27,7 @@
 
     </div>
 
-    <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 bg-black/50 z-20 md:hidden"
+    <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 bg-black/50 z-40 md:hidden"
         style="display: none;" x-transition.opacity>
 
     </div>

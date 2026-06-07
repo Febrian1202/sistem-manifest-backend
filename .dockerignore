@@ -1,0 +1,40 @@
+.git
+.gitattributes
+.gitignore
+
+# Dependencies
+node_modules
+vendor
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Build artifacts
+public/build
+public/hot
+
+# Logs and cache
+storage/logs/*
+!storage/logs/.gitignore
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+npm-debug.log
+yarn-error.log
+
+# IDEs and OS files
+.idea
+.vscode
+.DS_Store
+Thumbs.db
+
+# Tests and documentation
+tests
+phpunit.xml
+.phpunit.result.cache
+markdown
+README.md
+GEMINI.md
+.server
+

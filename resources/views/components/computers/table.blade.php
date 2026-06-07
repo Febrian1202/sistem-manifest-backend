@@ -1,6 +1,6 @@
     @props(['computers'])
 
-    <div class="rounded-md border border-border bg-card shadow-sm">
+    <div class="rounded-md border border-border bg-card shadow-sm overflow-x-auto w-full">
         <x-ui.table.table>
             <x-ui.table.table-header>
                 <x-ui.table.table-row>
