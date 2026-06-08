@@ -1,0 +1,857 @@
+[
+    {
+        "id": 1,
+        "normalized_name": "Adobe After Effects 2020",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 2,
+        "normalized_name": "Adobe Creative Cloud",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 3,
+        "normalized_name": "Adobe Illustrator 2024",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 4,
+        "normalized_name": "Adobe Media Encoder 2020",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 5,
+        "normalized_name": "Adobe Photoshop 2024",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 6,
+        "normalized_name": "Adobe Premiere Pro 2020",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 7,
+        "normalized_name": "Anaconda3 2024.06-1 (Python 3.12.4 64-bit)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 8,
+        "normalized_name": "Android Studio",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 9,
+        "normalized_name": "Antigravity 2.0.6",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 10,
+        "normalized_name": "Antigravity IDE (User)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 11,
+        "normalized_name": "Audacity 3.7.2",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 12,
+        "normalized_name": "AutoIt v3.3.16.1",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 13,
+        "normalized_name": "Boris FX Continuum 2019 Plug-ins for Adobe and Compatible Products",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 14,
+        "normalized_name": "Boris FX Sapphire Plug-ins 2019.021 for After Effects and Compatible Products",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 15,
+        "normalized_name": "Brave",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 16,
+        "normalized_name": "Chaos Cosmos Browser",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 17,
+        "normalized_name": "Chaos Scatter for Cinema 4D 2024",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 18,
+        "normalized_name": "Cisco Packet Tracer 9.0.0 64Bit",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 19,
+        "normalized_name": "Composer - PHP Dependency Manager",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 20,
+        "normalized_name": "Copilot",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 21,
+        "normalized_name": "Coral Island MULTi9 - ElAmigos version 1.1.1232",
+        "category": "Freeware",
+        "status": "Blacklist",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 22,
+        "normalized_name": "Discord",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 23,
+        "normalized_name": "EA app",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 24,
+        "normalized_name": "Elden Ring Deluxe Edition MULTi14 - ElAmigos version 1.12.0",
+        "category": "Freeware",
+        "status": "Blacklist",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 25,
+        "normalized_name": "Epic Games Launcher",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 26,
+        "normalized_name": "Fantech Shooter III 0.0.9",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 27,
+        "normalized_name": "FARO LS 1.1.505.0 (64bit)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 28,
+        "normalized_name": "Figma",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 29,
+        "normalized_name": "Figma Agent",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 30,
+        "normalized_name": "freeCodeCamp",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 31,
+        "normalized_name": "Git",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 32,
+        "normalized_name": "GitHub CLI",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 33,
+        "normalized_name": "Google Chrome",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 34,
+        "normalized_name": "Hamachi",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 35,
+        "normalized_name": "HandBrake 1.8.1",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 36,
+        "normalized_name": "Hollow Knight",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 37,
+        "normalized_name": "Hollow Knight Silksong MULTi10 - ElAmigos version 1.0.28324",
+        "category": "Freeware",
+        "status": "Blacklist",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 38,
+        "normalized_name": "K-Lite Mega Codec Pack 18.2.0",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 39,
+        "normalized_name": "Laragon 8.3.0",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 40,
+        "normalized_name": "Live2D Cubism 5.0.00",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 41,
+        "normalized_name": "Magic Bullet Suite",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 42,
+        "normalized_name": "Magic Bullet Suite v13.0.11",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 43,
+        "normalized_name": "Maxon App",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 44,
+        "normalized_name": "Mendeley Desktop 1.19.8",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 45,
+        "normalized_name": "Mendeley Reference Manager 2.144.0",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 46,
+        "normalized_name": "Metal Gear Solid V The Phantom Pain MULTi8 - ElAmigos version 1.15",
+        "category": "Freeware",
+        "status": "Blacklist",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 47,
+        "normalized_name": "Microsoft .NET Toolset 7.0.410 (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 48,
+        "normalized_name": "Microsoft 365 - id-id",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 49,
+        "normalized_name": "Microsoft Edge",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 50,
+        "normalized_name": "Microsoft Office Professional Plus 2019 - en-us",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 51,
+        "normalized_name": "Microsoft OneDrive",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 52,
+        "normalized_name": "Microsoft OneNote - id-id",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 53,
+        "normalized_name": "Microsoft Visual Studio Code (User)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 54,
+        "normalized_name": "MicrosoftTeams",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 55,
+        "normalized_name": "MSTeams",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 56,
+        "normalized_name": "Nitro PDF Pro",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 57,
+        "normalized_name": "Notepad++ (64-bit x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 58,
+        "normalized_name": "NotepadPlusPlus",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 59,
+        "normalized_name": "Notion 7.7.0",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 60,
+        "normalized_name": "OBS Studio",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 61,
+        "normalized_name": "Postman x64 11.87.3",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 62,
+        "normalized_name": "PowerISO",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 63,
+        "normalized_name": "Python 3.12.6 (64-bit)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 64,
+        "normalized_name": "Python Launcher",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 65,
+        "normalized_name": "RE:VisionFX Effections Plus",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 66,
+        "normalized_name": "Red Giant Link",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 67,
+        "normalized_name": "REDlauncher",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 68,
+        "normalized_name": "Resident Evil Village Deluxe Edition MULTi13 - ElAmigos version 10.04.2023",
+        "category": "Freeware",
+        "status": "Blacklist",
+        "description": null,
+        "created_at": "2026-06-07T12:16:41.000000Z",
+        "updated_at": "2026-06-07T12:16:41.000000Z"
+    },
+    {
+        "id": 69,
+        "normalized_name": "Roblox Player for ADVAN",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 70,
+        "normalized_name": "Roblox Studio for ADVAN",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 71,
+        "normalized_name": "SciTE4AutoIt3 21.203.1500.3",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 72,
+        "normalized_name": "Spotify",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 73,
+        "normalized_name": "Stardew Valley",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 74,
+        "normalized_name": "Steam",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 75,
+        "normalized_name": "TablePlus 6.7.1",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 76,
+        "normalized_name": "Telegram Desktop",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 77,
+        "normalized_name": "TeraBox",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 78,
+        "normalized_name": "TikTok LIVE Studio",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 79,
+        "normalized_name": "Trapcode Suite",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 80,
+        "normalized_name": "Universal x86 Tuning Utility",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 81,
+        "normalized_name": "uTorrent Web",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 82,
+        "normalized_name": "UXP WebView Support",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 83,
+        "normalized_name": "Visual Studio Build Tools 2026 (2)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 84,
+        "normalized_name": "Visual Studio Community 2022",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 85,
+        "normalized_name": "Visual Studio Community 2026",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 86,
+        "normalized_name": "VLC media player",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 87,
+        "normalized_name": "Wallpaper Engine",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 88,
+        "normalized_name": "WezTerm version 20240203-110809-5046fc22",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 89,
+        "normalized_name": "Winaero Tweaker",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 90,
+        "normalized_name": "Windhawk v1.6.1",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 91,
+        "normalized_name": "WinRAR 7.00 (64-bit)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 92,
+        "normalized_name": "WizTree v4.28",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 93,
+        "normalized_name": "XAMPP",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 94,
+        "normalized_name": "Zed",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    },
+    {
+        "id": 95,
+        "normalized_name": "Zoom (64-bit)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-06-07T12:16:42.000000Z",
+        "updated_at": "2026-06-07T12:16:42.000000Z"
+    }
+]
