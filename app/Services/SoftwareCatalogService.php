@@ -26,15 +26,28 @@ class SoftwareCatalogService
 
             foreach ($cleanSoftware as $soft) {
                 $name = $soft['name'];
+                $isFlagged = in_array($name, $flaggedNames);
 
                 // 1. Find or Create Catalog entry
+                $autoProcessed = $isFlagged
+                    ? ['status' => 'Unreviewed', 'category' => 'Freeware']
+                    : $this->getAutoProcessedData($name);
+
                 $catalog = SoftwareCatalog::firstOrCreate(
                     ['normalized_name' => $name],
-                    ['status' => 'Unreviewed', 'category' => 'Freeware']
+                    $autoProcessed
                 );
 
+                // If existing entry is still Unreviewed, but matches whitelist, update it (only if not flagged)
+                if (! $isFlagged && $catalog->status === 'Unreviewed' && $autoProcessed['status'] === 'Whitelist') {
+                    $catalog->update([
+                        'status' => $autoProcessed['status'],
+                        'category' => $autoProcessed['category'],
+                    ]);
+                }
+
                 // 2. Auto-blacklist if flagged and still unreviewed
-                if (in_array($name, $flaggedNames) && $catalog->status === 'Unreviewed') {
+                if ($isFlagged && $catalog->status === 'Unreviewed') {
                     $catalog->update(['status' => 'Blacklist']);
                 }
 
@@ -62,6 +75,29 @@ class SoftwareCatalogService
                 ->whereNotIn('id', $currentDiscoveryIds)
                 ->delete();
         });
+    }
+
+    /**
+     * Determine if a software is eligible for auto-processing based on whitelist keywords.
+     */
+    public function getAutoProcessedData(string $softwareName): array
+    {
+        $whitelist = config('software_whitelist.freeware_keywords', []);
+        $lowerName = strtolower($softwareName);
+
+        foreach ($whitelist as $keyword => $data) {
+            if (str_contains($lowerName, strtolower($keyword))) {
+                return [
+                    'category' => $data['category'],
+                    'status' => $data['status'],
+                ];
+            }
+        }
+
+        return [
+            'category' => 'Freeware',
+            'status' => 'Unreviewed',
+        ];
     }
 
     /**

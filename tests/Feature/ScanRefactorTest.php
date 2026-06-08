@@ -2,6 +2,7 @@
 
 use App\Jobs\ProcessScanResultJob;
 use App\Models\Computer;
+use App\Models\SoftwareCatalog;
 use App\Services\SoftwareCatalogService;
 use App\Services\SoftwareFilterService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -91,5 +92,66 @@ test('ProcessScanResultJob processes software correctly via services', function 
     $this->assertDatabaseHas('software_discoveries', [
         'computer_id' => $computer->id,
         'raw_name' => 'Slack',
+    ]);
+});
+
+test('ProcessScanResultJob auto-processes whitelisted freeware and open-source software', function () {
+    $computer = Computer::factory()->create(['hostname' => 'WS-WHITELIST-TEST']);
+
+    $softwareList = [
+        ['name' => 'VLC media player', 'version' => '3.0.18'],
+        ['name' => 'Unknown Hack Tool', 'version' => '1.0'],
+        ['name' => 'VLC media player Activator', 'version' => '1.0'], // Matches whitelist but also matches a priority (blacklist) keyword
+    ];
+
+    $job = new ProcessScanResultJob($computer, $softwareList);
+
+    // Execute job manually
+    $job->handle(new SoftwareFilterService, new SoftwareCatalogService);
+
+    // VLC media player should be OpenSource and Whitelist
+    $this->assertDatabaseHas('software_catalogs', [
+        'normalized_name' => 'VLC media player',
+        'category' => 'OpenSource',
+        'status' => 'Whitelist',
+    ]);
+
+    // Unknown Hack Tool should be Freeware (default) and Unreviewed
+    $this->assertDatabaseHas('software_catalogs', [
+        'normalized_name' => 'Unknown Hack Tool',
+        'category' => 'Freeware',
+        'status' => 'Unreviewed',
+    ]);
+
+    // VLC media player Activator contains 'Activator' (Priority/Blacklist keyword)
+    // Even though it contains 'VLC media player' (Whitelist), it should be Blacklist and NOT Whitelist
+    $this->assertDatabaseHas('software_catalogs', [
+        'normalized_name' => 'VLC media player Activator',
+        'status' => 'Blacklist',
+    ]);
+});
+
+test('ProcessScanResultJob updates existing unreviewed software to whitelist if matching whitelist', function () {
+    $computer = Computer::factory()->create(['hostname' => 'WS-EXISTING-TEST']);
+
+    // Pre-create the software catalog entry as Unreviewed/Freeware
+    SoftwareCatalog::create([
+        'normalized_name' => 'Git',
+        'status' => 'Unreviewed',
+        'category' => 'Freeware',
+    ]);
+
+    $softwareList = [
+        ['name' => 'Git', 'version' => '2.40.0'],
+    ];
+
+    $job = new ProcessScanResultJob($computer, $softwareList);
+    $job->handle(new SoftwareFilterService, new SoftwareCatalogService);
+
+    // Git should now be OpenSource and Whitelist
+    $this->assertDatabaseHas('software_catalogs', [
+        'normalized_name' => 'Git',
+        'category' => 'OpenSource',
+        'status' => 'Whitelist',
     ]);
 });
