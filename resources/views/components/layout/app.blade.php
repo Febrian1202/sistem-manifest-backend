@@ -1,7 +1,7 @@
 @props(['title' => 'Dashboard', 'breadcrumbs' => []])
 
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="pre-alpine">
 
 <head>
     <meta charset="UTF-8">
@@ -11,9 +11,49 @@
     <link rel="icon" href="{{ asset('assets/logo-usn.png') }}" type="image/png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <script>
+        // Set initial state immediately to avoid FOUC
+        if (localStorage.getItem('sidebarOpen') === 'false') {
+            document.documentElement.classList.add('sidebar-closed');
+        } else {
+            document.documentElement.classList.add('sidebar-open');
+        }
+    </script>
+    <style>
+        /* Pre-Alpine styling to prevent FOUC */
+        html.pre-alpine.sidebar-open aside {
+            width: 16rem !important; /* w-64 */
+            transform: translateX(0) !important;
+        }
+        html.pre-alpine.sidebar-closed aside {
+            width: 4.5rem !important; /* w-18 */
+        }
+        @media (max-width: 767px) {
+            html.pre-alpine.sidebar-closed aside {
+                transform: translateX(-100%) !important;
+            }
+            html.pre-alpine.sidebar-open aside {
+                transform: translateX(0) !important;
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-background h-screen flex overflow-hidden font-sans antialiased text-foreground" x-data="{ sidebarOpen: false }">
+<body class="bg-background h-screen flex overflow-hidden font-sans antialiased text-foreground" 
+      x-data="{ sidebarOpen: localStorage.getItem('sidebarOpen') !== 'false' }"
+      x-init="
+          document.documentElement.classList.remove('pre-alpine');
+          $watch('sidebarOpen', val => { 
+              localStorage.setItem('sidebarOpen', val);
+              if (val) {
+                  document.documentElement.classList.remove('sidebar-closed');
+                  document.documentElement.classList.add('sidebar-open');
+              } else {
+                  document.documentElement.classList.remove('sidebar-open');
+                  document.documentElement.classList.add('sidebar-closed');
+              }
+          })
+      ">
 
     <x-layout.side-bar />
 

@@ -13,7 +13,7 @@
             </div>
         </div>
 
-        <div class="w-full flex justify-center" x-show="!sidebarOpen">
+        <div class="w-full flex justify-center" x-show="!sidebarOpen" style="display: none;">
             <img src="{{ asset('assets/logo-usn.png') }}" class="h-7 w-7 object-contain" alt="Logo USN">
         </div>
 
@@ -45,7 +45,7 @@
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
                 Manajemen Aset
             </div>
-            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
 
             <a href="{{ route('computers') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('computers*') ? $activeClass : $inactiveClass }}">
@@ -71,7 +71,7 @@
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
                 Lisensi & Audit
             </div>
-            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
 
             <a href="{{ route('licenses') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('licenses*') ? $activeClass : $inactiveClass }}">
@@ -95,7 +95,7 @@
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
                 Pengaturan
             </div>
-            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
 
             <a href="{{ route('accounts') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('accounts*') ? $activeClass : $inactiveClass }}">
@@ -121,7 +121,7 @@
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
                 Laporan
             </div>
-            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen"></div>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
 
             <a href="{{ route('reports') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('reports*') ? $activeClass : $inactiveClass }}">
