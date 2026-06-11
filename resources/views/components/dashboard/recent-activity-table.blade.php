@@ -16,24 +16,24 @@
             <thead class="[&_tr]:border-b [&_tr]:border-border">
                 <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
                     <th
-                        class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                        class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 whitespace-nowrap">
                         Computer
                     </th>
                     <th
-                        class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                        class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 whitespace-nowrap">
                         Time
                     </th>
                     <th
-                        class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                        class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 whitespace-nowrap">
                         Software Found
                     </th>
                     <th
-                        class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                        class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 whitespace-nowrap">
                         Status
                     </th>
                     @role('admin')
                         <th
-                            class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0">
+                            class="h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 whitespace-nowrap">
                             Aksi
                         </th>
                     @endrole
@@ -63,10 +63,10 @@
                     @endphp
 
                     <tr class="border-b border-border transition-colors hover:bg-muted/50">
-                        <td class="p-4 align-middle font-medium text-foreground">{{ $activity['computer'] }}</td>
-                        <td class="p-4 align-middle text-muted-foreground">{{ $activity['time'] }}</td>
-                        <td class="p-4 align-middle text-muted-foreground">{{ $activity['software'] }} apps</td>
-                        <td class="p-4 align-middle">
+                        <td class="p-4 align-middle font-medium text-foreground whitespace-nowrap">{{ $activity['computer'] }}</td>
+                        <td class="p-4 align-middle text-muted-foreground whitespace-nowrap">{{ $activity['time'] }}</td>
+                        <td class="p-4 align-middle text-muted-foreground whitespace-nowrap">{{ $activity['software'] }} apps</td>
+                        <td class="p-4 align-middle whitespace-nowrap">
                             <span
                                 class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $badgeClass }}">
                                 <i class="fa-solid {{ $icon }} mr-1.5 text-[10px]"></i>
@@ -74,9 +74,9 @@
                             </span>
                         </td>
                         @role('admin')
-                            <td class="p-4 align-middle">
+                            <td class="p-4 align-middle whitespace-nowrap">
                                 <a href="/compliance?computer={{ $activity['id'] }}"
-                                    class="text-xs font-semibold text-blue-600 border border-blue-300 px-3 py-1 rounded-md hover:bg-blue-50 transition-colors">
+                                    class="inline-flex items-center justify-center whitespace-nowrap text-xs font-semibold text-blue-600 border border-blue-300 px-3 py-1 rounded-md hover:bg-blue-50 transition-colors">
                                     Lihat Detail
                                 </a>
                             </td>
