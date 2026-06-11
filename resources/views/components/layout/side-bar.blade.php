@@ -1,5 +1,5 @@
 <aside
-    class="flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out h-screen fixed md:static z-50"
+    class="flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out h-screen h-dvh fixed md:static z-50"
     :class="sidebarOpen ? 'w-64 translate-x-0' : 'w-18 -translate-x-full md:translate-x-0'">
 
     <div class="h-16 flex items-center justify-between px-4 border-b border-sidebar-border">

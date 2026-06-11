@@ -39,7 +39,7 @@
     </style>
 </head>
 
-<body class="bg-background h-screen flex overflow-hidden font-sans antialiased text-foreground" 
+<body class="bg-background h-screen h-dvh flex overflow-hidden font-sans antialiased text-foreground" 
       x-data="{ sidebarOpen: localStorage.getItem('sidebarOpen') !== 'false' }"
       x-init="
           document.documentElement.classList.remove('pre-alpine');
