@@ -49,6 +49,15 @@ class ComputerDataController extends Controller
         return view('pages.admin.computers', compact('computers', 'locations'));
     }
 
+    public function show(Computer $computer)
+    {
+        $computer->load(['softwares' => function ($q) {
+            $q->orderBy('raw_name');
+        }, 'softwares.catalog']);
+        
+        return view('pages.admin.computers-show', compact('computer'));
+    }
+
     public function update(UpdateComputerRequest $request, Computer $computer)
     {
         try {

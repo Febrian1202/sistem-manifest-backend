@@ -30,6 +30,7 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     // Shared Read-only access
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/computers', [ComputerDataController::class, 'index'])->name('computers');
+    Route::get('/computers/{computer}', [ComputerDataController::class, 'show'])->name('computers.show');
     Route::get('/softwares', [SoftwareDataController::class, 'index'])->name('softwares');
     Route::get('/licenses', [LicenseDataController::class, 'index'])->name('licenses');
     Route::get('/licenses/{license}', [LicenseDataController::class, 'show'])->name('licenses.show');

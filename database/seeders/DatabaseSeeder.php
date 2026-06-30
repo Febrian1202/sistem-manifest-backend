@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash; // Tambahkan import Hash
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,26 +15,30 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            RoleAndPermissionSeeder::class,
-        ]);
+        $this->call([RoleAndPermissionSeeder::class]);
 
         // Buat Akun Admin
-        $admin = User::firstOrCreate([
-            'email' => 'admin@usn.ac.id',
-        ], [
-            'name' => 'Administrator',
-            'password' => env('DEFAULT_USER_PASSWORD', 'ManifestUSN_2026!'),
-        ]);
-        $admin->assignRole('admin');
+        $admin = User::firstOrCreate(
+            [
+                "email" => "admin@usn.ac.id",
+            ],
+            [
+                "name" => "Administrator",
+                "password" => env("DEFAULT_USER_PASSWORD", "ManifestUSN_2026!"),
+            ],
+        );
+        $admin->assignRole("admin");
 
         // Buat Akun Pimpinan
-        $pimpinan = User::firstOrCreate([
-            'email' => 'pimpinan@usn.ac.id',
-        ], [
-            'name' => 'Pimpinan',
-            'password' => env('DEFAULT_USER_PASSWORD', 'ManifestUSN_2026!'),
-        ]);
-        $pimpinan->assignRole('pimpinan');
+        $pimpinan = User::firstOrCreate(
+            [
+                "email" => "pimpinan@usn.ac.id",
+            ],
+            [
+                "name" => "Pimpinan",
+                "password" => env("DEFAULT_USER_PASSWORD", "ManifestUSN_2026!"),
+            ],
+        );
+        $pimpinan->assignRole("pimpinan");
     }
 }
