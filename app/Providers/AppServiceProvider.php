@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (config('app.env') === 'production') {
-            URL::forceScheme('https');
+            // URL::forceScheme('https');
         }
 
         // Registration of Model Observers for Cache Invalidation
