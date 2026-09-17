@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplianceDataController;
 use App\Http\Controllers\ComputerDataController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\LicenseDataController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SoftwareDataController;
@@ -26,9 +27,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/account/password', [AccountController::class, 'changePassword'])->name('account.change-password');
 });
 
+Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
 Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     // Shared Read-only access
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/computers', [ComputerDataController::class, 'index'])->name('computers');
     Route::get('/computers/{computer}', [ComputerDataController::class, 'show'])->name('computers.show');
     Route::get('/softwares', [SoftwareDataController::class, 'index'])->name('softwares');
@@ -77,6 +81,9 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
         Route::put('/accounts/{user}', [AccountController::class, 'update'])->name('accounts.update');
         Route::delete('/accounts/{user}', [AccountController::class, 'destroy'])->name('accounts.destroy');
         Route::put('/accounts/{user}/reset-password', [AccountController::class, 'resetPassword'])->name('accounts.reset-password');
+
+        // Manajemen Laboratorium
+        Route::resource('laboratories', LaboratoryController::class);
 
         // Activity Log
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs');

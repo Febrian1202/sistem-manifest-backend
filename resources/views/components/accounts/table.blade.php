@@ -1,4 +1,4 @@
-@props(['users'])
+@props(['users', 'laboratories' => []])
 
 <div class="rounded-md border border-border bg-card shadow-sm">
     <x-ui.table.table>
@@ -8,6 +8,7 @@
                 <x-ui.table.table-head>Nama</x-ui.table.table-head>
                 <x-ui.table.table-head>Email</x-ui.table.table-head>
                 <x-ui.table.table-head>Role</x-ui.table.table-head>
+                <x-ui.table.table-head>Laboratorium</x-ui.table.table-head>
                 <x-ui.table.table-head>Tanggal Dibuat</x-ui.table.table-head>
                 <x-ui.table.table-head class="text-right">Aksi</x-ui.table.table-head>
             </x-ui.table.table-row>
@@ -19,11 +20,13 @@
                     $roleName = $user->getRoleNames()->first();
                     $badgeClass = match ($roleName) {
                         'admin' => 'bg-blue-500/10 text-blue-600 border-blue-200',
+                        'kepala_lab' => 'bg-purple-500/10 text-purple-600 border-purple-200',
                         'pimpinan' => 'bg-green-500/10 text-green-600 border-green-200',
                         default => 'bg-muted text-muted-foreground border-border',
                     };
                     $roleLabel = match ($roleName) {
                         'admin' => 'Admin',
+                        'kepala_lab' => 'Kepala Lab',
                         'pimpinan' => 'Pimpinan',
                         default => ucfirst($roleName ?? 'User'),
                     };
@@ -66,12 +69,24 @@
                         </span>
                     </x-ui.table.table-cell>
 
-                    {{-- 5. Tanggal Dibuat --}}
+                    {{-- 5. Laboratorium --}}
+                    <x-ui.table.table-cell class="text-xs">
+                        @if($user->hasRole('kepala_lab'))
+                            <span class="inline-flex items-center gap-1.5 font-medium text-foreground">
+                                <i class="fa-solid fa-flask text-[10px] text-purple-600"></i>
+                                {{ $user->laboratory?->name ?? '-' }}
+                            </span>
+                        @else
+                            <span class="text-muted-foreground">-</span>
+                        @endif
+                    </x-ui.table.table-cell>
+
+                    {{-- 6. Tanggal Dibuat --}}
                     <x-ui.table.table-cell class="text-xs text-muted-foreground">
                         {{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}
                     </x-ui.table.table-cell>
 
-                    {{-- 6. Aksi --}}
+                    {{-- 7. Aksi --}}
                     <x-ui.table.table-cell class="text-right">
                         <div class="flex items-center justify-end gap-2">
                             
@@ -87,11 +102,11 @@
                                     <x-ui.sheet.header>
                                         <x-ui.sheet.title>Edit Akun</x-ui.sheet.title>
                                         <x-ui.sheet.description>
-                                            Perbarui informasi nama, email, dan role akun.
+                                            Perbarui informasi nama, email, role, dan laboratorium akun.
                                         </x-ui.sheet.description>
                                     </x-ui.sheet.header>
 
-                                    <form action="{{ route('accounts.update', $user->id) }}" method="POST" class="mt-6 space-y-4">
+                                    <form action="{{ route('accounts.update', $user->id) }}" method="POST" class="mt-6 space-y-4" x-data="{ editRole: '{{ old('role', $roleName) }}' }">
                                         @csrf
                                         @method('PUT')
 
@@ -112,12 +127,28 @@
                                                 <x-form.input value="{{ $roleLabel }}" disabled class="bg-muted text-muted-foreground" />
                                                 <p class="text-[10px] text-muted-foreground italic mt-1">Anda tidak bisa mengubah role Anda sendiri.</p>
                                             @else
-                                                <select id="role_{{ $user->id }}" name="role" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                                <select id="role_{{ $user->id }}" name="role" x-model="editRole" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                                                     <option value="admin" {{ $roleName === 'admin' ? 'selected' : '' }}>Admin</option>
+                                                    <option value="kepala_lab" {{ $roleName === 'kepala_lab' ? 'selected' : '' }}>Kepala Lab / PJ Lab</option>
                                                     <option value="pimpinan" {{ $roleName === 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
                                                 </select>
                                             @endif
                                         </div>
+
+                                        @if($user->id !== auth()->id() || $user->hasRole('kepala_lab'))
+                                        <div class="space-y-1.5" x-show="editRole === 'kepala_lab'" x-cloak>
+                                            <x-form.label for="laboratory_id_{{ $user->id }}">Laboratorium <span class="text-destructive">*</span></x-form.label>
+                                            <select id="laboratory_id_{{ $user->id }}" name="laboratory_id" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                                <option value="">-- Pilih Laboratorium --</option>
+                                                @foreach($laboratories as $lab)
+                                                    <option value="{{ $lab->id }}" {{ old('laboratory_id', $user->laboratory_id) == $lab->id ? 'selected' : '' }}>
+                                                        {{ $lab->name }} ({{ $lab->code }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <p class="text-[11px] text-muted-foreground">Pilih laboratorium yang diampu.</p>
+                                        </div>
+                                        @endif
 
                                         <x-ui.sheet.footer>
                                             <x-ui.button type="submit" class="w-full">
@@ -217,7 +248,7 @@
                 </x-ui.table.table-row>
             @empty
                 <x-ui.table.table-row>
-                    <x-ui.table.table-cell colspan="6" class="text-center h-24 text-muted-foreground">
+                    <x-ui.table.table-cell colspan="7" class="text-center h-24 text-muted-foreground">
                         Tidak ada data akun pengguna.
                     </x-ui.table.table-cell>
                 </x-ui.table.table-row>

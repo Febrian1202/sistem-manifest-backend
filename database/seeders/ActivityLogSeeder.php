@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class ActivityLogSeeder extends Seeder
 {
@@ -49,7 +49,7 @@ class ActivityLogSeeder extends Seeder
                 'causer_id' => 1,
                 'properties' => json_encode([
                     'attributes' => ['location' => 'Laboratorium Komputer A'],
-                    'old' => ['location' => 'Belum Diatur']
+                    'old' => ['location' => 'Belum Diatur'],
                 ]),
                 'created_at' => Carbon::now()->subDays(1)->subHours(8),
                 'updated_at' => Carbon::now()->subDays(1)->subHours(8),
@@ -88,7 +88,7 @@ class ActivityLogSeeder extends Seeder
                 'causer_id' => 1,
                 'properties' => json_encode([
                     'attributes' => ['status' => 'Blacklist'],
-                    'old' => ['status' => 'Unreviewed']
+                    'old' => ['status' => 'Unreviewed'],
                 ]),
                 'created_at' => Carbon::now()->subHours(5),
                 'updated_at' => Carbon::now()->subHours(5),

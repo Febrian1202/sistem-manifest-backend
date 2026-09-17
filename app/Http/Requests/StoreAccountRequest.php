@@ -26,7 +26,8 @@ class StoreAccountRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'string', 'in:admin,pimpinan'],
+            'role' => ['required', 'string', 'in:admin,kepala_lab,pimpinan'],
+            'laboratory_id' => ['nullable', 'required_if:role,kepala_lab', 'exists:laboratories,id'],
         ];
     }
 
@@ -47,6 +48,8 @@ class StoreAccountRequest extends FormRequest
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'role.required' => 'Role wajib dipilih.',
             'role.in' => 'Role tidak valid.',
+            'laboratory_id.required_if' => 'Laboratorium wajib dipilih untuk role Kepala Lab.',
+            'laboratory_id.exists' => 'Laboratorium yang dipilih tidak valid.',
         ];
     }
 }

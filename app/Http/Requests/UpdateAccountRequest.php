@@ -22,12 +22,14 @@ class UpdateAccountRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = $this->route('user')?->id;
+        $user = $this->route('user');
+        $userId = is_object($user) ? $user->id : $user;
 
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$userId],
-            'role' => ['required', 'string', 'in:admin,pimpinan'],
+            'role' => ['required', 'string', 'in:admin,kepala_lab,pimpinan'],
+            'laboratory_id' => ['nullable', 'required_if:role,kepala_lab', 'exists:laboratories,id'],
         ];
     }
 
@@ -45,6 +47,8 @@ class UpdateAccountRequest extends FormRequest
             'email.unique' => 'Email sudah digunakan.',
             'role.required' => 'Role wajib dipilih.',
             'role.in' => 'Role tidak valid.',
+            'laboratory_id.required_if' => 'Laboratorium wajib dipilih untuk role Kepala Lab.',
+            'laboratory_id.exists' => 'Laboratorium yang dipilih tidak valid.',
         ];
     }
 }

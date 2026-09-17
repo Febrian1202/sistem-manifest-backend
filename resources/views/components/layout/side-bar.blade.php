@@ -40,6 +40,32 @@
             </div>
         </a>
 
+        @role('kepala_lab')
+            <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
+                :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
+                Menu PJ Lab
+            </div>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
+
+            <a href="{{ Route::has('lab.inventory.index') ? route('lab.inventory.index') : '#' }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('lab/inventory*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-boxes-stacked text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Inventaris Lab</span>
+            </a>
+
+            <a href="{{ Route::has('lab.reports.index') ? route('lab.reports.index') : '#' }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('lab/reports*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-clipboard-check text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Review Laporan</span>
+            </a>
+        @endrole
+
         @role('admin|pimpinan')
             <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
                 :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
@@ -64,6 +90,17 @@
                 <span class="font-medium whitespace-nowrap transition-opacity duration-200"
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Katalog Software</span>
             </a>
+
+            @role('admin')
+                <a href="{{ route('laboratories.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('laboratories*') ? $activeClass : $inactiveClass }}">
+                    <div class="w-6 flex justify-center">
+                        <i class="fa-solid fa-flask text-lg"></i>
+                    </div>
+                    <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                        :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Laboratorium</span>
+                </a>
+            @endrole
         @endrole
 
         @role('admin')
@@ -124,13 +161,24 @@
             <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
 
             <a href="{{ route('reports') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('reports*') ? $activeClass : $inactiveClass }}">
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('reports*') && !request()->is('report-submissions*') ? $activeClass : $inactiveClass }}">
                 <div class="w-6 flex justify-center">
                     <i class="fa-solid fa-file-pdf text-lg"></i>
                 </div>
                 <span class="font-medium whitespace-nowrap transition-opacity duration-200"
-                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Laporan & Cetak</span>
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">{{ auth()->user()->hasRole('admin') ? 'Pusat Laporan' : 'Laporan & Cetak' }}</span>
             </a>
+
+            @role('admin')
+                <a href="{{ Route::has('report-submissions.index') ? route('report-submissions.index') : '#' }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('report-submissions*') ? $activeClass : $inactiveClass }}">
+                    <div class="w-6 flex justify-center">
+                        <i class="fa-solid fa-paper-plane text-lg"></i>
+                    </div>
+                    <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                        :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Kirim ke PJ Lab</span>
+                </a>
+            @endrole
         @endrole
     </nav>
 

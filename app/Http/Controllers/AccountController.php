@@ -6,6 +6,7 @@ use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
+use App\Models\Laboratory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +20,7 @@ class AccountController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::query()->with('roles');
+        $query = User::query()->with(['roles', 'laboratory']);
 
         // Search by name or email
         if ($request->filled('search')) {
@@ -36,9 +37,10 @@ class AccountController extends Controller
         }
 
         $users = $query->latest()->paginate(10)->withQueryString();
-        $roles = Role::whereIn('name', ['admin', 'pimpinan'])->pluck('name');
+        $roles = Role::whereIn('name', ['admin', 'kepala_lab', 'pimpinan'])->pluck('name');
+        $laboratories = Laboratory::orderBy('name')->get();
 
-        return view('pages.admin.accounts', compact('users', 'roles'));
+        return view('pages.admin.accounts', compact('users', 'roles', 'laboratories'));
     }
 
     /**
@@ -51,6 +53,7 @@ class AccountController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
+                'laboratory_id' => $request->role === 'kepala_lab' ? $request->laboratory_id : null,
             ]);
 
             $user->assignRole($request->role);
@@ -86,7 +89,7 @@ class AccountController extends Controller
             }
 
             // Minimum 1 admin verification:
-            // If the user being edited is currently an admin, and the target role is NOT admin (e.g. pimpinan),
+            // If the user being edited is currently an admin, and the target role is NOT admin (e.g. pimpinan, kepala_lab),
             // we must check if there is at least one other admin in the system.
             if ($user->hasRole('admin') && $role !== 'admin') {
                 $adminCount = User::role('admin')->count();
@@ -98,9 +101,12 @@ class AccountController extends Controller
                 }
             }
 
+            $labId = ($role === 'kepala_lab') ? $request->laboratory_id : null;
+
             $user->update([
                 'name' => $request->name,
                 'email' => $request->email,
+                'laboratory_id' => $labId,
             ]);
 
             // Sync role (skip if it was forced to remain current due to self-edit check)

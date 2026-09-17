@@ -27,7 +27,7 @@
                         </x-ui.sheet.description>
                     </x-ui.sheet.header>
 
-                    <form action="{{ route('accounts.store') }}" method="POST" class="mt-6 space-y-4">
+                    <form action="{{ route('accounts.store') }}" method="POST" class="mt-6 space-y-4" x-data="{ selectedRole: '{{ old('role', 'admin') }}' }">
                         @csrf
 
                         <div class="space-y-1.5">
@@ -62,10 +62,24 @@
 
                         <div class="space-y-1.5">
                             <x-form.label for="new_role">Role Hak Akses</x-form.label>
-                            <select id="new_role" name="role" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                            <select id="new_role" name="role" x-model="selectedRole" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                                 <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="kepala_lab" {{ old('role') === 'kepala_lab' ? 'selected' : '' }}>Kepala Lab / PJ Lab</option>
                                 <option value="pimpinan" {{ old('role') === 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
                             </select>
+                        </div>
+
+                        <div class="space-y-1.5" x-show="selectedRole === 'kepala_lab'" x-cloak>
+                            <x-form.label for="new_laboratory_id">Laboratorium <span class="text-destructive">*</span></x-form.label>
+                            <select id="new_laboratory_id" name="laboratory_id" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                <option value="">-- Pilih Laboratorium --</option>
+                                @foreach($laboratories as $lab)
+                                    <option value="{{ $lab->id }}" {{ old('laboratory_id') == $lab->id ? 'selected' : '' }}>
+                                        {{ $lab->name }} ({{ $lab->code }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="text-[11px] text-muted-foreground">Pilih laboratorium yang akan diampu oleh Kepala Lab.</p>
                         </div>
 
                         <x-ui.sheet.footer>
@@ -135,7 +149,7 @@
         </form>
 
         {{-- Tabel Komponen --}}
-        <x-accounts.table :users="$users" />
+        <x-accounts.table :users="$users" :laboratories="$laboratories" />
 
         {{-- Pagination --}}
         <div class="mt-4 flex flex-col items-center justify-between gap-4 border-t border-border py-4 sm:flex-row">
