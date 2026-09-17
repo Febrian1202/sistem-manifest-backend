@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -38,6 +39,7 @@ class Computer extends Authenticatable
         'manufacturer',
         'model',
         'location',
+        'laboratory_id',
         'last_seen_at',
         'scan_requested',
     ];
@@ -49,6 +51,11 @@ class Computer extends Authenticatable
         'serial_number',
         'ip_address',
     ];
+
+    public function laboratory(): BelongsTo
+    {
+        return $this->belongsTo(Laboratory::class);
+    }
 
     public function softwares()
     {

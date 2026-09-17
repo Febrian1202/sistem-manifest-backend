@@ -24,12 +24,24 @@ class RoleAndPermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'manage licenses', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'view reports', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'manage users', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'manage laboratories', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'review reports', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'view lab inventory', 'guard_name' => 'web']);
 
         // 2. Create roles and assign permissions
 
         // Admin: Full access
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $adminRole->givePermissionTo(Permission::all());
+
+        // Kepala Lab (PJ Lab)
+        $kepalaLabRole = Role::firstOrCreate(['name' => 'kepala_lab', 'guard_name' => 'web']);
+        $kepalaLabRole->givePermissionTo([
+            'access admin panel',
+            'view reports',
+            'review reports',
+            'view lab inventory',
+        ]);
 
         // Pimpinan: Read-only access
         $pimpinanRole = Role::firstOrCreate(['name' => 'pimpinan', 'guard_name' => 'web']);

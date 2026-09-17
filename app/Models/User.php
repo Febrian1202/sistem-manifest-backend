@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -33,7 +34,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'laboratory_id',
     ];
+
+    public function laboratory(): BelongsTo
+    {
+        return $this->belongsTo(Laboratory::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.
