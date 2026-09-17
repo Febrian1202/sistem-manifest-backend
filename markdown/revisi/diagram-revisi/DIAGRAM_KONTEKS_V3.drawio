@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" type="device">
+  <diagram name="Diagram Konteks V3" id="konteks-v3"><mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="e_staff" value="&lt;b&gt;Admin / Staff Lab&lt;/b&gt;" style="shape=doubleEllipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;verticalAlign=middle;spacingTop=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="40" width="180" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_pjlab" value="&lt;b&gt;Penanggung Jawab&lt;br&gt;Lab (PJ Lab)&lt;/b&gt;" style="shape=doubleEllipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="720" y="40" width="180" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="sistem" value="&lt;b&gt;0.&lt;/b&gt;&lt;br&gt;&lt;b&gt;Sistem Informasi Manifest&lt;/b&gt;&lt;br&gt;&lt;b&gt;Lisensi Perangkat Lunak&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="330" y="320" width="340" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e_dekan" value="&lt;b&gt;Dekan&lt;/b&gt;" style="shape=doubleEllipse;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="410" y="600" width="180" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1_in" value="Data Scan Komputer (Data Komputer/OS),&#xa;Data Scan Komputer (Data Software Terdeteksi),&#xa;Data Scan Komputer (Data Lisensi),&#xa;Data Katalog Software, Data Aturan Whitelist/Blacklist,&#xa;Data Pengajuan Laporan Lab" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=0;fontSize=10;align=right;verticalAlign=bottom;labelBackgroundColor=none;exitX=0.5;exitY=1;entryX=0.2;entryY=0;" edge="1" source="e_staff" target="sistem" parent="1">
+          <mxGeometry x="-0.05" y="15" relative="1" as="geometry">
+            <mxPoint as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e1_out" value="Informasi Status Scan &amp; Token,&#xa;Informasi Aset Komputer &amp; Software,&#xa;Informasi Log Aktivitas,&#xa;Informasi Kesiapan Scan Lab" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=0;fontSize=10;dashed=1;align=right;verticalAlign=top;labelBackgroundColor=none;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" edge="1" source="sistem" target="e_staff" parent="1">
+          <mxGeometry x="-0.5" y="-10" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="60" y="375"/>
+              <mxPoint x="60" y="85"/>
+            </Array>
+            <mxPoint as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e2_in" value="Data Verifikasi Inventaris,&#xa;Data Keputusan Persetujuan Laporan,&#xa;Data Catatan Review" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=0;fontSize=10;align=left;verticalAlign=bottom;labelBackgroundColor=none;exitX=0.5;exitY=1;entryX=0.8;entryY=0;" edge="1" source="e_pjlab" target="sistem" parent="1">
+          <mxGeometry x="0.05" y="15" relative="1" as="geometry">
+            <mxPoint as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e2_out" value="Daftar Inventaris Lab,&#xa;Draf Laporan Kepatuhan Lab,&#xa;Notifikasi Temuan Pelanggaran" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=0;fontSize=10;dashed=1;align=left;verticalAlign=top;labelBackgroundColor=none;exitX=1;exitY=0.5;entryX=1;entryY=0.5;" edge="1" source="sistem" target="e_pjlab" parent="1">
+          <mxGeometry x="0.5" y="-10" relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="375"/>
+              <mxPoint x="960" y="85"/>
+            </Array>
+            <mxPoint as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e3_in" value="Parameter Filter Laporan" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=0;fontSize=10;align=right;verticalAlign=bottom;labelBackgroundColor=none;entryX=0.35;entryY=1;exitX=0.35;exitY=0;" edge="1" source="e_dekan" target="sistem" parent="1">
+          <mxGeometry x="0.1" y="10" relative="1" as="geometry">
+            <mxPoint as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e3_out" value="Informasi Dashboard Kepatuhan,&#xa;Dokumen Laporan Final (PDF/Excel)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=0;fontSize=10;dashed=1;align=left;verticalAlign=bottom;labelBackgroundColor=none;exitX=0.65;exitY=1;entryX=0.65;entryY=0;" edge="1" source="sistem" target="e_dekan" parent="1">
+          <mxGeometry x="-0.1" y="-10" relative="1" as="geometry">
+            <mxPoint as="offset"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="title" value="Gambar 3.3 Diagram Konteks (DFD Level 0)&#xa;Sistem Informasi Manifest Lisensi Perangkat Lunak — USN Kolaka" style="text;html=0;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="740" width="480" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend" value="&#xa;Keterangan:&#xa;  ────▶  Aliran data masuk (ke sistem)&#xa;  - - - ▶  Aliran data keluar (dari sistem)" style="text;html=0;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=10;fillColor=#f5f5f5;strokeColor=#CCCCCC;rounded=1;spacingLeft=5;spacingTop=2;" vertex="1" parent="1">
+          <mxGeometry x="30" y="720" width="220" height="65" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel></diagram>
+</mxfile>
