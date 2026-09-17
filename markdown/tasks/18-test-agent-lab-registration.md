@@ -98,5 +98,5 @@ it('rejects registration with invalid laboratory_id', function () {
 - Atau buat file baru `tests/Feature/AgentLabRegistrationTest.php`
 
 ## Verifikasi
-- [ ] `php artisan test --filter=AgentLabRegistration` (atau nama filter yang sesuai) — semua pass
-- [ ] `composer test` — semua test (lama + baru) pass
+- [x] `php artisan test --filter=AgentLabRegistration` (atau nama filter yang sesuai) — semua pass
+- [x] `composer test` — semua test (lama + baru) pass

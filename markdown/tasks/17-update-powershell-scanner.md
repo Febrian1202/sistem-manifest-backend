@@ -56,7 +56,7 @@ $response = Invoke-RestMethod -Uri "$($config.baseUrl)/api/agent/register" `
 - `script/agent/scanner.ps1`
 
 ## Verifikasi
-- [ ] Script bisa membaca `laboratoryId` dari config.json
-- [ ] Registrasi mengirim `laboratory_id` dalam body POST
-- [ ] Script tidak error jika dijalankan (test secara konseptual — tidak perlu test pada komputer klien saat ini)
-- [ ] Bagian scan dan pengiriman hasil tidak berubah
+- [x] Script bisa membaca `laboratoryId` dari config.json
+- [x] Registrasi mengirim `laboratory_id` dalam body POST
+- [x] Script tidak error jika dijalankan (test secara konseptual — tidak perlu test pada komputer klien saat ini)
+- [x] Bagian scan dan pengiriman hasil tidak berubah

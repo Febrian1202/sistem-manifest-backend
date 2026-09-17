@@ -29,6 +29,7 @@ class AgentRegisterController extends Controller
             'mac_address' => ['required', 'string', 'regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/'],
             'hostname' => 'required|string',
             'serial_number' => 'nullable|string',
+            'laboratory_id' => 'required|exists:laboratories,id',
         ]);
 
         if ($validator->fails()) {
@@ -46,6 +47,7 @@ class AgentRegisterController extends Controller
             [
                 'hostname' => $request->hostname,
                 'serial_number' => $request->serial_number,
+                'laboratory_id' => $request->laboratory_id,
                 'last_seen_at' => now(),
             ]
         );
@@ -63,6 +65,7 @@ class AgentRegisterController extends Controller
             'message' => 'Computer registered successfully',
             'computer_id' => $computer->id,
             'hostname' => $computer->hostname,
+            'laboratory_id' => $computer->laboratory_id,
             'token' => $token,
         ], 201);
     }

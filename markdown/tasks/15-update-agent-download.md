@@ -86,7 +86,7 @@ Ganti referensi "Agen Scanner" menjadi "Tools Pemindai" di halaman ini (lihat Ta
 - View halaman download agent (cari file dengan string "Download" atau "Unduh" terkait agent/scanner)
 
 ## Verifikasi
-- [ ] Halaman download menampilkan dropdown laboratorium
-- [ ] Tidak bisa download tanpa memilih lab (validasi required)
-- [ ] File `config.json` dalam ZIP berisi `laboratoryId` dan `laboratoryName`
-- [ ] Format ZIP lainnya (scanner.ps1, instruksi.txt) tidak terganggu
+- [x] Halaman download menampilkan dropdown laboratorium
+- [x] Tidak bisa download tanpa memilih lab (validasi required)
+- [x] File `config.json` dalam ZIP berisi `laboratoryId` dan `laboratoryName`
+- [x] Format ZIP lainnya (scanner.ps1, instruksi.txt) tidak terganggu

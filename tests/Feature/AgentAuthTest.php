@@ -1,26 +1,30 @@
 <?php
 
 use App\Models\Computer;
+use App\Models\Laboratory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 test('agent can register and receive token', function () {
     $mac = 'AA:BB:CC:DD:EE:FF';
+    $lab = Laboratory::factory()->create();
 
     $response = $this->withHeader('X-Agent-Key', config('app.agent_registration_key'))
         ->postJson('/api/agent/register', [
             'mac_address' => $mac,
             'hostname' => 'TEST-PC',
             'serial_number' => 'SN123',
+            'laboratory_id' => $lab->id,
         ]);
 
     $response->assertStatus(201)
-        ->assertJsonStructure(['token', 'computer_id', 'hostname']);
+        ->assertJsonStructure(['token', 'computer_id', 'hostname', 'laboratory_id']);
 
     $this->assertDatabaseHas('computers', [
         'mac_address' => $mac,
         'hostname' => 'TEST-PC',
+        'laboratory_id' => $lab->id,
     ]);
 });
 

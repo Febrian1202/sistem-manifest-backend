@@ -15,6 +15,7 @@ try {
     $config = Get-Content $configFile | ConvertFrom-Json
     $baseUrl = $config.baseUrl
     $registrationKey = $config.registrationKey
+    $laboratoryId = $config.laboratoryId
 } catch {
     Write-Host " [!] Format config.json tidak valid (bukan JSON yang benar)." -ForegroundColor Red
     exit 1
@@ -51,6 +52,7 @@ if (-not (Test-Path $tokenFile)) {
         mac_address   = $macAddress
         hostname      = $hostname
         serial_number = $bios.SerialNumber.Trim()
+        laboratory_id = $laboratoryId
     } | ConvertTo-Json
 
     try {

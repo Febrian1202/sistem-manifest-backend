@@ -1,4 +1,6 @@
 {
     "baseUrl": "https://domain-anda.com/api",
-    "registrationKey": "MASUKKAN_KEY_REGISTRASI_DI_SINI"
+    "registrationKey": "MASUKKAN_KEY_REGISTRASI_DI_SINI",
+    "laboratoryId": 1,
+    "laboratoryName": "Laboratorium Komputasi Dasar"
 }

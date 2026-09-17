@@ -56,8 +56,8 @@ Ini memberikan waktu untuk re-deploy agent scanner ke semua komputer. Setelah se
 - `app/Http/Controllers/Api/AgentRegisterController.php`
 
 ## Verifikasi
-- [ ] `POST /api/agent/register` dengan `laboratory_id` → komputer tersimpan dengan lab yang benar
-- [ ] `POST /api/agent/register` tanpa `laboratory_id` → error validasi (atau null jika backward compatible)
-- [ ] Komputer yang sudah ada di-update `laboratory_id` saat re-register
-- [ ] Token Sanctum tetap di-generate dengan benar
-- [ ] Header `X-Agent-Key` masih dicek (fungsionalitas lama tidak terganggu)
+- [x] `POST /api/agent/register` dengan `laboratory_id` → komputer tersimpan dengan lab yang benar
+- [x] `POST /api/agent/register` tanpa `laboratory_id` → error validasi (atau null jika backward compatible)
+- [x] Komputer yang sudah ada di-update `laboratory_id` saat re-register
+- [x] Token Sanctum tetap di-generate dengan benar
+- [x] Header `X-Agent-Key` masih dicek (fungsionalitas lama tidak terganggu)
