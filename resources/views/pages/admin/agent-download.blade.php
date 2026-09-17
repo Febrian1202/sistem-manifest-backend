@@ -82,7 +82,7 @@
                 <div class="rounded-md bg-muted/50 p-3 border border-border text-xs text-foreground/80 space-y-1">
                     <p class="font-semibold text-foreground">Langkah Pemasangan di Komputer Klien:</p>
                     <ol class="list-decimal list-inside space-y-1 pl-1">
-                        <li>Ekstrak seluruh file ZIP ke folder permanen (misalnya: <code class="bg-background px-1 py-0.5 rounded">C:\USN-Manifest-Agent\</code>).</li>
+                        <li>Ekstrak seluruh file ZIP ke folder permanen (misalnya: <code class="bg-background px-1 py-0.5 rounded">C:\USN-Manifest-Scanner\</code>).</li>
                         <li>Jalankan <code class="bg-background px-1 py-0.5 rounded">scanner.ps1</code> dengan PowerShell untuk pendaftaran dan pemindaian perdana.</li>
                         <li>Jalankan <code class="bg-background px-1 py-0.5 rounded">setup_tasks.ps1</code> (Run as Administrator) agar pemindaian terjadwal otomatis.</li>
                     </ol>

@@ -34,6 +34,10 @@ Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function ()
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
+Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function () {
+    Route::get('/compliance', [ComplianceDataController::class, 'index'])->name('compliance');
+});
+
 Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     // Shared Read-only access
     Route::get('/computers', [ComputerDataController::class, 'index'])->name('computers');
@@ -41,7 +45,6 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     Route::get('/softwares', [SoftwareDataController::class, 'index'])->name('softwares');
     Route::get('/licenses', [LicenseDataController::class, 'index'])->name('licenses');
     Route::get('/licenses/{license}', [LicenseDataController::class, 'show'])->name('licenses.show');
-    Route::get('/compliance', [ComplianceDataController::class, 'index'])->name('compliance');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports');
 
     // New detailed reports

@@ -12,6 +12,20 @@
             </p>
         </div>
 
+        @if(isset($isPimpinan) && $isPimpinan && isset($hasApprovedLabs) && ! $hasApprovedLabs)
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-md">
+                <div class="flex">
+                    <div class="shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-semibold text-amber-800">Belum ada laporan yang disetujui untuk periode ini.</p>
+                        <p class="text-xs text-amber-700 mt-0.5">Data audit kepatuhan pimpinan hanya memuat komputer dari laboratorium yang laporannya telah disetujui (Approved) oleh Penanggung Jawab Laboratorium untuk periode {{ \Carbon\Carbon::createFromFormat('Y-m', $currentPeriod)->translatedFormat('F Y') }}.</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         {{-- Stat Cards Kepatuhan --}}
         <x-compliance.card-section :stats="$stats" />
 

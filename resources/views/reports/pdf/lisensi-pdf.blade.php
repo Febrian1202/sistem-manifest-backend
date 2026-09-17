@@ -83,6 +83,34 @@
         </tbody>
     </table>
 
+    @if(isset($approvalData) && $approvalData->isNotEmpty())
+    <div style="margin-top: 25px; margin-bottom: 8px; font-weight: bold; font-size: 11px;">Status Verifikasi Penanggung Jawab Laboratorium</div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Laboratorium</th>
+                <th class="text-center" width="90">Status</th>
+                <th>Diverifikasi Oleh</th>
+                <th class="text-center" width="110">Tanggal</th>
+                <th>Catatan Evaluasi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($approvalData as $approval)
+            <tr>
+                <td><strong>{{ $approval->laboratory->name ?? '-' }}</strong> ({{ $approval->laboratory->code ?? '-' }})</td>
+                <td class="text-center" style="color: #166534; font-weight: bold;">
+                    {{ $approval->status === 'approved' ? 'Disetujui' : ucfirst($approval->status) }}
+                </td>
+                <td>{{ $approval->reviewer?->name ?? '-' }}</td>
+                <td class="text-center">{{ $approval->reviewed_at ? $approval->reviewed_at->format('d/m/Y H:i') : '-' }}</td>
+                <td>{{ $approval->notes ?: '-' }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @endif
+
     <div class="footer">
         Dokumen ini dicetak secara otomatis oleh Sistem Manifest
     </div>

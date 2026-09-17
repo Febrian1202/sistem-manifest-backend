@@ -19,11 +19,14 @@ class LisensiExport implements FromCollection, ShouldAutoSize, WithHeadings, Wit
 
     protected $endDate;
 
-    public function __construct($licenses, $startDate, $endDate)
+    protected $approvalData;
+
+    public function __construct($licenses, $startDate, $endDate, $approvalData = null)
     {
         $this->licenses = $licenses;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->approvalData = $approvalData;
     }
 
     public function collection()
@@ -101,6 +104,31 @@ class LisensiExport implements FromCollection, ShouldAutoSize, WithHeadings, Wit
                 $sheet->getStyle('A'.$row.':I'.$row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FEE2E2');
             } elseif ($status === 'Hampir Habis') {
                 $sheet->getStyle('A'.$row.':I'.$row)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FEF9C3');
+            }
+        }
+
+        if ($this->approvalData && $this->approvalData->isNotEmpty()) {
+            $lastRow = $sheet->getHighestRow();
+            $currentRow = $lastRow + 2;
+            $sheet->setCellValue('A'.$currentRow, 'STATUS VERIFIKASI PENANGGUNG JAWAB LABORATORIUM');
+            $sheet->getStyle('A'.$currentRow)->getFont()->setBold(true);
+
+            $currentRow++;
+            $sheet->setCellValue('A'.$currentRow, 'Laboratorium');
+            $sheet->setCellValue('B'.$currentRow, 'Status');
+            $sheet->setCellValue('C'.$currentRow, 'Diverifikasi Oleh');
+            $sheet->setCellValue('D'.$currentRow, 'Tanggal Verifikasi');
+            $sheet->setCellValue('E'.$currentRow, 'Catatan Evaluasi');
+            $sheet->getStyle('A'.$currentRow.':E'.$currentRow)->getFont()->setBold(true);
+            $sheet->getStyle('A'.$currentRow.':E'.$currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E5E7EB');
+
+            foreach ($this->approvalData as $approval) {
+                $currentRow++;
+                $sheet->setCellValue('A'.$currentRow, ($approval->laboratory->name ?? '-').' ('.($approval->laboratory->code ?? '-').')');
+                $sheet->setCellValue('B'.$currentRow, $approval->status === 'approved' ? 'Disetujui' : ucfirst($approval->status));
+                $sheet->setCellValue('C'.$currentRow, $approval->reviewer?->name ?? '-');
+                $sheet->setCellValue('D'.$currentRow, $approval->reviewed_at ? $approval->reviewed_at->format('d/m/Y H:i') : '-');
+                $sheet->setCellValue('E'.$currentRow, $approval->notes ?: '-');
             }
         }
 

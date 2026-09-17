@@ -10,11 +10,13 @@ use App\Jobs\GenerateComplianceReportJob;
 use App\Models\ComplianceReport;
 use App\Models\Computer;
 use App\Models\LicenseInventory;
+use App\Models\ReportApproval;
 use App\Models\SoftwareDiscovery;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
@@ -40,56 +42,127 @@ class ReportController extends Controller
         return [$startDate, $endDate];
     }
 
+    /**
+     * Get approved laboratory IDs for a specific report type and period.
+     */
+    private function getApprovedLabIds(string $reportType, string $period): Collection
+    {
+        return ReportApproval::where('status', 'approved')
+            ->where('report_type', $reportType)
+            ->where('period', $period)
+            ->pluck('laboratory_id');
+    }
+
+    /**
+     * Get approved report approval records with relations for metadata.
+     */
+    private function getApprovalData(string $reportType, string $period): Collection
+    {
+        return ReportApproval::where('status', 'approved')
+            ->where('report_type', $reportType)
+            ->where('period', $period)
+            ->with(['laboratory', 'reviewer'])
+            ->get();
+    }
+
     // --- 1. RINGKASAN EKSEKUTIF [PDF ONLY] ---
 
     public function showEksekutif(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
-        $data = $this->getEksekutifData($startDate, $endDate);
+        $period = $request->input('period', $startDate->format('Y-m'));
+        $isPimpinan = auth()->user()?->hasRole('pimpinan');
+        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
+        $approvalData = $this->getApprovalData('kepatuhan', $period);
+
+        $data = $this->getEksekutifData($startDate, $endDate, $approvedLabIds);
 
         return view('reports.eksekutif', array_merge($data, [
             'startDate' => $startDate->toDateString(),
             'endDate' => $endDate->toDateString(),
+            'period' => $period,
+            'isPimpinan' => $isPimpinan,
+            'hasApprovedLabs' => ! $isPimpinan || ($approvedLabIds && $approvedLabIds->isNotEmpty()),
+            'approvalData' => $approvalData,
         ]));
     }
 
     public function exportEksekutif(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
-        $data = $this->getEksekutifData($startDate, $endDate);
+        $period = $request->input('period', $startDate->format('Y-m'));
+        $isPimpinan = auth()->user()?->hasRole('pimpinan');
+        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
+        $approvalData = $this->getApprovalData('kepatuhan', $period);
+
+        $data = $this->getEksekutifData($startDate, $endDate, $approvedLabIds);
         $data['print_date'] = now()->format('d/m/Y H:i');
         $data['printed_by'] = auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')';
         $data['startDateStr'] = $startDate->format('d/m/Y');
         $data['endDateStr'] = $endDate->format('d/m/Y');
+        $data['period'] = $period;
+        $data['approvalData'] = $approvalData;
 
         $pdf = Pdf::loadView('reports.pdf.eksekutif-pdf', $data)->setPaper('a4', 'portrait');
 
         return $pdf->stream('laporan-eksekutif_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.pdf');
     }
 
-    private function getEksekutifData($startDate, $endDate)
+    private function getEksekutifData($startDate, $endDate, ?Collection $approvedLabIds = null)
     {
-        $totalComputers = Computer::count();
-        $totalInstallations = SoftwareDiscovery::whereBetween('created_at', [$startDate, $endDate])->count();
+        $isPimpinan = auth()->user()?->hasRole('pimpinan');
+
+        $computersQuery = Computer::query();
+        if ($isPimpinan) {
+            $computersQuery->whereIn('laboratory_id', $approvedLabIds ?? collect());
+        }
+        $totalComputers = $computersQuery->count();
+
+        $installationsQuery = SoftwareDiscovery::whereBetween('created_at', [$startDate, $endDate]);
+        if ($isPimpinan) {
+            $installationsQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $approvedLabIds ?? collect()));
+        }
+        $totalInstallations = $installationsQuery->count();
 
         // Compliance stats
-        $licensed = Computer::where('os_license_status', 'Licensed')->count();
+        $licensedQuery = Computer::where('os_license_status', 'Licensed');
+        if ($isPimpinan) {
+            $licensedQuery->whereIn('laboratory_id', $approvedLabIds ?? collect());
+        }
+        $licensed = $licensedQuery->count();
         $complianceRate = $totalComputers > 0 ? round(($licensed / $totalComputers) * 100, 2) : 0;
 
-        $criticalAlerts = SoftwareDiscovery::whereHas('catalog', function ($q) {
+        $criticalAlertsQuery = SoftwareDiscovery::whereHas('catalog', function ($q) {
             $q->where('category', 'Commercial')->whereDoesntHave('licenses');
-        })->whereBetween('created_at', [$startDate, $endDate])->count();
+        })->whereBetween('created_at', [$startDate, $endDate]);
+        if ($isPimpinan) {
+            $criticalAlertsQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $approvedLabIds ?? collect()));
+        }
+        $criticalAlerts = $criticalAlertsQuery->count();
+
+        $graceQuery = Computer::where('os_license_status', 'Grace Period');
+        $actionNeededQuery = Computer::whereNotIn('os_license_status', ['Licensed', 'Grace Period']);
+        if ($isPimpinan) {
+            $graceQuery->whereIn('laboratory_id', $approvedLabIds ?? collect());
+            $actionNeededQuery->whereIn('laboratory_id', $approvedLabIds ?? collect());
+        }
+        $graceCount = $graceQuery->count();
+        $actionNeededCount = $actionNeededQuery->count();
 
         $breakdown = [
             ['status' => 'Berlisensi', 'count' => $licensed, 'pct' => $totalComputers > 0 ? round(($licensed / $totalComputers) * 100, 1) : 0],
-            ['status' => 'Masa Tenggang', 'count' => Computer::where('os_license_status', 'Grace Period')->count(), 'pct' => $totalComputers > 0 ? round((Computer::where('os_license_status', 'Grace Period')->count() / $totalComputers) * 100, 1) : 0],
-            ['status' => 'Perlu Tindakan', 'count' => Computer::whereNotIn('os_license_status', ['Licensed', 'Grace Period'])->count(), 'pct' => $totalComputers > 0 ? round((Computer::whereNotIn('os_license_status', ['Licensed', 'Grace Period'])->count() / $totalComputers) * 100, 1) : 0],
+            ['status' => 'Masa Tenggang', 'count' => $graceCount, 'pct' => $totalComputers > 0 ? round(($graceCount / $totalComputers) * 100, 1) : 0],
+            ['status' => 'Perlu Tindakan', 'count' => $actionNeededCount, 'pct' => $totalComputers > 0 ? round(($actionNeededCount / $totalComputers) * 100, 1) : 0],
         ];
 
-        $topUnlicensed = SoftwareDiscovery::whereHas('catalog', function ($q) {
+        $topUnlicensedQuery = SoftwareDiscovery::whereHas('catalog', function ($q) {
             $q->where('category', 'Commercial')->whereDoesntHave('licenses');
-        })
-            ->whereBetween('created_at', [$startDate, $endDate])
+        })->whereBetween('created_at', [$startDate, $endDate]);
+        if ($isPimpinan) {
+            $topUnlicensedQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $approvedLabIds ?? collect()));
+        }
+
+        $topUnlicensed = $topUnlicensedQuery
             ->select('raw_name', \DB::raw('count(*) as total'))
             ->groupBy('raw_name')
             ->orderByDesc('total')
@@ -104,20 +177,47 @@ class ReportController extends Controller
     public function showKomputer(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
+        $isPimpinan = auth()->user()?->hasRole('pimpinan');
+        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
+        $approvalData = $this->getApprovalData('kepatuhan', $period);
+
         $query = Computer::withCount('softwares')->whereBetween('created_at', [$startDate, $endDate])->orderBy('hostname');
+        if ($isPimpinan) {
+            $query->whereIn('laboratory_id', $approvedLabIds ?? collect());
+        }
+
         $computers = $query->paginate(15)->withQueryString();
 
-        return view('reports.komputer', compact('computers', 'startDate', 'endDate'));
+        return view('reports.komputer', [
+            'computers' => $computers,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'period' => $period,
+            'isPimpinan' => $isPimpinan,
+            'hasApprovedLabs' => ! $isPimpinan || ($approvedLabIds && $approvedLabIds->isNotEmpty()),
+            'approvalData' => $approvalData,
+        ]);
     }
 
     public function exportKomputer(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
         $format = $request->query('format', 'pdf');
-        $computers = Computer::withCount('softwares')->whereBetween('created_at', [$startDate, $endDate])->orderBy('hostname')->get();
+        $isPimpinan = auth()->user()?->hasRole('pimpinan');
+        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
+        $approvalData = $this->getApprovalData('kepatuhan', $period);
+
+        $query = Computer::withCount('softwares')->whereBetween('created_at', [$startDate, $endDate])->orderBy('hostname');
+        if ($isPimpinan) {
+            $query->whereIn('laboratory_id', $approvedLabIds ?? collect());
+        }
+
+        $computers = $query->get();
 
         if ($format === 'excel') {
-            return Excel::download(new KomputerExport($computers, $startDate, $endDate), 'inventaris-komputer_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
+            return Excel::download(new KomputerExport($computers, $startDate, $endDate, $approvalData), 'inventaris-komputer_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
         }
 
         $data = [
@@ -126,6 +226,8 @@ class ReportController extends Controller
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
             'printed_by' => auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')',
+            'period' => $period,
+            'approvalData' => $approvalData,
         ];
 
         return Pdf::loadView('reports.pdf.komputer-pdf', $data)->setPaper('a4', 'landscape')->stream();
@@ -136,19 +238,37 @@ class ReportController extends Controller
     public function showSoftware(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
-        $softwares = $this->getSoftwareData($startDate, $endDate)->paginate(15)->withQueryString();
+        $period = $request->input('period', $startDate->format('Y-m'));
+        $isPimpinan = auth()->user()?->hasRole('pimpinan');
+        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
+        $approvalData = $this->getApprovalData('kepatuhan', $period);
 
-        return view('reports.software', compact('softwares', 'startDate', 'endDate'));
+        $softwares = $this->getSoftwareData($startDate, $endDate, $approvedLabIds)->paginate(15)->withQueryString();
+
+        return view('reports.software', [
+            'softwares' => $softwares,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'period' => $period,
+            'isPimpinan' => $isPimpinan,
+            'hasApprovedLabs' => ! $isPimpinan || ($approvedLabIds && $approvedLabIds->isNotEmpty()),
+            'approvalData' => $approvalData,
+        ]);
     }
 
     public function exportSoftware(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
         $format = $request->query('format', 'pdf');
-        $softwares = $this->getSoftwareData($startDate, $endDate)->get();
+        $isPimpinan = auth()->user()?->hasRole('pimpinan');
+        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
+        $approvalData = $this->getApprovalData('kepatuhan', $period);
+
+        $softwares = $this->getSoftwareData($startDate, $endDate, $approvedLabIds)->get();
 
         if ($format === 'excel') {
-            return Excel::download(new SoftwareExport($softwares, $startDate, $endDate), 'inventaris-software_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
+            return Excel::download(new SoftwareExport($softwares, $startDate, $endDate, $approvalData), 'inventaris-software_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
         }
 
         $data = [
@@ -157,15 +277,24 @@ class ReportController extends Controller
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
             'printed_by' => auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')',
+            'period' => $period,
+            'approvalData' => $approvalData,
         ];
 
         return Pdf::loadView('reports.pdf.software-pdf', $data)->setPaper('a4', 'portrait')->stream();
     }
 
-    private function getSoftwareData($startDate, $endDate)
+    private function getSoftwareData($startDate, $endDate, ?Collection $approvedLabIds = null)
     {
-        return SoftwareDiscovery::whereBetween('software_discoveries.created_at', [$startDate, $endDate])
-            ->join('software_catalogs', 'software_discoveries.catalog_id', '=', 'software_catalogs.id')
+        $query = SoftwareDiscovery::whereBetween('software_discoveries.created_at', [$startDate, $endDate])
+            ->join('software_catalogs', 'software_discoveries.catalog_id', '=', 'software_catalogs.id');
+
+        if ($approvedLabIds !== null) {
+            $query->join('computers', 'software_discoveries.computer_id', '=', 'computers.id')
+                ->whereIn('computers.laboratory_id', $approvedLabIds);
+        }
+
+        return $query
             ->select(
                 'software_discoveries.catalog_id',
                 'software_discoveries.version',
@@ -188,27 +317,53 @@ class ReportController extends Controller
     public function showKepatuhan(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
+        $isPimpinan = auth()->user()?->hasRole('pimpinan');
+        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
+        $approvalData = $this->getApprovalData('kepatuhan', $period);
 
-        $reports = ComplianceReport::with(['computer', 'softwareCatalog'])
+        $query = ComplianceReport::with(['computer', 'softwareCatalog'])
             ->whereBetween('scanned_at', [$startDate, $endDate])
-            ->orderByDesc('scanned_at')
-            ->paginate(15)->withQueryString();
+            ->orderByDesc('scanned_at');
 
-        return view('reports.kepatuhan', compact('reports', 'startDate', 'endDate'));
+        if ($isPimpinan) {
+            $query->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $approvedLabIds ?? collect()));
+        }
+
+        $reports = $query->paginate(15)->withQueryString();
+
+        return view('reports.kepatuhan', [
+            'reports' => $reports,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'period' => $period,
+            'isPimpinan' => $isPimpinan,
+            'hasApprovedLabs' => ! $isPimpinan || ($approvedLabIds && $approvedLabIds->isNotEmpty()),
+            'approvalData' => $approvalData,
+        ]);
     }
 
     public function exportKepatuhan(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
         $format = $request->query('format', 'pdf');
+        $isPimpinan = auth()->user()?->hasRole('pimpinan');
+        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
+        $approvalData = $this->getApprovalData('kepatuhan', $period);
 
-        $reports = ComplianceReport::with(['computer', 'softwareCatalog'])
+        $query = ComplianceReport::with(['computer', 'softwareCatalog'])
             ->whereBetween('scanned_at', [$startDate, $endDate])
-            ->orderByDesc('scanned_at')
-            ->get();
+            ->orderByDesc('scanned_at');
+
+        if ($isPimpinan) {
+            $query->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $approvedLabIds ?? collect()));
+        }
+
+        $reports = $query->get();
 
         if ($format === 'excel') {
-            return Excel::download(new KepatuhanExport($reports, $startDate, $endDate), 'kepatuhan-lisensi_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
+            return Excel::download(new KepatuhanExport($reports, $startDate, $endDate, $approvalData), 'kepatuhan-lisensi_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
         }
 
         $data = [
@@ -217,6 +372,8 @@ class ReportController extends Controller
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
             'printed_by' => auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')',
+            'period' => $period,
+            'approvalData' => $approvalData,
         ];
 
         return Pdf::loadView('reports.pdf.kepatuhan-pdf', $data)->setPaper('a4', 'portrait')->stream();
@@ -227,6 +384,9 @@ class ReportController extends Controller
     public function showLisensi(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
+        $approvalData = $this->getApprovalData('kepatuhan', $period);
+
         $licenses = LicenseInventory::with('catalog')
             ->select('*')
             ->selectRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) as used_count')
@@ -253,13 +413,21 @@ class ReportController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
-        return view('reports.lisensi', ['licenses' => $paginatedLicenses, 'startDate' => $startDate, 'endDate' => $endDate]);
+        return view('reports.lisensi', [
+            'licenses' => $paginatedLicenses,
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'period' => $period,
+            'approvalData' => $approvalData,
+        ]);
     }
 
     public function exportLisensi(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
         $format = $request->query('format', 'pdf');
+        $approvalData = $this->getApprovalData('kepatuhan', $period);
 
         $licenses = LicenseInventory::with('catalog')
             ->select('*')
@@ -275,7 +443,7 @@ class ReportController extends Controller
             });
 
         if ($format === 'excel') {
-            return Excel::download(new LisensiExport($licenses, $startDate, $endDate), 'status-lisensi_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
+            return Excel::download(new LisensiExport($licenses, $startDate, $endDate, $approvalData), 'status-lisensi_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
         }
 
         $data = [
@@ -284,6 +452,8 @@ class ReportController extends Controller
             'endDateStr' => $endDate->format('d/m/Y'),
             'print_date' => now()->format('d/m/Y H:i'),
             'printed_by' => auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')',
+            'period' => $period,
+            'approvalData' => $approvalData,
         ];
 
         return Pdf::loadView('reports.pdf.lisensi-pdf', $data)->setPaper('a4', 'portrait')->stream();

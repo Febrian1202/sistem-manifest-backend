@@ -150,7 +150,17 @@
                         <p class="font-mono font-medium">{{ $computer->serial_number ?? '-' }}</p>
                     </div>
                     <div class="col-span-2 sm:col-span-1">
-                        <p class="text-muted-foreground text-xs uppercase mb-1">Lokasi</p>
+                        <p class="text-muted-foreground text-xs uppercase mb-1">Laboratorium</p>
+                        <p class="font-medium">
+                            @if($computer->laboratory)
+                                {{ $computer->laboratory->name }} ({{ $computer->laboratory->code }})
+                            @else
+                                Belum ditentukan
+                            @endif
+                        </p>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <p class="text-muted-foreground text-xs uppercase mb-1">Lokasi Fisik</p>
                         <p class="font-medium">{{ $computer->location ?? 'Belum Diatur' }}</p>
                     </div>
                     

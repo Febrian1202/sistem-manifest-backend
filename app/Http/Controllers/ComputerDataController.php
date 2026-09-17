@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateComputerRequest;
 use App\Models\Computer;
+use App\Models\Laboratory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -14,7 +15,7 @@ class ComputerDataController extends Controller
     public function index(Request $request)
     {
         // 1. Mulai Query
-        $query = Computer::query();
+        $query = Computer::with('laboratory');
 
         // 2. Logika Search (Hostname, IP, atau OS)
         if ($request->filled('search')) {
@@ -26,34 +27,46 @@ class ComputerDataController extends Controller
             });
         }
 
-        // 3. Filter Berdasarkan Lokasi
+        // 3. Filter Berdasarkan Laboratorium
+        if ($request->filled('laboratory_id') && $request->laboratory_id !== 'All') {
+            $query->where('laboratory_id', $request->laboratory_id);
+        }
+
+        // 4. Filter Berdasarkan Lokasi
         if ($request->filled('location') && $request->location !== 'All') {
             $query->where('location', $request->location);
         }
 
-        // 4. Filter Berdasarkan Status Lisensi
+        // 5. Filter Berdasarkan Status Lisensi
         if ($request->filled('license_status') && $request->license_status !== 'All') {
             $query->where('os_license_status', $request->license_status);
         }
 
-        // 5. Ambil data (Pagination)
+        // 6. Ambil data (Pagination)
         $computers = $query->latest('last_seen_at')->paginate(10)->withQueryString();
 
-        // 6. Ambil daftar lokasi unik untuk opsi Filter
+        // 7. Ambil daftar lokasi unik untuk opsi Filter
         $locations = Computer::select('location')
             ->whereNotNull('location')
             ->distinct()
             ->orderBy('location')
             ->pluck('location');
 
-        return view('pages.admin.computers', compact('computers', 'locations'));
+        // 8. Ambil daftar laboratorium untuk opsi Filter
+        $laboratories = Laboratory::orderBy('name')->get();
+
+        return view('pages.admin.computers', compact('computers', 'locations', 'laboratories'));
     }
 
     public function show(Computer $computer)
     {
-        $computer->load(['softwares' => function ($q) {
-            $q->orderBy('raw_name');
-        }, 'softwares.catalog']);
+        $computer->load([
+            'laboratory',
+            'softwares' => function ($q) {
+                $q->orderBy('raw_name');
+            },
+            'softwares.catalog',
+        ]);
 
         return view('pages.admin.computers-show', compact('computer'));
     }
@@ -97,7 +110,7 @@ class ComputerDataController extends Controller
             ->log("Meminta scan ulang komputer {$computer->hostname}");
 
         return back()->with([
-            'message' => 'Permintaan scan dikirim. Agent akan memproses pada polling berikutnya.',
+            'message' => 'Permintaan scan dikirim. Scanner akan memproses pada polling berikutnya.',
             'status' => 'success',
         ]);
     }

@@ -71,8 +71,8 @@ $cacheKey = "compliance.stats.{$user->id}"; // atau scope by role+lab
 - `app/Http/Controllers/ComplianceDataController.php`
 
 ## Verifikasi
-- [ ] Admin melihat semua data compliance (semua lab)
-- [ ] Kepala Lab melihat data compliance lab sendiri saja
-- [ ] Pimpinan melihat data compliance dari lab yang approved saja
-- [ ] Statistik global akurat sesuai scope
-- [ ] Cache tidak menyebabkan data role A muncul di role B
+- [x] Admin melihat semua data compliance (semua lab)
+- [x] Kepala Lab melihat data compliance lab sendiri saja
+- [x] Pimpinan melihat data compliance dari lab yang approved saja
+- [x] Statistik global akurat sesuai scope
+- [x] Cache tidak menyebabkan data role A muncul di role B

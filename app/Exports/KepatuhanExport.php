@@ -20,11 +20,14 @@ class KepatuhanExport implements FromCollection, ShouldAutoSize, WithHeadings, W
 
     protected $endDate;
 
-    public function __construct($reports, $startDate, $endDate)
+    protected $approvalData;
+
+    public function __construct($reports, $startDate, $endDate, $approvalData = null)
     {
         $this->reports = $reports;
         $this->startDate = $startDate;
         $this->endDate = $endDate;
+        $this->approvalData = $approvalData;
     }
 
     public function collection()
@@ -102,6 +105,30 @@ class KepatuhanExport implements FromCollection, ShouldAutoSize, WithHeadings, W
         $sheet->setCellValue('A'.$summaryRow, $summaryText);
         $sheet->mergeCells('A'.$summaryRow.':G'.$summaryRow);
         $sheet->getStyle('A'.$summaryRow)->getFont()->setBold(true);
+
+        if ($this->approvalData && $this->approvalData->isNotEmpty()) {
+            $currentRow = $summaryRow + 2;
+            $sheet->setCellValue('A'.$currentRow, 'STATUS VERIFIKASI PENANGGUNG JAWAB LABORATORIUM');
+            $sheet->getStyle('A'.$currentRow)->getFont()->setBold(true);
+
+            $currentRow++;
+            $sheet->setCellValue('A'.$currentRow, 'Laboratorium');
+            $sheet->setCellValue('B'.$currentRow, 'Status');
+            $sheet->setCellValue('C'.$currentRow, 'Diverifikasi Oleh');
+            $sheet->setCellValue('D'.$currentRow, 'Tanggal Verifikasi');
+            $sheet->setCellValue('E'.$currentRow, 'Catatan Evaluasi');
+            $sheet->getStyle('A'.$currentRow.':E'.$currentRow)->getFont()->setBold(true);
+            $sheet->getStyle('A'.$currentRow.':E'.$currentRow)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E5E7EB');
+
+            foreach ($this->approvalData as $approval) {
+                $currentRow++;
+                $sheet->setCellValue('A'.$currentRow, ($approval->laboratory->name ?? '-').' ('.($approval->laboratory->code ?? '-').')');
+                $sheet->setCellValue('B'.$currentRow, $approval->status === 'approved' ? 'Disetujui' : ucfirst($approval->status));
+                $sheet->setCellValue('C'.$currentRow, $approval->reviewer?->name ?? '-');
+                $sheet->setCellValue('D'.$currentRow, $approval->reviewed_at ? $approval->reviewed_at->format('d/m/Y H:i') : '-');
+                $sheet->setCellValue('E'.$currentRow, $approval->notes ?: '-');
+            }
+        }
 
         return [
             1 => ['font' => ['bold' => true, 'size' => 14]],

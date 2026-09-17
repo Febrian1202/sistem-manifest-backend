@@ -80,7 +80,7 @@ Jika halaman daftar komputer sudah punya filter (dropdown lokasi), pertimbangkan
 - View detail komputer (show)
 
 ## Verifikasi
-- [ ] Daftar komputer menampilkan nama lab (bukan hanya string location)
-- [ ] Komputer tanpa lab menampilkan fallback (location string atau "-")
-- [ ] Detail komputer menampilkan info lab
-- [ ] View tetap tampil benar untuk komputer tanpa `laboratory_id` (backward compatible)
+- [x] Daftar komputer menampilkan nama lab (bukan hanya string location)
+- [x] Komputer tanpa lab menampilkan fallback (location string atau "-")
+- [x] Detail komputer menampilkan info lab
+- [x] View tetap tampil benar untuk komputer tanpa `laboratory_id` (backward compatible)

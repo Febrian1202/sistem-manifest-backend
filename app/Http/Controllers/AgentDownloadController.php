@@ -69,7 +69,7 @@ class AgentDownloadController extends Controller
 
 1. Ekstrak seluruh isi file ZIP ini ke dalam sebuah folder permanen.
    SANGAT DISARANKAN meletakkannya di folder permanen seperti: 
-   C:\USN-Manifest-Agent\ atau direktori aplikasi lainnya.
+   C:\USN-Manifest-Scanner\ atau direktori aplikasi lainnya.
    (Hindari diletakkan di folder sementara seperti 'Downloads')
 
    (Pastikan keempat file: scanner.ps1, setup_tasks.ps1, config.json, 

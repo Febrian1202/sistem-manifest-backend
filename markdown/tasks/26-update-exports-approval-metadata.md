@@ -78,7 +78,7 @@ $approvalData = ReportApproval::where('status', 'approved')
 - `app/Http/Controllers/ReportController.php` — pass data approval ke view/export
 
 ## Verifikasi
-- [ ] PDF menampilkan info "Diverifikasi oleh [nama PJ Lab] pada [tanggal]"
-- [ ] Excel menyertakan metadata approval
-- [ ] Metadata hanya muncul untuk lab yang sudah approved
-- [ ] Format dokumen yang sudah ada tidak rusak
+- [x] PDF menampilkan info "Diverifikasi oleh [nama PJ Lab] pada [tanggal]"
+- [x] Excel menyertakan metadata approval
+- [x] Metadata hanya muncul untuk lab yang sudah approved
+- [x] Format dokumen yang sudah ada tidak rusak

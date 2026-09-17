@@ -44,6 +44,20 @@
             </form>
         </div>
 
+        @if(isset($isPimpinan) && $isPimpinan && isset($hasApprovedLabs) && ! $hasApprovedLabs)
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-r-md">
+                <div class="flex">
+                    <div class="shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-semibold text-amber-800">Belum ada laporan yang disetujui untuk periode ini.</p>
+                        <p class="text-xs text-amber-700 mt-0.5">Daftar inventaris software pimpinan hanya memuat software yang terpasang pada komputer laboratorium yang telah disetujui (Approved) oleh Penanggung Jawab Laboratorium.</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="mb-4 text-sm text-gray-600 italic">
             Menampilkan {{ $softwares->total() }} data untuk periode {{ $startDate->format('d/m/Y') }} s/d
             {{ $endDate->format('d/m/Y') }}

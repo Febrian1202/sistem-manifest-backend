@@ -68,6 +68,20 @@
             </div>
         </div>
 
+        @if(isset($isPimpinan) && $isPimpinan && isset($hasApprovedLabs) && ! $hasApprovedLabs)
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-r-md">
+                <div class="flex">
+                    <div class="shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-semibold text-amber-800">Belum ada laporan yang disetujui untuk periode ini.</p>
+                        <p class="text-xs text-amber-700 mt-0.5">Laporan kepatuhan lisensi pimpinan hanya memuat temuan dari laboratorium yang laporannya telah disetujui (Approved) oleh Penanggung Jawab Laboratorium.</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <div class="mb-4 flex items-center justify-between">
             <div class="text-sm text-gray-600 italic">
                 Menampilkan {{ $reports->total() }} temuan untuk periode {{ $startDate->format('d/m/Y') }} s/d

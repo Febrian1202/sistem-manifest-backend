@@ -61,7 +61,7 @@ File `instruksi.txt` yang ada di ZIP bundle scanner — jika menyebut "Agen", ga
 - `script/agent/instruksi.txt` (jika ada)
 
 ## Verifikasi
-- [ ] Tidak ada teks "Agen Scanner" yang tampil di UI
-- [ ] Nama class dan route PHP **tidak** berubah
-- [ ] Semua halaman yang menyebut scanner menggunakan narasi baru
-- [ ] Instruksi dalam ZIP bundle menggunakan narasi baru
+- [x] Tidak ada teks "Agen Scanner" yang tampil di UI
+- [x] Nama class dan route PHP **tidak** berubah
+- [x] Semua halaman yang menyebut scanner menggunakan narasi baru
+- [x] Instruksi dalam ZIP bundle menggunakan narasi baru

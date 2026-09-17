@@ -85,6 +85,19 @@
             {{-- RIGHT: Filters + Actions --}}
             <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 md:ml-auto w-full md:w-auto">
 
+                {{-- Laboratory --}}
+                <div class="w-full md:w-48">
+                    <x-ui.select.index name="laboratory_id" value="{{ request('laboratory_id') }}" placeholder="Semua Lab">
+                        <x-ui.select.trigger />
+                        <x-ui.select.content>
+                            <x-ui.select.item value="All">Semua Lab</x-ui.select.item>
+                            @foreach ($laboratories as $lab)
+                                <x-ui.select.item value="{{ $lab->id }}">{{ $lab->name }}</x-ui.select.item>
+                            @endforeach
+                        </x-ui.select.content>
+                    </x-ui.select.index>
+                </div>
+
                 {{-- Location --}}
                 <div class="w-full md:w-48">
                     <x-ui.select.index name="location" value="{{ request('location') }}" placeholder="Semua Lokasi">
@@ -124,7 +137,7 @@
                         <i class="fa-solid fa-filter mr-2"></i> Filter
                     </x-ui.button>
 
-                    @if (request()->hasAny(['search', 'location', 'license_status']))
+                    @if (request()->hasAny(['search', 'laboratory_id', 'location', 'license_status']))
                         <a href="{{ url()->current() }}">
                             <x-ui.button type="button" variant="outline" title="Reset Filter">
                                 <i class="fa-solid fa-xmark"></i>

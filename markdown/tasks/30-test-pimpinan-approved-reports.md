@@ -83,18 +83,18 @@ Semua test (lama + baru dari Sprint 1-5) harus pass.
 
 ### 4. Checklist Akhir Sprint 5
 
-- [ ] Semua fitur PJ Lab berfungsi (inventaris, review, approve/reject)
-- [ ] Admin bisa kirim laporan ke PJ Lab
-- [ ] Pimpinan hanya lihat data approved
-- [ ] PDF/Excel menyertakan metadata approval
-- [ ] Narasi "Agen Scanner" sudah diganti di UI
-- [ ] Dashboard per role berfungsi
-- [ ] Compliance page di-scope per role
-- [ ] Semua test pass
+- [x] Semua fitur PJ Lab berfungsi (inventaris, review, approve/reject)
+- [x] Admin bisa kirim laporan ke PJ Lab
+- [x] Pimpinan hanya lihat data approved
+- [x] PDF/Excel menyertakan metadata approval
+- [x] Narasi "Agen Scanner" sudah diganti di UI
+- [x] Dashboard per role berfungsi
+- [x] Compliance page di-scope per role
+- [x] Semua test pass
 
 ## File yang Dibuat
 - `tests/Feature/PimpinanApprovedReportsTest.php`
 
 ## Verifikasi
-- [ ] `php artisan test --filter=PimpinanApprovedReports` — semua pass
-- [ ] `composer test` — SEMUA test pass (0 failures)
+- [x] `php artisan test --filter=PimpinanApprovedReports` — semua pass
+- [x] `composer test` — SEMUA test pass (0 failures)

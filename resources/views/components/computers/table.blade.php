@@ -7,8 +7,8 @@
                     <x-ui.table.table-head>Hostname</x-ui.table.table-head>
                     <x-ui.table.table-head>Alamat IP</x-ui.table.table-head>
                     <x-ui.table.table-head>Info OS</x-ui.table.table-head>
-                    {{-- [BARU] Kolom Location --}}
-                    <x-ui.table.table-head>Lokasi</x-ui.table.table-head>
+                    {{-- Kolom Laboratorium / Lokasi --}}
+                    <x-ui.table.table-head>Laboratorium / Lokasi</x-ui.table.table-head>
                     <x-ui.table.table-head>Status Lisensi</x-ui.table.table-head>
                     <x-ui.table.table-head>Scan Terakhir</x-ui.table.table-head>
                     <x-ui.table.table-head class="text-right">Aksi</x-ui.table.table-head>
@@ -76,11 +76,20 @@
                             </div>
                         </x-ui.table.table-cell>
 
-                        {{-- [BARU] 4. Location --}}
+                        {{-- 4. Laboratorium / Lokasi --}}
                         <x-ui.table.table-cell>
                             <div class="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                <i class="fa-solid fa-location-dot text-[10px] opacity-70"></i>
-                                <span>{{ $computer->location ?? 'Belum Diatur' }}</span>
+                                <i class="fa-solid fa-flask text-[10px] opacity-70"></i>
+                                @if($computer->laboratory)
+                                    <div>
+                                        <span class="font-medium text-foreground">{{ $computer->laboratory->name }}</span>
+                                        <span class="text-[10px] text-muted-foreground">({{ $computer->laboratory->code }})</span>
+                                    </div>
+                                @elseif($computer->location)
+                                    <span>{{ $computer->location }}</span>
+                                @else
+                                    <span class="text-muted-foreground/60">-</span>
+                                @endif
                             </div>
                         </x-ui.table.table-cell>
 

@@ -72,8 +72,8 @@ Filter ini HANYA berlaku untuk role `pimpinan`. Admin tetap melihat semua data t
 - `app/Http/Controllers/ReportController.php`
 
 ## Verifikasi
-- [ ] Pimpinan hanya melihat data dari lab yang sudah approved
-- [ ] Admin tetap melihat semua data (tidak terfilter)
-- [ ] Jika tidak ada lab approved, Pimpinan melihat pesan informatif
-- [ ] Semua 5 tipe laporan terfilter dengan benar
-- [ ] Export PDF/Excel juga terfilter (bukan hanya preview)
+- [x] Pimpinan hanya melihat data dari lab yang sudah approved
+- [x] Admin tetap melihat semua data (tidak terfilter)
+- [x] Jika tidak ada lab approved, Pimpinan melihat pesan informatif
+- [x] Semua 5 tipe laporan terfilter dengan benar
+- [x] Export PDF/Excel juga terfilter (bukan hanya preview)

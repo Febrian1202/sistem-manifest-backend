@@ -45,6 +45,20 @@
             </form>
         </div>
 
+        @if(isset($isPimpinan) && $isPimpinan && isset($hasApprovedLabs) && ! $hasApprovedLabs)
+            <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-r-md">
+                <div class="flex">
+                    <div class="shrink-0">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-semibold text-amber-800">Belum ada laporan yang disetujui untuk periode ini.</p>
+                        <p class="text-xs text-amber-700 mt-0.5">Data ringkasan eksekutif pimpinan hanya memuat data dari laboratorium yang laporannya telah diverifikasi dan disetujui (Approved) oleh Penanggung Jawab Laboratorium.</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
