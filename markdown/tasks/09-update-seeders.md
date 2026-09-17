@@ -100,11 +100,11 @@ User default yang sudah ada **jangan dihapus**:
 - `database/seeders/DatabaseSeeder.php`
 
 ## Verifikasi
-- [ ] `php artisan migrate:fresh --seed` berjalan tanpa error
-- [ ] Tabel `roles` berisi 3 role: `admin`, `kepala_lab`, `pimpinan`
-- [ ] Tabel `permissions` berisi 8 permission (5 lama + 3 baru)
-- [ ] Role `kepala_lab` punya 4 permission yang benar
-- [ ] Tabel `laboratories` berisi sample data lab
-- [ ] Tabel `users` berisi 3 user default (admin, pimpinan, kepala_lab)
-- [ ] User kepala_lab punya `laboratory_id` yang terisi
-- [ ] `composer test` — semua test lama masih pass
+ - [x] `php artisan migrate:fresh --seed` berjalan tanpa error
+ - [x] Tabel `roles` berisi 3 role: `admin`, `kepala_lab`, `pimpinan`
+ - [x] Tabel `permissions` berisi 8 permission (5 lama + 3 baru)
+ - [x] Role `kepala_lab` punya 4 permission yang benar
+ - [x] Tabel `laboratories` berisi sample data lab
+ - [x] Tabel `users` berisi 3 user default (admin, pimpinan, kepala_lab)
+ - [x] User kepala_lab punya `laboratory_id` yang terisi
+ - [x] `composer test` — semua test lama masih pass

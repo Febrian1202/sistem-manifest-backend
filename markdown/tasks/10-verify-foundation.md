@@ -68,12 +68,12 @@ Pastikan 4 migration baru (laboratories, FK computers, FK users, report_approval
 
 ## Kriteria Kelulusan Sprint 1
 
-- [ ] `php artisan migrate:fresh --seed` — sukses tanpa error
-- [ ] 3 role ada di database (admin, kepala_lab, pimpinan)
-- [ ] 8 permission ada di database
-- [ ] 3 default user ada (admin, pimpinan, kepala_lab)
-- [ ] Sample laboratorium tersimpan
-- [ ] User kepala_lab terasosiasi ke laboratorium
-- [ ] Semua relasi model berfungsi (Laboratory ↔ Computer, Laboratory ↔ User, Laboratory ↔ ReportApproval)
-- [ ] `composer test` — SEMUA test pass
-- [ ] Migration rollback + re-migrate berjalan lancar
+ - [x] `php artisan migrate:fresh --seed` — sukses tanpa error
+ - [x] 3 role ada di database (admin, kepala_lab, pimpinan)
+ - [x] 8 permission ada di database
+ - [x] 3 default user ada (admin, pimpinan, kepala_lab)
+ - [x] Sample laboratorium tersimpan
+ - [x] User kepala_lab terasosiasi ke laboratorium
+ - [x] Semua relasi model berfungsi (Laboratory ↔ Computer, Laboratory ↔ User, Laboratory ↔ ReportApproval)
+ - [x] `composer test` — SEMUA test pass
+ - [x] Migration rollback + re-migrate berjalan lancar

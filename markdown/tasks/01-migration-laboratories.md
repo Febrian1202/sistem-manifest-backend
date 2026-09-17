@@ -48,6 +48,6 @@ Schema::create('laboratories', function (Blueprint $table) {
 - `database/migrations/xxxx_xx_xx_xxxxxx_create_laboratories_table.php`
 
 ## Verifikasi
-- [ ] Migration bisa dijalankan tanpa error (`php artisan migrate`)
-- [ ] Migration bisa di-rollback tanpa error (`php artisan migrate:rollback`)
-- [ ] Tabel `laboratories` terbentuk dengan semua kolom yang benar
+ - [x] Migration bisa dijalankan tanpa error (`php artisan migrate`)
+ - [x] Migration bisa di-rollback tanpa error (`php artisan migrate:rollback`)
+ - [x] Tabel `laboratories` terbentuk dengan semua kolom yang benar

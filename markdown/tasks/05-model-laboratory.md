@@ -78,7 +78,7 @@ public function definition(): array
 - `database/factories/LaboratoryFactory.php`
 
 ## Verifikasi
-- [ ] Model bisa di-import tanpa error
-- [ ] `Laboratory::create([...])` berhasil menyimpan data
-- [ ] Relasi `computers()`, `penanggungJawab()`, `reportApprovals()` bisa diakses
-- [ ] Factory bisa menghasilkan instance: `Laboratory::factory()->create()`
+ - [x] Model bisa di-import tanpa error
+ - [x] `Laboratory::create([...])` berhasil menyimpan data
+ - [x] Relasi `computers()`, `penanggungJawab()`, `reportApprovals()` bisa diakses
+ - [x] Factory bisa menghasilkan instance: `Laboratory::factory()->create()`

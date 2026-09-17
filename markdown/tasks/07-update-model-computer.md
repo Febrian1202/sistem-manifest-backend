@@ -40,7 +40,7 @@ public function laboratory(): BelongsTo
 - `app/Models/Computer.php`
 
 ## Verifikasi
-- [ ] `$computer->laboratory` mengembalikan instance `Laboratory` (atau null)
-- [ ] `$computer->laboratory_id` bisa diisi via mass assignment
-- [ ] Semua fungsionalitas lama Computer (Sanctum token, relasi softwareDiscoveries, complianceReports) tetap berjalan
-- [ ] Jalankan `composer test` — semua test yang ada harus tetap pass
+ - [x] `$computer->laboratory` mengembalikan instance `Laboratory` (atau null)
+ - [x] `$computer->laboratory_id` bisa diisi via mass assignment
+ - [x] Semua fungsionalitas lama Computer (Sanctum token, relasi softwareDiscoveries, complianceReports) tetap berjalan
+ - [x] Jalankan `composer test` — semua test yang ada harus tetap pass

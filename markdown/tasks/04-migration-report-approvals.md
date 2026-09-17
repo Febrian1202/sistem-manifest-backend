@@ -57,8 +57,8 @@ Schema::create('report_approvals', function (Blueprint $table) {
 - `database/migrations/xxxx_xx_xx_xxxxxx_create_report_approvals_table.php`
 
 ## Verifikasi
-- [ ] Migration bisa dijalankan tanpa error
-- [ ] Migration bisa di-rollback tanpa error
-- [ ] Tabel `report_approvals` terbentuk dengan semua kolom
-- [ ] Index pada (laboratory_id, report_type, period) aktif
-- [ ] FK constraint ke `laboratories` dan `users` aktif
+ - [x] Migration bisa dijalankan tanpa error
+ - [x] Migration bisa di-rollback tanpa error
+ - [x] Tabel `report_approvals` terbentuk dengan semua kolom
+ - [x] Index pada (laboratory_id, report_type, period) aktif
+ - [x] FK constraint ke `laboratories` dan `users` aktif

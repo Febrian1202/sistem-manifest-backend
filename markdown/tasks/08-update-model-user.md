@@ -40,7 +40,7 @@ public function laboratory(): BelongsTo
 - `app/Models/User.php`
 
 ## Verifikasi
-- [ ] `$user->laboratory` mengembalikan instance `Laboratory` (atau null)
-- [ ] `$user->laboratory_id` bisa diisi via mass assignment
-- [ ] Semua fungsionalitas lama User (Spatie roles/permissions, LogsActivity) tetap berjalan
-- [ ] Jalankan `composer test` — semua test yang ada harus tetap pass
+ - [x] `$user->laboratory` mengembalikan instance `Laboratory` (atau null)
+ - [x] `$user->laboratory_id` bisa diisi via mass assignment
+ - [x] Semua fungsionalitas lama User (Spatie roles/permissions, LogsActivity) tetap berjalan
+ - [x] Jalankan `composer test` — semua test yang ada harus tetap pass

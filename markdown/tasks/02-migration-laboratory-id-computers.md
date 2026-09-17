@@ -41,7 +41,7 @@ public function down(): void
 - `database/migrations/xxxx_xx_xx_xxxxxx_add_laboratory_id_to_computers_table.php`
 
 ## Verifikasi
-- [ ] Migration bisa dijalankan tanpa error
-- [ ] Kolom `laboratory_id` muncul di tabel `computers`
-- [ ] Foreign key constraint aktif ke tabel `laboratories`
-- [ ] Kolom `location` yang lama masih ada
+ - [x] Migration bisa dijalankan tanpa error
+ - [x] Kolom `laboratory_id` muncul di tabel `computers`
+ - [x] Foreign key constraint aktif ke tabel `laboratories`
+ - [x] Kolom `location` yang lama masih ada

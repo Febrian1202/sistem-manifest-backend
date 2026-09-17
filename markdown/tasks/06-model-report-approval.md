@@ -111,8 +111,8 @@ public function rejected(): static
 - `database/factories/ReportApprovalFactory.php`
 
 ## Verifikasi
-- [ ] Model bisa di-import tanpa error
-- [ ] Relasi `laboratory()` dan `reviewer()` berfungsi
-- [ ] Cast `reviewed_at` mengembalikan Carbon instance
-- [ ] Activity log tercatat saat status berubah
-- [ ] Factory states (`approved()`, `rejected()`) berfungsi
+ - [x] Model bisa di-import tanpa error
+ - [x] Relasi `laboratory()` dan `reviewer()` berfungsi
+ - [x] Cast `reviewed_at` mengembalikan Carbon instance
+ - [x] Activity log tercatat saat status berubah
+ - [x] Factory states (`approved()`, `rejected()`) berfungsi
