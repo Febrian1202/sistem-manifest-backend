@@ -93,8 +93,8 @@ Di `resources/views/report-approvals/show.blade.php`, tambahkan tombol "Preview 
 - `routes/web.php` — tambah route
 
 ## Verifikasi
-- [ ] Tombol "Preview PDF" muncul di halaman review
-- [ ] PDF ter-generate dan ditampilkan di tab baru browser
-- [ ] PDF berisi data lab yang benar (bukan lab lain)
-- [ ] PDF menampilkan watermark "Preview" atau "Belum Disetujui"
-- [ ] PJ Lab tidak bisa akses preview PDF lab lain (403)
+- [x] Tombol "Preview PDF" muncul di halaman review
+- [x] PDF ter-generate dan ditampilkan di tab baru browser
+- [x] PDF berisi data lab yang benar (bukan lab lain)
+- [x] PDF menampilkan watermark "Preview" atau "Belum Disetujui"
+- [x] PJ Lab tidak bisa akses preview PDF lab lain (403)

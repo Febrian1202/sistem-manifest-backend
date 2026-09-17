@@ -179,10 +179,10 @@ Route::post('/lab/reports/{reportApproval}/reject', [ReportApprovalController::c
 - `routes/web.php` — tambah routes
 
 ## Verifikasi
-- [ ] Daftar laporan hanya menampilkan lab sendiri
-- [ ] Detail laporan menampilkan ringkasan, temuan, dan daftar komputer
-- [ ] Bisa approve laporan pending (status berubah, timestamp terisi)
-- [ ] Bisa reject laporan pending (notes wajib, status berubah)
-- [ ] Tidak bisa approve/reject laporan yang sudah di-review
-- [ ] Tidak bisa akses laporan lab lain (403)
-- [ ] Activity log tercatat saat approve/reject
+- [x] Daftar laporan hanya menampilkan lab sendiri
+- [x] Detail laporan menampilkan ringkasan, temuan, dan daftar komputer
+- [x] Bisa approve laporan pending (status berubah, timestamp terisi)
+- [x] Bisa reject laporan pending (notes wajib, status berubah)
+- [x] Tidak bisa approve/reject laporan yang sudah di-review
+- [x] Tidak bisa akses laporan lab lain (403)
+- [x] Activity log tercatat saat approve/reject

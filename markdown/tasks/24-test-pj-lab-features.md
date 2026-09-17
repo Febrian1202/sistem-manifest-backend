@@ -109,8 +109,8 @@ it('kepala_lab without lab sees informative message');
 - `tests/Feature/LabScopedDashboardTest.php`
 
 ## Verifikasi
-- [ ] `php artisan test --filter=ReportSubmission` — semua pass
-- [ ] `php artisan test --filter=KepalaLabRole` — semua pass
-- [ ] `php artisan test --filter=ReportApproval` — semua pass
-- [ ] `php artisan test --filter=LabScopedDashboard` — semua pass
-- [ ] `composer test` — SEMUA test (lama + baru) pass
+- [x] `php artisan test --filter=ReportSubmission` — semua pass
+- [x] `php artisan test --filter=KepalaLabRole` — semua pass
+- [x] `php artisan test --filter=ReportApproval` — semua pass
+- [x] `php artisan test --filter=LabScopedDashboard` — semua pass
+- [x] `composer test` — SEMUA test (lama + baru) pass

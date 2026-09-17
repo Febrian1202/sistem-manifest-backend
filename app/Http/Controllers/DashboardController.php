@@ -3,13 +3,119 @@
 namespace App\Http\Controllers;
 
 use App\Models\Computer;
+use App\Models\Laboratory;
+use App\Models\ReportApproval;
 use App\Models\SoftwareDiscovery;
+use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
+    {
+        $user = auth()->user();
+
+        if ($user->hasRole('kepala_lab')) {
+            return $this->labDashboard($user);
+        }
+
+        if ($user->hasRole('pimpinan')) {
+            return $this->pimpinanDashboard();
+        }
+
+        return $this->adminDashboard();
+    }
+
+    private function labDashboard(User $user)
+    {
+        $lab = $user->laboratory;
+
+        if (! $lab) {
+            return view('dashboard.no-lab');
+        }
+
+        $labId = $lab->id;
+        $totalComputers = Computer::where('laboratory_id', $labId)->count();
+        $scannedThisMonth = Computer::where('laboratory_id', $labId)
+            ->whereMonth('last_seen_at', now()->month)
+            ->whereYear('last_seen_at', now()->year)
+            ->count();
+
+        $licensedOS = Computer::where('laboratory_id', $labId)->where('os_license_status', 'Licensed')->count();
+        $complianceRate = $totalComputers > 0 ? round(($licensedOS / $totalComputers) * 100, 1) : 0;
+        $totalSoftware = SoftwareDiscovery::whereHas('computer', fn ($q) => $q->where('laboratory_id', $labId))->count();
+        $pendingReports = ReportApproval::where('laboratory_id', $labId)->where('status', 'pending')->count();
+
+        $stats = [
+            'total_computers' => $totalComputers,
+            'scanned_this_month' => $scannedThisMonth,
+            'licensed_os' => $licensedOS,
+            'compliance_rate' => $complianceRate,
+            'total_software' => $totalSoftware,
+            'pending_reports' => $pendingReports,
+        ];
+
+        $topSoftware = SoftwareDiscovery::whereHas('computer', fn ($q) => $q->where('laboratory_id', $labId))
+            ->with('catalog')
+            ->selectRaw('catalog_id, COUNT(*) as total')
+            ->groupBy('catalog_id')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->catalog ? $item->catalog->normalized_name : 'Unknown Application',
+                    'total' => $item->total,
+                ];
+            });
+
+        $recentComputers = Computer::where('laboratory_id', $labId)
+            ->orderByDesc('last_seen_at')
+            ->take(5)
+            ->get();
+
+        $recentApprovals = ReportApproval::where('laboratory_id', $labId)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return view('dashboard.kepala-lab', compact('lab', 'stats', 'topSoftware', 'recentComputers', 'recentApprovals'));
+    }
+
+    private function pimpinanDashboard()
+    {
+        $currentPeriod = now()->format('Y-m');
+
+        $approvedLabIds = ReportApproval::where('status', 'approved')
+            ->where('report_type', 'kepatuhan')
+            ->where('period', $currentPeriod)
+            ->pluck('laboratory_id');
+
+        $totalLabs = Laboratory::count();
+        $approvedLabsCount = $approvedLabIds->count();
+        $totalComputers = Computer::whereIn('laboratory_id', $approvedLabIds)->count();
+        $licensedOS = Computer::whereIn('laboratory_id', $approvedLabIds)->where('os_license_status', 'Licensed')->count();
+        $complianceRate = $totalComputers > 0 ? round(($licensedOS / $totalComputers) * 100, 1) : 0;
+
+        $stats = [
+            'total_computers' => $totalComputers,
+            'approved_labs' => $approvedLabsCount,
+            'total_labs' => $totalLabs,
+            'compliance_rate' => $complianceRate,
+            'licensed_os' => $licensedOS,
+        ];
+
+        $laboratoriesStatus = Laboratory::withCount('computers')
+            ->with(['reportApprovals' => function ($q) use ($currentPeriod) {
+                $q->where('period', $currentPeriod)->where('report_type', 'kepatuhan')->latest();
+            }])
+            ->get();
+
+        return view('dashboard.pimpinan', compact('stats', 'approvedLabIds', 'laboratoriesStatus', 'currentPeriod'));
+    }
+
+    private function adminDashboard()
     {
         // --- 1. STATISTIK UTAMA (TTL: 10 Menit) ---
         $stats = Cache::remember('dashboard.stats.'.now()->format('Y-m'), 600, function () {

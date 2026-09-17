@@ -121,8 +121,8 @@ private function pimpinanDashboard()
 - `resources/views/dashboard/pimpinan.blade.php` (atau modifikasi view existing)
 
 ## Verifikasi
-- [ ] Admin melihat dashboard penuh (semua data, tidak berubah dari sebelumnya)
-- [ ] Kepala Lab melihat dashboard lab sendiri saja
-- [ ] Pimpinan melihat dashboard hanya dari lab yang approved
-- [ ] Kepala Lab yang belum ditugaskan ke lab melihat pesan informatif
-- [ ] Statistik akurat sesuai scope masing-masing role
+- [x] Admin melihat dashboard penuh (semua data, tidak berubah dari sebelumnya)
+- [x] Kepala Lab melihat dashboard lab sendiri saja
+- [x] Pimpinan melihat dashboard hanya dari lab yang approved
+- [x] Kepala Lab yang belum ditugaskan ke lab melihat pesan informatif
+- [x] Statistik akurat sesuai scope masing-masing role

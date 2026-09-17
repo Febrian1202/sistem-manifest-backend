@@ -7,9 +7,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplianceDataController;
 use App\Http\Controllers\ComputerDataController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LabInventoryController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\LicenseDataController;
+use App\Http\Controllers\ReportApprovalController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReportSubmissionController;
 use App\Http\Controllers\SoftwareDataController;
 use Illuminate\Support\Facades\Route;
 
@@ -86,7 +89,24 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
         // Manajemen Laboratorium
         Route::resource('laboratories', LaboratoryController::class);
 
+        // Kirim Laporan ke PJ Lab
+        Route::get('/reports/submit-to-lab', [ReportSubmissionController::class, 'index'])->name('report-submissions.index');
+        Route::post('/reports/submit-to-lab', [ReportSubmissionController::class, 'submit'])->name('report-submissions.submit');
+
         // Activity Log
         Route::get('/activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs');
     });
+});
+
+Route::middleware(['auth', 'role:kepala_lab'])->group(function () {
+    // Inventaris Lab
+    Route::get('/lab/inventory', [LabInventoryController::class, 'index'])->name('lab.inventory.index');
+    Route::get('/lab/inventory/{computer}', [LabInventoryController::class, 'show'])->name('lab.inventory.show');
+
+    // Review Laporan
+    Route::get('/lab/reports', [ReportApprovalController::class, 'index'])->name('lab.reports.index');
+    Route::get('/lab/reports/{reportApproval}', [ReportApprovalController::class, 'show'])->name('lab.reports.show');
+    Route::post('/lab/reports/{reportApproval}/approve', [ReportApprovalController::class, 'approve'])->name('lab.reports.approve');
+    Route::post('/lab/reports/{reportApproval}/reject', [ReportApprovalController::class, 'reject'])->name('lab.reports.reject');
+    Route::get('/lab/reports/{reportApproval}/preview-pdf', [ReportApprovalController::class, 'previewPdf'])->name('lab.reports.preview-pdf');
 });

@@ -144,10 +144,10 @@ Route::post('/reports/submit-to-lab', [ReportSubmissionController::class, 'submi
 - `routes/web.php` — tambah routes
 
 ## Verifikasi
-- [ ] Halaman menampilkan daftar lab dengan jumlah komputer dan status kesiapan
-- [ ] Bisa kirim laporan ke lab yang belum ada pending
-- [ ] Tidak bisa kirim ulang jika masih ada pending
-- [ ] Bisa kirim ulang setelah PJ Lab approve/reject
-- [ ] Activity log tercatat saat kirim
-- [ ] Flash message sukses/error tampil
-- [ ] Role selain admin tidak bisa akses (403)
+- [x] Halaman menampilkan daftar lab dengan jumlah komputer dan status kesiapan
+- [x] Bisa kirim laporan ke lab yang belum ada pending
+- [x] Tidak bisa kirim ulang jika masih ada pending
+- [x] Bisa kirim ulang setelah PJ Lab approve/reject
+- [x] Activity log tercatat saat kirim
+- [x] Flash message sukses/error tampil
+- [x] Role selain admin tidak bisa akses (403)

@@ -119,9 +119,9 @@ Route::get('/lab/inventory/{computer}', [LabInventoryController::class, 'show'])
 - `routes/web.php` — tambah routes
 
 ## Verifikasi
-- [ ] PJ Lab melihat hanya komputer di lab sendiri
-- [ ] PJ Lab tidak bisa akses komputer di lab lain (403)
-- [ ] Ringkasan statistik lab ditampilkan dengan benar
-- [ ] Detail komputer + software terinstal tampil
-- [ ] Tidak ada tombol edit/hapus di halaman ini
-- [ ] Admin dan Pimpinan tidak bisa akses route ini (403)
+- [x] PJ Lab melihat hanya komputer di lab sendiri
+- [x] PJ Lab tidak bisa akses komputer di lab lain (403)
+- [x] Ringkasan statistik lab ditampilkan dengan benar
+- [x] Detail komputer + software terinstal tampil
+- [x] Tidak ada tombol edit/hapus di halaman ini
+- [x] Admin dan Pimpinan tidak bisa akses route ini (403)
