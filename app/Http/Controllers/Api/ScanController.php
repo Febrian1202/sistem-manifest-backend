@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\GenerateComplianceReportJob;
 use App\Jobs\ProcessScanResultJob;
 use App\Models\Computer;
+use App\Models\ScanSession;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ScanController extends Controller
 {
@@ -23,6 +25,10 @@ class ScanController extends Controller
 
         // 2. Validate Input
         $request->validate([
+            'scan_uuid' => 'nullable|uuid',
+            'client_started_at' => 'nullable|date',
+            'agent_version' => 'nullable|string|max:50',
+            'scan_mode' => 'nullable|string|in:scheduled,manual,on_demand',
             'hostname' => 'required|string|max:255',
             'processor' => 'nullable|string|max:255',
             'ram_gb' => 'nullable|integer|min:0',
@@ -45,8 +51,22 @@ class ScanController extends Controller
             'installed_software.*.install_date' => 'nullable|string',
         ]);
 
-        // 3. Update Authenticated Computer record (Identity comes from Token)
+        // 3. Check Idempotency via scan_uuid
+        $scanUuid = $request->input('scan_uuid') ?: (string) Str::uuid();
+
+        $existingSession = ScanSession::where('scan_uuid', $scanUuid)->first();
+        if ($existingSession) {
+            return response()->json([
+                'status' => 'already_processed',
+                'message' => 'Scan already processed',
+                'scan_session_id' => $existingSession->id,
+            ], 200);
+        }
+
+        // 4. Update Authenticated Computer record (Identity comes from Token)
         $computer = $request->user();
+        $trigger = $request->input('scan_mode') ?? ($computer->scan_requested ? 'on_demand' : 'scheduled');
+
         $computer->update([
             'hostname' => $request->hostname,
             'processor' => $request->processor,
@@ -67,28 +87,36 @@ class ScanController extends Controller
             'os_partial_key' => $request->os_partial_key,
 
             'last_seen_at' => now(),
+            'scan_requested' => false,
         ]);
 
-        // 4. Dispatch heavy software processing to async job
-        if ($request->installed_software) {
-            ProcessScanResultJob::dispatch(
-                $computer,
-                $request->installed_software
-            );
+        // 5. Create ScanSession
+        $startedAt = $request->input('client_started_at')
+            ? Carbon::parse($request->input('client_started_at'))
+            : now();
 
-            // Dispatch compliance report generation (runs after scan processing)
-            GenerateComplianceReportJob::dispatch($computer)
-                ->onQueue('compliance')
-                ->delay(now()->addSeconds(10));
-        }
+        $scanSession = ScanSession::create([
+            'computer_id' => $computer->id,
+            'scan_uuid' => $scanUuid,
+            'started_at' => $startedAt,
+            'status' => 'pending',
+            'trigger' => $trigger,
+            'agent_version' => $request->input('agent_version'),
+        ]);
 
-        // 5. Reset on-demand scan flag
-        $computer->update(['scan_requested' => false]);
+        // 6. Dispatch software processing job
+        $installedSoftware = $request->input('installed_software', []);
+
+        ProcessScanResultJob::dispatch(
+            $scanSession,
+            $installedSoftware
+        );
 
         return response()->json([
             'status' => 'received',
             'message' => 'Data scan hardware & software sedang diproses',
             'computer' => $computer->hostname,
+            'scan_session_id' => $scanSession->id,
         ], 202);
     }
 }

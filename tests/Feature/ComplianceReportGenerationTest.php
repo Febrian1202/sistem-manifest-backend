@@ -1,15 +1,18 @@
 <?php
 
 use App\Jobs\GenerateComplianceReportJob;
+use App\Jobs\ProcessScanResultJob;
 use App\Models\ComplianceReport;
 use App\Models\Computer;
 use App\Models\LicenseInventory;
+use App\Models\ScanSession;
 use App\Models\SoftwareCatalog;
 use App\Models\SoftwareDiscovery;
+use App\Services\SoftwareCatalogService;
+use App\Services\SoftwareFilterService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Queue;
-use Laravel\Sanctum\Sanctum;
 
 uses(RefreshDatabase::class);
 
@@ -17,18 +20,12 @@ test('Job Ter-dispatch Setelah Scan', function () {
     Queue::fake();
 
     $computer = Computer::factory()->create();
-    Sanctum::actingAs($computer, ['scan:submit']);
+    $session = ScanSession::factory()->create(['computer_id' => $computer->id]);
 
-    $payload = [
-        'hostname' => 'WS-TEST-01',
-        'installed_software' => [
-            ['name' => 'Google Chrome', 'version' => '100.0'],
-        ],
-    ];
-
-    $response = $this->postJson('/api/scan-result', $payload);
-
-    $response->assertStatus(202);
+    $job = new ProcessScanResultJob($session, [
+        ['name' => 'Google Chrome', 'version' => '100.0'],
+    ]);
+    $job->handle(new SoftwareFilterService, new SoftwareCatalogService);
 
     Queue::assertPushed(GenerateComplianceReportJob::class, function ($job) use ($computer) {
         return $job->computer->id === $computer->id && $job->queue === 'compliance';

@@ -118,26 +118,26 @@ P2 — PENGUAT (hanya jika waktu tersedia)
 
 ### Wajib
 
-- [ ] Lebih dari satu laboratorium dapat didaftarkan dan digunakan
-- [ ] Komputer terikat ke laboratorium yang benar
+- [x] Lebih dari satu laboratorium dapat didaftarkan dan digunakan
+- [x] Komputer terikat ke laboratorium yang benar
 - [ ] PJ Lab hanya melihat data sesuai scope laboratoriumnya
 - [ ] Agent dapat melakukan scan otomatis berkala
-- [ ] Setiap scan menghasilkan `scan_session`
-- [ ] Hasil software setiap scan tersimpan sebagai histori
-- [ ] Status compliance setiap scan tersimpan sebagai histori
-- [ ] Histori tidak hilang ketika software dihapus dari komputer
+- [x] Setiap scan menghasilkan `scan_session`
+- [x] Hasil software setiap scan tersimpan sebagai histori
+- [x] Status compliance setiap scan tersimpan sebagai histori
+- [x] Histori tidak hilang ketika software dihapus dari komputer
 - [ ] Perubahan software antar-scan dapat ditampilkan
 - [ ] Laporan dapat difilter berdasarkan laboratorium dan periode
 - [ ] Dashboard menampilkan indikator monitoring berkala
-- [ ] Sistem dapat merekam scan gagal
+- [x] Sistem dapat merekam scan gagal
 - [ ] Pengujian multi-lab dan periodic monitoring berhasil
 
 ### Sangat Disarankan
 
-- [ ] `scan_uuid`/idempotency diterapkan
-- [ ] Job processing deterministic/chained
+- [x] `scan_uuid`/idempotency diterapkan
+- [x] Job processing deterministic/chained
 - [ ] Agent enrollment mengikat komputer ke lab di sisi server
-- [ ] Status komputer active/inactive/retired (bukan hard delete)
+- [x] Status komputer active/inactive/retired (bukan hard delete)
 - [ ] Fakultas dimodelkan sebagai entitas terpisah
 - [ ] Histori perubahan versi software
 - [ ] Trend compliance

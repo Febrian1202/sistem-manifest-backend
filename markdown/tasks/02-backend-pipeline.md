@@ -284,16 +284,16 @@ $scanUuid = $request->scan_uuid ?? (string) Str::uuid();
 
 ## Kriteria Selesai Phase 2
 
-- [ ] POST `/scan-result` membuat `ScanSession` baru
-- [ ] `ProcessScanResultJob` menyimpan data ke `scan_software_results`
-- [ ] `ProcessScanResultJob` tetap mengupdate `software_discoveries` (backward compatible)
-- [ ] `GenerateComplianceReportJob` menyimpan data ke `compliance_snapshots`
-- [ ] Job chaining berjalan tanpa `delay(10s)`
-- [ ] Scan UUID yang sama tidak membuat duplikat
-- [ ] Scan gagal tercatat dengan status `failed` dan `error_message`
-- [ ] `last_seen_at` pada computer tetap terupdate
-- [ ] Existing agent (tanpa `scan_uuid`) tetap bisa mengirim scan (fallback)
-- [ ] `vendor/bin/pint --dirty` clean
+- [x] POST `/scan-result` membuat `ScanSession` baru
+- [x] `ProcessScanResultJob` menyimpan data ke `scan_software_results`
+- [x] `ProcessScanResultJob` tetap mengupdate `software_discoveries` (backward compatible)
+- [x] `GenerateComplianceReportJob` menyimpan data ke `compliance_snapshots`
+- [x] Job chaining berjalan tanpa `delay(10s)`
+- [x] Scan UUID yang sama tidak membuat duplikat
+- [x] Scan gagal tercatat dengan status `failed` dan `error_message`
+- [x] `last_seen_at` pada computer tetap terupdate
+- [x] Existing agent (tanpa `scan_uuid`) tetap bisa mengirim scan (fallback)
+- [x] `vendor/bin/pint --dirty` clean
 
 ---
 

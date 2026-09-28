@@ -3,7 +3,10 @@
 namespace App\Jobs;
 
 use App\Models\ComplianceReport;
+use App\Models\ComplianceSnapshot;
 use App\Models\Computer;
+use App\Models\ScanSession;
+use App\Models\ScanSoftwareResult;
 use App\Models\SoftwareDiscovery;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,12 +42,27 @@ class GenerateComplianceReportJob implements ShouldQueue
      */
     public $backoff = [30, 60, 120];
 
+    public ScanSession|Computer $target;
+
+    public Computer $computer;
+
+    public ?ScanSession $scanSession = null;
+
     /**
      * Create a new job instance.
      */
     public function __construct(
-        public Computer $computer
+        ScanSession|Computer $target
     ) {
+        $this->target = $target;
+
+        if ($target instanceof ScanSession) {
+            $this->scanSession = $target;
+            $this->computer = $target->computer ?? Computer::find($target->computer_id);
+        } else {
+            $this->computer = $target;
+        }
+
         $this->onQueue('compliance');
     }
 
@@ -57,21 +75,37 @@ class GenerateComplianceReportJob implements ShouldQueue
             Log::info('Generating compliance report for computer: '.$this->computer->hostname);
 
             // STEP 1 — Load Data
-            $discoveries = SoftwareDiscovery::with(['catalog', 'catalog.licenses'])
-                ->where('computer_id', $this->computer->id)
-                ->get();
+            $softwareItems = collect();
+
+            if ($this->scanSession) {
+                $softwareItems = ScanSoftwareResult::with(['catalog', 'catalog.licenses'])
+                    ->where('scan_session_id', $this->scanSession->id)
+                    ->get();
+            }
+
+            if ($softwareItems->isEmpty()) {
+                $softwareItems = SoftwareDiscovery::with(['catalog', 'catalog.licenses'])
+                    ->where('computer_id', $this->computer->id)
+                    ->get();
+            }
 
             $blockedSoftwareList = config('compliance.blocked_software', []);
-            $records = [];
+            $complianceReportRecords = [];
+            $complianceSnapshotRecords = [];
             $currentCatalogIds = [];
+            $scannedAt = $this->scanSession?->started_at ?? now();
 
             // STEP 2 — Process Setiap Software
-            foreach ($discoveries as $discovery) {
-                if (! $discovery->catalog) {
+            foreach ($softwareItems as $item) {
+                if (! $item->catalog) {
                     continue;
                 }
 
-                $catalog = $discovery->catalog;
+                $catalog = $item->catalog;
+                $rawName = $item->raw_name ?? $item->software_name;
+                $version = $item->version ?? $item->software_version ?? null;
+                $installDate = $item->install_date ?? $item->detected_at ?? null;
+
                 $currentCatalogIds[] = $catalog->id;
 
                 $status = 'Berlisensi';
@@ -81,7 +115,7 @@ class GenerateComplianceReportJob implements ShouldQueue
                 // 1. CEK BLOCKLIST
                 $isBlocked = false;
                 foreach ($blockedSoftwareList as $blockedName) {
-                    if (Str::contains(strtolower($discovery->software_name), strtolower($blockedName))) {
+                    if (Str::contains(strtolower($rawName), strtolower($blockedName))) {
                         $isBlocked = true;
                         break;
                     }
@@ -97,7 +131,7 @@ class GenerateComplianceReportJob implements ShouldQueue
                     $keterangan = 'Software gratis, tidak memerlukan lisensi';
                 } else {
                     // Software is Commercial, need to check license
-                    $license = $catalog->licenses->first(); // Assuming one primary license record per catalog for simplicity as per instructions
+                    $license = $catalog->licenses->first();
 
                     // 3. CEK LISENSI ADA ATAU TIDAK
                     if (! $license) {
@@ -128,25 +162,47 @@ class GenerateComplianceReportJob implements ShouldQueue
                     }
                 }
 
-                $records[] = [
+                $complianceReportRecords[] = [
                     'computer_id' => $this->computer->id,
                     'software_catalog_id' => $catalog->id,
-                    'software_name' => $discovery->software_name,
-                    'software_version' => $discovery->software_version,
+                    'software_name' => $rawName,
+                    'software_version' => $version,
                     'status' => $status,
                     'keterangan' => $keterangan,
                     'license_inventory_id' => $licenseId,
-                    'detected_at' => $discovery->install_date ?? now(),
-                    'scanned_at' => now(),
+                    'detected_at' => $installDate ?? now(),
+                    'scanned_at' => $scannedAt,
                     'updated_at' => now(),
                     'created_at' => now(),
                 ];
+
+                if ($this->scanSession) {
+                    $complianceSnapshotRecords[] = [
+                        'scan_session_id' => $this->scanSession->id,
+                        'computer_id' => $this->computer->id,
+                        'software_catalog_id' => $catalog->id,
+                        'software_name' => $rawName,
+                        'software_version' => $version,
+                        'status' => $status,
+                        'keterangan' => $keterangan,
+                        'license_inventory_id' => $licenseId,
+                        'detected_at' => $installDate,
+                        'scanned_at' => $scannedAt,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
             }
 
-            // STEP 3 — Upsert ke Database
-            if (! empty($records)) {
-                // MySQL upsert
-                ComplianceReport::upsert($records,
+            // STEP 3 — Persist Snapshots & Upsert Reports
+            if (! empty($complianceSnapshotRecords)) {
+                ComplianceSnapshot::insert($complianceSnapshotRecords);
+            }
+
+            if (! empty($complianceReportRecords)) {
+                // MySQL / SQLite upsert
+                ComplianceReport::upsert(
+                    $complianceReportRecords,
                     ['computer_id', 'software_catalog_id'],
                     ['status', 'keterangan', 'license_inventory_id', 'software_version', 'detected_at', 'scanned_at', 'updated_at']
                 );

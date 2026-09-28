@@ -49,7 +49,10 @@ class Computer extends Authenticatable
         'scan_requested',
     ];
 
-    protected $casts = ['last_seen_at' => 'datetime'];
+    protected $casts = [
+        'last_seen_at' => 'datetime',
+        'scan_requested' => 'boolean',
+    ];
 
     protected $hidden = [
         'mac_address',
