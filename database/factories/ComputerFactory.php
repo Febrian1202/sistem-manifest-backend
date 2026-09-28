@@ -32,6 +32,7 @@ class ComputerFactory extends Factory
             'os_version' => '22H2',
             'os_architecture' => '64-bit',
             'os_license_status' => 'Licensed',
+            'status' => 'active',
             'last_seen_at' => now(),
         ];
     }

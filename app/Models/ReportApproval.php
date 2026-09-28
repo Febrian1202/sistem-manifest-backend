@@ -26,6 +26,8 @@ class ReportApproval extends Model
         'reviewed_by',
         'report_type',
         'period',
+        'period_start',
+        'period_end',
         'status',
         'notes',
         'reviewed_at',
@@ -33,6 +35,8 @@ class ReportApproval extends Model
 
     protected $casts = [
         'reviewed_at' => 'datetime',
+        'period_start' => 'date',
+        'period_end' => 'date',
     ];
 
     public function laboratory(): BelongsTo

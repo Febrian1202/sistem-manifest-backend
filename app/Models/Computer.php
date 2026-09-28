@@ -22,6 +22,10 @@ class Computer extends Authenticatable
             ->setDescriptionForEvent(fn (string $eventName) => "Data komputer {$this->hostname} telah di-{$eventName}");
     }
 
+    protected $attributes = [
+        'status' => 'active',
+    ];
+
     protected $fillable = [
         'hostname',
         'os_name',
@@ -40,6 +44,7 @@ class Computer extends Authenticatable
         'model',
         'location',
         'laboratory_id',
+        'status',
         'last_seen_at',
         'scan_requested',
     ];
@@ -75,5 +80,20 @@ class Computer extends Authenticatable
     public function latestComplianceReport()
     {
         return $this->hasOne(ComplianceReport::class)->latestOfMany();
+    }
+
+    public function scanSessions()
+    {
+        return $this->hasMany(ScanSession::class);
+    }
+
+    public function latestScanSession()
+    {
+        return $this->hasOne(ScanSession::class)->latestOfMany();
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 }
