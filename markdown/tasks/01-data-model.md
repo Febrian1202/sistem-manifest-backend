@@ -279,14 +279,14 @@ php artisan make:migration update_period_in_report_approvals_table --no-interact
 
 ## Kriteria Selesai Phase 1
 
-- [ ] `php artisan migrate` berhasil tanpa error
-- [ ] Model `ScanSession`, `ScanSoftwareResult`, `ComplianceSnapshot` memiliki relasi yang benar
-- [ ] Model `Computer` memiliki relasi `scanSessions()`
-- [ ] FK behavior: delete komputer TIDAK menghapus scan_sessions dan compliance_snapshots
-- [ ] Factory bisa menghasilkan data test (`ScanSession::factory()->create()` berhasil)
-- [ ] Existing data dan fitur tidak rusak (migration backward-compatible)
-- [ ] Kolom `status` pada computers berfungsi
-- [ ] `vendor/bin/pint --dirty` clean
+- [x] `php artisan migrate` berhasil tanpa error
+- [x] Model `ScanSession`, `ScanSoftwareResult`, `ComplianceSnapshot` memiliki relasi yang benar
+- [x] Model `Computer` memiliki relasi `scanSessions()`
+- [x] FK behavior: delete komputer TIDAK menghapus scan_sessions dan compliance_snapshots
+- [x] Factory bisa menghasilkan data test (`ScanSession::factory()->create()` berhasil)
+- [x] Existing data dan fitur tidak rusak (migration backward-compatible)
+- [x] Kolom `status` pada computers berfungsi
+- [x] `vendor/bin/pint --dirty` clean
 
 ---
 
