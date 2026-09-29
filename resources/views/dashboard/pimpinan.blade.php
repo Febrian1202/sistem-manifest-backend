@@ -23,6 +23,11 @@
             </div>
         </div>
 
+        {{-- Filter Bar --}}
+        @if ($laboratories->isNotEmpty())
+            <x-dashboard.filter-bar :period="$period" :selectedLabId="$selectedLabId" :laboratories="$laboratories" />
+        @endif
+
         {{-- Stat Cards Grid --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-card border border-border p-5 rounded-lg shadow-sm">
@@ -73,6 +78,9 @@
                 <div class="text-xs text-muted-foreground mt-1">Rata-rata lab yang approved</div>
             </div>
         </div>
+
+        {{-- Trend Charts --}}
+        <x-dashboard.trend-charts :chartData="$chartData" :period="$period" />
 
         {{-- Tabel Status Laporan Seluruh Laboratorium --}}
         <div class="space-y-3">

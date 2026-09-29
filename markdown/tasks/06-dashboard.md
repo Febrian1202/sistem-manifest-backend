@@ -183,12 +183,12 @@ Bisa menggunakan satu controller dengan logic per role, atau partial blade yang 
 
 ## Kriteria Selesai Phase 6
 
-- [ ] Dashboard menampilkan statistik monitoring (scan hari ini, gagal, dll)
-- [ ] Minimal 2 chart trend berfungsi (scan trend + compliance trend)
-- [ ] Dashboard ter-scope per role (kepala_lab hanya lab-nya)
-- [ ] Filter periode berfungsi
-- [ ] Dashboard merespons data real-time dari `scan_sessions` dan `compliance_snapshots`
-- [ ] `vendor/bin/pint --dirty` clean
+- [x] Dashboard menampilkan statistik monitoring (scan hari ini, gagal, dll)
+- [x] Minimal 2 chart trend berfungsi (scan trend + compliance trend)
+- [x] Dashboard ter-scope per role (kepala_lab hanya lab-nya)
+- [x] Filter periode berfungsi
+- [x] Dashboard merespons data real-time dari `scan_sessions` dan `compliance_snapshots`
+- [x] `vendor/bin/pint --dirty` clean
 
 ---
 

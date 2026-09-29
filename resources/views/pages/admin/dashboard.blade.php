@@ -20,7 +20,31 @@
             </div>
         </div>
 
-        {{-- Statistik --}}
+        {{-- Filter Bar --}}
+        <x-dashboard.filter-bar :period="$period" :selectedLabId="$selectedLabId" :laboratories="$laboratories" />
+
+        {{-- Monitoring Berkala Stats --}}
+        <div class="space-y-3">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-bold text-foreground flex items-center gap-2">
+                        <i class="fa-solid fa-satellite-dish text-primary"></i> Monitoring Berkala Hari Ini
+                    </h2>
+                    <p class="text-xs text-muted-foreground">Status pemindaian manifest dan deteksi temuan komputer lab hari ini</p>
+                </div>
+            </div>
+            <x-dashboard.monitoring-stat-cards :stats="$monitoringStats" />
+        </div>
+
+        {{-- Trend Charts --}}
+        <x-dashboard.trend-charts :chartData="$chartData" :period="$period" />
+
+        {{-- Unscanned Computers Alert / Table --}}
+        @if ($unscannedComputers->isNotEmpty())
+            <x-dashboard.unscanned-computers-table :computers="$unscannedComputers" />
+        @endif
+
+        {{-- Statistik Inventaris --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {{-- Total komputer --}}
             <x-stat-card title="Total Komputer" subtitle="Aktif" value="{{ $totalComputers }} Unit"

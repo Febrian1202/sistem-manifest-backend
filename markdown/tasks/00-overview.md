@@ -128,7 +128,7 @@ P2 — PENGUAT (hanya jika waktu tersedia)
 - [x] Histori tidak hilang ketika software dihapus dari komputer
 - [x] Perubahan software antar-scan dapat ditampilkan
 - [x] Laporan dapat difilter berdasarkan laboratorium dan periode
-- [ ] Dashboard menampilkan indikator monitoring berkala
+- [x] Dashboard menampilkan indikator monitoring berkala
 - [x] Sistem dapat merekam scan gagal
 - [ ] Pengujian multi-lab dan periodic monitoring berhasil
 
@@ -140,4 +140,4 @@ P2 — PENGUAT (hanya jika waktu tersedia)
 - [x] Status komputer active/inactive/retired (bukan hard delete)
 - [ ] Fakultas dimodelkan sebagai entitas terpisah
 - [x] Histori perubahan versi software
-- [ ] Trend compliance
+- [x] Trend compliance

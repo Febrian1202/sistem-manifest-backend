@@ -51,6 +51,26 @@
             </div>
         @endif
 
+        {{-- Filter Bar --}}
+        <x-dashboard.filter-bar :period="$period" :showLabFilter="false" />
+
+        {{-- Monitoring Berkala Stats --}}
+        <div class="space-y-3">
+            <div>
+                <h2 class="text-lg font-bold text-foreground flex items-center gap-2">
+                    <i class="fa-solid fa-satellite-dish text-primary"></i> Monitoring Berkala Lab Hari Ini
+                </h2>
+                <p class="text-xs text-muted-foreground">Status pemindaian berkala komputer di {{ $lab->name }}</p>
+            </div>
+            <x-dashboard.monitoring-stat-cards :stats="$monitoringStats" />
+        </div>
+
+        {{-- Trend Charts --}}
+        <x-dashboard.trend-charts :chartData="$chartData" :period="$period" />
+
+        {{-- Unscanned Computers Alert / Table --}}
+        <x-dashboard.unscanned-computers-table :computers="$unscannedComputers" />
+
         {{-- Stat Cards --}}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-card border border-border p-5 rounded-lg shadow-sm">

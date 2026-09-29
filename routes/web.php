@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData'])->name('dashboard.chart-data');
 });
 
 Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function () {
