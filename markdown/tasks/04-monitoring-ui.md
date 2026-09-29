@@ -294,15 +294,15 @@ Tambahkan section "Monitoring" di sidebar layout:
 
 ## Kriteria Selesai Phase 4
 
-- [ ] Halaman riwayat monitoring menampilkan daftar scan sessions dengan filter
-- [ ] Detail scan session menampilkan software + compliance untuk scan tersebut
-- [ ] Histori komputer menampilkan timeline scan dengan perubahan software
-- [ ] Perubahan software (baru/hilang/upgrade) terdeteksi dan ditampilkan
-- [ ] Compliance history menampilkan perubahan status dari waktu ke waktu
-- [ ] Semua halaman ter-scope berdasarkan role (kepala_lab hanya lab-nya)
-- [ ] Route dan menu navigasi terintegrasi
-- [ ] Pagination dan sorting berfungsi
-- [ ] `vendor/bin/pint --dirty` clean
+- [x] Halaman riwayat monitoring menampilkan daftar scan sessions dengan filter
+- [x] Detail scan session menampilkan software + compliance untuk scan tersebut
+- [x] Histori komputer menampilkan timeline scan dengan perubahan software
+- [x] Perubahan software (baru/hilang/upgrade) terdeteksi dan ditampilkan
+- [x] Compliance history menampilkan perubahan status dari waktu ke waktu
+- [x] Semua halaman ter-scope berdasarkan role (kepala_lab hanya lab-nya)
+- [x] Route dan menu navigasi terintegrasi
+- [x] Pagination dan sorting berfungsi
+- [x] `vendor/bin/pint --dirty` clean
 
 ---
 

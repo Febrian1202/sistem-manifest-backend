@@ -15,6 +15,13 @@
             </div>
             
             <div class="flex items-center gap-2">
+                <a href="{{ route('computers.history', $computer) }}">
+                    <x-ui.button type="button" variant="outline">
+                        <i class="fa-solid fa-clock-rotate-left mr-2"></i>
+                        Histori Scan
+                    </x-ui.button>
+                </a>
+                
                 <a href="{{ route('computers') }}">
                     <x-ui.button type="button" variant="outline">
                         <i class="fa-solid fa-arrow-left mr-2"></i>

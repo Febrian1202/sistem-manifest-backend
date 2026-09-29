@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateComputerRequest;
 use App\Models\Computer;
 use App\Models\Laboratory;
+use App\Services\SoftwareChangeDetectionService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -129,6 +131,49 @@ class ComputerDataController extends Controller
             'message' => "Permintaan scan dikirim ke {$updated} komputer.",
             'status' => 'success',
         ]);
+    }
+
+    public function history(Request $request, Computer $computer, SoftwareChangeDetectionService $changeService)
+    {
+        $user = auth()->user();
+
+        if ($user->hasRole('kepala_lab')) {
+            if (! $user->laboratory_id || (int) $computer->laboratory_id !== (int) $user->laboratory_id) {
+                abort(403, 'Anda tidak memiliki akses ke histori komputer laboratorium ini.');
+            }
+        }
+
+        $computer->load('laboratory');
+
+        $query = $computer->scanSessions()
+            ->with(['softwareResults', 'complianceSnapshots']);
+
+        if ($request->filled('status') && $request->status !== 'All') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('period_start')) {
+            $query->whereDate('started_at', '>=', Carbon::parse($request->period_start));
+        }
+
+        if ($request->filled('period_end')) {
+            $query->whereDate('started_at', '<=', Carbon::parse($request->period_end));
+        }
+
+        $sessions = $query->latest('started_at')->latest('id')->paginate(10)->withQueryString();
+
+        $sessionsWithDiff = $sessions->through(function ($session) use ($changeService) {
+            $diff = $changeService->compareSessions($session);
+            $complianceDiff = $changeService->compareComplianceSnapshots($session, $diff['previous_session'] ?? null);
+
+            return [
+                'session' => $session,
+                'diff' => $diff,
+                'compliance_diff' => $complianceDiff,
+            ];
+        });
+
+        return view('monitoring.computer-history', compact('computer', 'sessions', 'sessionsWithDiff'));
     }
 
     public function destroy(Computer $computer)

@@ -126,7 +126,7 @@ P2 — PENGUAT (hanya jika waktu tersedia)
 - [x] Hasil software setiap scan tersimpan sebagai histori
 - [x] Status compliance setiap scan tersimpan sebagai histori
 - [x] Histori tidak hilang ketika software dihapus dari komputer
-- [ ] Perubahan software antar-scan dapat ditampilkan
+- [x] Perubahan software antar-scan dapat ditampilkan
 - [x] Laporan dapat difilter berdasarkan laboratorium dan periode
 - [ ] Dashboard menampilkan indikator monitoring berkala
 - [x] Sistem dapat merekam scan gagal
@@ -139,5 +139,5 @@ P2 — PENGUAT (hanya jika waktu tersedia)
 - [x] Agent enrollment mengikat komputer ke lab di sisi server
 - [x] Status komputer active/inactive/retired (bukan hard delete)
 - [ ] Fakultas dimodelkan sebagai entitas terpisah
-- [ ] Histori perubahan versi software
+- [x] Histori perubahan versi software
 - [ ] Trend compliance

@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LabInventoryController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\LicenseDataController;
+use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\ReportApprovalController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReportSubmissionController;
@@ -32,6 +33,14 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function () {
+    Route::get('/monitoring', [MonitoringController::class, 'index'])->name('monitoring.index');
+    Route::get('/monitoring/changes', [MonitoringController::class, 'changes'])->name('monitoring.changes');
+    Route::get('/monitoring/compliance', [MonitoringController::class, 'compliance'])->name('monitoring.compliance');
+    Route::get('/monitoring/{scanSession}', [MonitoringController::class, 'show'])->name('monitoring.show');
+    Route::get('/computers/{computer}/history', [ComputerDataController::class, 'history'])->name('computers.history');
 });
 
 Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function () {
