@@ -35,6 +35,7 @@ class ScanController extends Controller
         $request->validate([
             'scan_uuid' => 'nullable|uuid',
             'client_started_at' => 'nullable|date',
+            'client_completed_at' => 'nullable|date',
             'agent_version' => 'nullable|string|max:50',
             'scan_mode' => 'nullable|string|in:scheduled,manual,on_demand',
             'hostname' => 'required|string|max:255',

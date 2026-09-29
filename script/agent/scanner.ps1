@@ -1,4 +1,9 @@
-param([string]$Mode = "poll")
+param(
+    [string]$Mode = "poll",
+    [string]$ScanMode = ""
+)
+
+$AgentVersion = "1.1.0"
 
 # ---------------------------------------------------------
 # Konfigurasi API via config.json
@@ -98,6 +103,34 @@ if ($Mode -eq "poll") {
     Write-Host " [0.5/3] Mode Scheduled: Menjalankan Scan Lengkap..." -ForegroundColor Green
 }
 
+if ($ScanMode -ne "") {
+    $actualScanMode = $ScanMode
+} elseif ($Mode -eq "poll") {
+    $actualScanMode = "on_demand"
+} elseif ($Mode -eq "scheduled") {
+    $actualScanMode = "scheduled"
+} else {
+    $actualScanMode = "manual"
+}
+
+$retryFile = "$env:TEMP\usn-manifest-last-scan.json"
+$scanUuid = $null
+
+if (Test-Path $retryFile) {
+    try {
+        $cachedData = Get-Content $retryFile -Raw | ConvertFrom-Json
+        if ($cachedData.scan_uuid) {
+            $scanUuid = $cachedData.scan_uuid
+        }
+    } catch {}
+}
+
+if (-not $scanUuid) {
+    $scanUuid = [System.Guid]::NewGuid().ToString()
+}
+
+$clientStartedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+
 # ---------------------------------------------------------
 # TAHAP 1: SCAN HARDWARE & OS
 # ---------------------------------------------------------
@@ -188,29 +221,44 @@ $uniqueSoftware = $allSoftware | Sort-Object name -Unique
 # ---------------------------------------------------------
 Write-Host " [3/3] Mengirim Data ke Server..." -ForegroundColor Yellow
 
+$clientCompletedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+
 $payload = @{
-    hostname           = $hostname
-    processor          = if ($cpu)  { $cpu.Name.Trim() }      else { "Unknown" }
-    ram_gb             = $ramGB
-    disk_total_gb      = $diskTotal
-    disk_free_gb       = $diskFree
-    manufacturer       = $sys.Manufacturer.Trim()
-    model              = $sys.Model.Trim()
-    serial_number      = $bios.SerialNumber.Trim()
-    ip_address         = $ipv4
-    mac_address        = $macAddress
-    os_name            = if ($os)   { $os.Caption.Trim() }    else { "Unknown" }
-    os_version         = if ($os)   { $os.Version }           else { "Unknown" }
-    os_architecture    = if ($os)   { $os.OSArchitecture }    else { "Unknown" }
-    os_license_status  = $osStatus
-    os_partial_key     = $partialKey
-    installed_software = @($uniqueSoftware)
+    hostname            = $hostname
+    scan_uuid           = $scanUuid
+    scan_mode           = $actualScanMode
+    client_started_at   = $clientStartedAt
+    client_completed_at = $clientCompletedAt
+    agent_version       = $AgentVersion
+    processor           = if ($cpu)  { $cpu.Name.Trim() }      else { "Unknown" }
+    ram_gb              = $ramGB
+    disk_total_gb       = $diskTotal
+    disk_free_gb        = $diskFree
+    manufacturer        = $sys.Manufacturer.Trim()
+    model               = $sys.Model.Trim()
+    serial_number       = $bios.SerialNumber.Trim()
+    ip_address          = $ipv4
+    mac_address         = $macAddress
+    os_name             = if ($os)   { $os.Caption.Trim() }    else { "Unknown" }
+    os_version          = if ($os)   { $os.Version }           else { "Unknown" }
+    os_architecture     = if ($os)   { $os.OSArchitecture }    else { "Unknown" }
+    os_license_status   = $osStatus
+    os_partial_key      = $partialKey
+    installed_software  = @($uniqueSoftware)
 }
 
 $jsonPayload = $payload | ConvertTo-Json -Depth 5
 
+# Simpan state untuk retry sebelum kirim
+try {
+    $jsonPayload | Out-File -FilePath $retryFile -Encoding utf8
+} catch {}
+
 try {
     $response = Invoke-RestMethod -Uri $scanUrl -Method Post -Headers $headers -Body $jsonPayload -ContentType "application/json"
+    if (Test-Path $retryFile) {
+        Remove-Item $retryFile -ErrorAction SilentlyContinue
+    }
     Write-Host "`n [SUKSES]" -ForegroundColor Green
     Write-Host " Server  : $($response.message)"
     Write-Host " Komputer: $($response.computer)"
@@ -223,8 +271,13 @@ try {
     } else {
         Write-Host "`n [GAGAL] Tidak dapat menghubungi server." -ForegroundColor Red
         Write-Host " Error: $($_.Exception.Message)"
+        Write-Warning " Pengunggahan hasil scan gagal, berkas retry tersimpan dengan UUID: $scanUuid"
     }
 }
 
-Write-Host "`n Selesai. Tekan Enter untuk keluar..."
-Read-Host
+if ($actualScanMode -eq "manual" -or ($Mode -ne "poll" -and $Mode -ne "scheduled")) {
+    Write-Host "`n Selesai. Tekan Enter untuk keluar..."
+    Read-Host
+} else {
+    Write-Host "`n Selesai."
+}

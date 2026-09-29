@@ -276,15 +276,15 @@ param(
 
 ## Kriteria Selesai Phase 7
 
-- [ ] Agent mengirim `scan_uuid` di setiap scan
-- [ ] Agent mengirim `client_started_at` dan `client_completed_at`
-- [ ] Agent mengirim `agent_version`
-- [ ] Agent mengirim `scan_mode` (scheduled/manual/on_demand)
-- [ ] Retry menggunakan UUID yang sama (idempotent)
-- [ ] Backend menerima dan menyimpan semua metadata baru
-- [ ] Backend tetap menerima payload lama (backward compatible)
-- [ ] Config example diperbarui
-- [ ] Setup tasks diperbarui
+- [x] Agent mengirim `scan_uuid` di setiap scan
+- [x] Agent mengirim `client_started_at` dan `client_completed_at`
+- [x] Agent mengirim `agent_version`
+- [x] Agent mengirim `scan_mode` (scheduled/manual/on_demand)
+- [x] Retry menggunakan UUID yang sama (idempotent)
+- [x] Backend menerima dan menyimpan semua metadata baru
+- [x] Backend tetap menerima payload lama (backward compatible)
+- [x] Config example diperbarui
+- [x] Setup tasks diperbarui
 
 ---
 

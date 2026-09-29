@@ -30,7 +30,7 @@ try {
     Unregister-ScheduledTask -TaskName $task1Name -Confirm:$false -ErrorAction SilentlyContinue
 
     $trigger1 = New-ScheduledTaskTrigger -Daily -At 08:00AM
-    $action1  = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File ""$agentPath"" -Mode scheduled"
+    $action1  = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File ""$agentPath"" -Mode scheduled -ScanMode scheduled"
 
     Register-ScheduledTask -TaskName $task1Name -Action $action1 -Trigger $trigger1 -Principal $taskPrincipal -Settings $taskSettings
     Write-Host " [+] Task berhasil didaftarkan: Berjalan setiap hari jam 08:00 AM." -ForegroundColor Green

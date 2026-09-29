@@ -57,6 +57,7 @@ class AgentDownloadController extends Controller
             'registrationKey' => $registrationKey,
             'laboratoryId' => $lab->id,
             'laboratoryName' => $lab->name,
+            'agentVersion' => '1.1.0',
         ];
 
         $configJson = json_encode($configData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);

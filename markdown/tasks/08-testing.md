@@ -400,18 +400,18 @@ Setelah semua phase coding selesai, pastikan artefak akademik konsisten:
 
 ## Kriteria Selesai Phase 8
 
-- [ ] Test multi-lab scope PASS
-- [ ] Test role scope PASS
-- [ ] Test periodic scan PASS
-- [ ] Test software added PASS
-- [ ] Test software removed PASS
-- [ ] Test version change PASS
-- [ ] Test compliance change PASS
-- [ ] Test failed scan PASS
-- [ ] Test idempotency PASS
-- [ ] `vendor/bin/pint --dirty` clean (tidak ada perubahan)
-- [ ] `php artisan test --compact` — ALL PASS
-- [ ] Checklist diagram/dokumen sudah di-review
+- [x] Test multi-lab scope PASS
+- [x] Test role scope PASS
+- [x] Test periodic scan PASS
+- [x] Test software added PASS
+- [x] Test software removed PASS
+- [x] Test version change PASS
+- [x] Test compliance change PASS
+- [x] Test failed scan PASS
+- [x] Test idempotency PASS
+- [x] `vendor/bin/pint --dirty` clean (tidak ada perubahan)
+- [x] `php artisan test --compact` — ALL PASS
+- [x] Checklist diagram/dokumen sudah di-review
 
 ---
 

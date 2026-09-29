@@ -121,7 +121,7 @@ P2 — PENGUAT (hanya jika waktu tersedia)
 - [x] Lebih dari satu laboratorium dapat didaftarkan dan digunakan
 - [x] Komputer terikat ke laboratorium yang benar
 - [x] PJ Lab hanya melihat data sesuai scope laboratoriumnya
-- [ ] Agent dapat melakukan scan otomatis berkala
+- [x] Agent dapat melakukan scan otomatis berkala
 - [x] Setiap scan menghasilkan `scan_session`
 - [x] Hasil software setiap scan tersimpan sebagai histori
 - [x] Status compliance setiap scan tersimpan sebagai histori
@@ -130,7 +130,7 @@ P2 — PENGUAT (hanya jika waktu tersedia)
 - [x] Laporan dapat difilter berdasarkan laboratorium dan periode
 - [x] Dashboard menampilkan indikator monitoring berkala
 - [x] Sistem dapat merekam scan gagal
-- [ ] Pengujian multi-lab dan periodic monitoring berhasil
+- [x] Pengujian multi-lab dan periodic monitoring berhasil
 
 ### Sangat Disarankan
 
