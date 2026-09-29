@@ -10,6 +10,46 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
+/**
+ * @property int $id
+ * @property int|null $computer_id
+ * @property string $scan_uuid
+ * @property \Illuminate\Support\Carbon|null $started_at
+ * @property \Illuminate\Support\Carbon|null $completed_at
+ * @property string $status
+ * @property string $trigger
+ * @property int $software_count
+ * @property string|null $error_message
+ * @property string|null $agent_version
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Activitylog\Models\Activity> $activitiesAsSubject
+ * @property-read int|null $activities_as_subject_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ComplianceSnapshot> $complianceSnapshots
+ * @property-read int|null $compliance_snapshots_count
+ * @property-read \App\Models\Computer|null $computer
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ScanSoftwareResult> $softwareResults
+ * @property-read int|null $software_results_count
+ * @method static \Database\Factories\ScanSessionFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession forLaboratory(string|int $laboratoryId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession forUserLab(?\App\Models\User $user = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereAgentVersion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereCompletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereComputerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereErrorMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereScanUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereSoftwareCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereStartedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereTrigger($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSession whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class ScanSession extends Model
 {
     use HasFactory, LogsActivity, ScopedByLaboratory;

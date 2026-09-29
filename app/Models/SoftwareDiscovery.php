@@ -6,6 +6,37 @@ use App\Models\Traits\ScopedByLaboratory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $computer_id
+ * @property string $raw_name
+ * @property string|null $version
+ * @property string|null $vendor
+ * @property string|null $install_date
+ * @property int|null $catalog_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\SoftwareCatalog|null $catalog
+ * @property-read \App\Models\Computer $computer
+ * @property-read mixed $software_name
+ * @property-read mixed $software_version
+ * @method static \Database\Factories\SoftwareDiscoveryFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery forLaboratory(string|int $laboratoryId)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery forUserLab(?\App\Models\User $user = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery whereCatalogId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery whereComputerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery whereInstallDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery whereRawName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery whereVendor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareDiscovery whereVersion($value)
+ * @mixin \Eloquent
+ */
 class SoftwareDiscovery extends Model
 {
     use HasFactory, ScopedByLaboratory;

@@ -7,6 +7,33 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
+/**
+ * @property int $id
+ * @property string $normalized_name
+ * @property string|null $category
+ * @property string $status
+ * @property string|null $description
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Activitylog\Models\Activity> $activitiesAsSubject
+ * @property-read int|null $activities_as_subject_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SoftwareDiscovery> $discoveries
+ * @property-read int|null $discoveries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LicenseInventory> $licenses
+ * @property-read int|null $licenses_count
+ * @method static \Database\Factories\SoftwareCatalogFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog whereCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog whereNormalizedName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class SoftwareCatalog extends Model
 {
     use HasFactory, LogsActivity;
