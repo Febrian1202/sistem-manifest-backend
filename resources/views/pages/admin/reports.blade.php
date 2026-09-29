@@ -100,6 +100,40 @@
                 </div>
             </div>
 
+            {{-- Modul: Rekap Monitoring Berkala --}}
+            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full border-teal-100 bg-teal-50/10">
+                <div class="h-10 w-10 bg-teal-500/10 text-teal-600 rounded-lg flex items-center justify-center text-lg mb-4">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">Rekap Monitoring Berkala</h3>
+                <p class="text-sm text-muted-foreground mb-6 grow">Ringkasan aktivitas dan tingkat keberhasilan sesi scan komputer berkala per laboratorium.</p>
+
+                <div class="mt-auto">
+                    <a href="{{ route('reports.monitoring') }}" class="block">
+                        <x-ui.button variant="default" class="w-full">
+                            <i class="fa-solid fa-eye mr-2"></i> Preview & Filter
+                        </x-ui.button>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Modul: Rekap Perubahan Software --}}
+            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full border-rose-100 bg-rose-50/10">
+                <div class="h-10 w-10 bg-rose-500/10 text-rose-600 rounded-lg flex items-center justify-center text-lg mb-4">
+                    <i class="fa-solid fa-code-compare"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">Rekap Perubahan Software</h3>
+                <p class="text-sm text-muted-foreground mb-6 grow">Tracking riwayat software baru, dihapus, upgrade, atau downgrade antar sesi scan.</p>
+
+                <div class="mt-auto">
+                    <a href="{{ route('reports.perubahan') }}" class="block">
+                        <x-ui.button variant="default" class="w-full">
+                            <i class="fa-solid fa-eye mr-2"></i> Preview & Filter
+                        </x-ui.button>
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
 </x-layout.app>

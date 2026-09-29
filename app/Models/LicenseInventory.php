@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -13,17 +16,18 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $license_key
  * @property string|null $purchase_order_number
  * @property int $quota_limit
- * @property \Illuminate\Support\Carbon|null $purchase_date
- * @property \Illuminate\Support\Carbon|null $expiry_date
+ * @property Carbon|null $purchase_date
+ * @property Carbon|null $expiry_date
  * @property numeric|null $price_per_unit
  * @property string|null $notes
  * @property string|null $proof_image
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Activitylog\Models\Activity> $activitiesAsSubject
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Activity> $activitiesAsSubject
  * @property-read int|null $activities_as_subject_count
- * @property-read \App\Models\SoftwareCatalog $catalog
+ * @property-read SoftwareCatalog $catalog
  * @property-read mixed $masked_license_key
+ *
  * @method static \Database\Factories\LicenseInventoryFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LicenseInventory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LicenseInventory newQuery()
@@ -40,6 +44,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LicenseInventory wherePurchaseOrderNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LicenseInventory whereQuotaLimit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|LicenseInventory whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class LicenseInventory extends Model

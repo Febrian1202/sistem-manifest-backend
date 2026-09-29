@@ -98,6 +98,8 @@
                             Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Software</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Total Scan</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Terakhir
                             Terlihat</th>
                     </tr>
@@ -129,6 +131,8 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
                                 {{ $computer->softwares_count }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center font-semibold text-gray-700">
+                                {{ $computer->total_scans ?? 0 }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 italic">
                                 {{ $computer->last_seen_at ? $computer->last_seen_at->diffForHumans() : '-' }}</td>
                         </tr>

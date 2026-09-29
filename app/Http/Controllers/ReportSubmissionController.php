@@ -50,6 +50,8 @@ class ReportSubmissionController extends Controller
         $validated = $request->validate([
             'laboratory_id' => 'required|exists:laboratories,id',
             'period' => 'required|date_format:Y-m',
+            'period_start' => 'nullable|date',
+            'period_end' => 'nullable|date|after_or_equal:period_start',
         ]);
 
         $labId = $validated['laboratory_id'];
@@ -74,10 +76,16 @@ class ReportSubmissionController extends Controller
             ->where('laboratory_id', $labId)
             ->first();
 
+        $periodDate = Carbon::createFromFormat('Y-m', $period);
+        $periodStart = $validated['period_start'] ?? $periodDate->copy()->startOfMonth()->toDateString();
+        $periodEnd = $validated['period_end'] ?? $periodDate->copy()->endOfMonth()->toDateString();
+
         ReportApproval::create([
             'laboratory_id' => $labId,
             'report_type' => 'kepatuhan',
             'period' => $period,
+            'period_start' => $periodStart,
+            'period_end' => $periodEnd,
             'status' => 'pending',
             'reviewed_by' => $pjLab?->id,
         ]);

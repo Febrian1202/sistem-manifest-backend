@@ -5,14 +5,20 @@ namespace App\Http\Controllers;
 use App\Exports\KepatuhanExport;
 use App\Exports\KomputerExport;
 use App\Exports\LisensiExport;
+use App\Exports\MonitoringRecapExport;
+use App\Exports\SoftwareChangesExport;
 use App\Exports\SoftwareExport;
 use App\Jobs\GenerateComplianceReportJob;
 use App\Models\ComplianceReport;
+use App\Models\ComplianceSnapshot;
 use App\Models\Computer;
 use App\Models\Laboratory;
 use App\Models\LicenseInventory;
 use App\Models\ReportApproval;
+use App\Models\ScanSession;
+use App\Models\ScanSoftwareResult;
 use App\Models\SoftwareDiscovery;
+use App\Services\SoftwareChangeDetectionService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -22,6 +28,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
+    public function __construct(
+        protected SoftwareChangeDetectionService $changeDetectionService
+    ) {}
+
     // Menampilkan halaman Pusat Laporan
     public function index()
     {
@@ -30,11 +40,15 @@ class ReportController extends Controller
 
     /**
      * Helper to get date range from request or default to current month.
+     * Supports both start_date/end_date and period_start/period_end.
      */
-    private function getDateRange(Request $request)
+    private function getDateRange(Request $request): array
     {
-        $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date')) : now()->startOfMonth();
-        $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date')) : now()->endOfMonth();
+        $startInput = $request->input('period_start') ?? $request->input('start_date');
+        $endInput = $request->input('period_end') ?? $request->input('end_date');
+
+        $startDate = $startInput ? Carbon::parse($startInput) : now()->startOfMonth();
+        $endDate = $endInput ? Carbon::parse($endInput) : now()->endOfMonth();
 
         if ($startDate->greaterThan($endDate)) {
             $endDate = $startDate->copy()->endOfMonth();
@@ -125,6 +139,19 @@ class ReportController extends Controller
         return $query->get();
     }
 
+    /**
+     * Get display name for selected laboratory.
+     */
+    private function getSelectedLabName($labId): string
+    {
+        if (empty($labId) || $labId === 'All') {
+            return 'Semua Laboratorium';
+        }
+        $lab = Laboratory::find($labId);
+
+        return $lab ? $lab->name : 'Semua Laboratorium';
+    }
+
     // --- 1. RINGKASAN EKSEKUTIF [PDF ONLY] ---
 
     public function showEksekutif(Request $request)
@@ -170,7 +197,7 @@ class ReportController extends Controller
         return $pdf->stream('laporan-eksekutif_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.pdf');
     }
 
-    private function getEksekutifData($startDate, $endDate, ?array $labIds = null)
+    private function getEksekutifData($startDate, $endDate, ?array $labIds = null): array
     {
         $computersQuery = Computer::query();
         if ($labIds !== null) {
@@ -229,7 +256,24 @@ class ReportController extends Controller
             ->take(5)
             ->get();
 
-        return compact('totalComputers', 'totalInstallations', 'complianceRate', 'criticalAlerts', 'breakdown', 'topUnlicensed');
+        // Monitoring Summary
+        $scanQuery = ScanSession::whereBetween('started_at', [$startDate, $endDate]);
+        if ($labIds !== null) {
+            $scanQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
+        }
+        $totalScans = (clone $scanQuery)->count();
+        $successfulScans = (clone $scanQuery)->where('status', 'completed')->count();
+        $failedScans = (clone $scanQuery)->where('status', 'failed')->count();
+        $scanSuccessRate = $totalScans > 0 ? round(($successfulScans / $totalScans) * 100, 1) : 0;
+
+        $monitoringSummary = [
+            'total_scans' => $totalScans,
+            'successful_scans' => $successfulScans,
+            'failed_scans' => $failedScans,
+            'scan_success_rate' => $scanSuccessRate,
+        ];
+
+        return compact('totalComputers', 'totalInstallations', 'complianceRate', 'criticalAlerts', 'breakdown', 'topUnlicensed', 'monitoringSummary');
     }
 
     // --- 2. INVENTARIS KOMPUTER [PDF + EXCEL] ---
@@ -243,7 +287,14 @@ class ReportController extends Controller
         $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
         $laboratories = $this->getAccessibleLaboratories($period);
 
-        $query = Computer::withCount('softwares')->whereBetween('created_at', [$startDate, $endDate])->orderBy('hostname');
+        $query = Computer::withCount([
+            'softwares',
+            'scanSessions as total_scans' => fn ($q) => $q->whereBetween('scan_sessions.started_at', [$startDate, $endDate]),
+        ])
+            ->with(['scanSessions' => fn ($q) => $q->latest('started_at')->limit(1)])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('hostname');
+
         if ($labIds !== null) {
             $query->whereIn('laboratory_id', $labIds);
         }
@@ -271,7 +322,14 @@ class ReportController extends Controller
         $labIds = $this->resolveLabScope($request, $period);
         $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
 
-        $query = Computer::withCount('softwares')->whereBetween('created_at', [$startDate, $endDate])->orderBy('hostname');
+        $query = Computer::withCount([
+            'softwares',
+            'scanSessions as total_scans' => fn ($q) => $q->whereBetween('scan_sessions.started_at', [$startDate, $endDate]),
+        ])
+            ->with(['scanSessions' => fn ($q) => $q->latest('started_at')->limit(1)])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderBy('hostname');
+
         if ($labIds !== null) {
             $query->whereIn('laboratory_id', $labIds);
         }
@@ -350,6 +408,46 @@ class ReportController extends Controller
 
     private function getSoftwareData($startDate, $endDate, ?array $labIds = null)
     {
+        $hasHistorical = ScanSoftwareResult::whereHas('scanSession', function ($q) use ($startDate, $endDate, $labIds) {
+            $q->whereBetween('started_at', [$startDate, $endDate]);
+            if ($labIds !== null) {
+                $q->whereHas('computer', fn ($c) => $c->whereIn('laboratory_id', $labIds));
+            }
+        })->exists();
+
+        if ($hasHistorical) {
+            $query = ScanSoftwareResult::whereHas('scanSession', function ($q) use ($startDate, $endDate, $labIds) {
+                $q->whereBetween('started_at', [$startDate, $endDate]);
+                if ($labIds !== null) {
+                    $q->whereHas('computer', fn ($c) => $c->whereIn('laboratory_id', $labIds));
+                }
+            })
+                ->join('scan_sessions', 'scan_software_results.scan_session_id', '=', 'scan_sessions.id')
+                ->leftJoin('software_catalogs', 'scan_software_results.catalog_id', '=', 'software_catalogs.id');
+
+            if ($labIds !== null) {
+                $query->join('computers', 'scan_sessions.computer_id', '=', 'computers.id')
+                    ->whereIn('computers.laboratory_id', $labIds);
+            }
+
+            return $query
+                ->select(
+                    'scan_software_results.catalog_id',
+                    'scan_software_results.version',
+                    \DB::raw('COALESCE(software_catalogs.normalized_name, scan_software_results.raw_name) as normalized_name'),
+                    \DB::raw('COALESCE(software_catalogs.category, "Unknown") as category'),
+                    \DB::raw('COUNT(DISTINCT scan_sessions.computer_id) as computer_count')
+                )
+                ->with(['catalog.licenses'])
+                ->groupBy(
+                    'scan_software_results.catalog_id',
+                    'scan_software_results.version',
+                    'normalized_name',
+                    'category'
+                )
+                ->orderByDesc('computer_count');
+        }
+
         $query = SoftwareDiscovery::whereBetween('software_discoveries.created_at', [$startDate, $endDate])
             ->join('software_catalogs', 'software_discoveries.catalog_id', '=', 'software_catalogs.id');
 
@@ -387,15 +485,7 @@ class ReportController extends Controller
         $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
         $laboratories = $this->getAccessibleLaboratories($period);
 
-        $query = ComplianceReport::with(['computer', 'softwareCatalog'])
-            ->whereBetween('scanned_at', [$startDate, $endDate])
-            ->orderByDesc('scanned_at');
-
-        if ($labIds !== null) {
-            $query->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
-        }
-
-        $reports = $query->paginate(15)->withQueryString();
+        $reports = $this->getKepatuhanQuery($startDate, $endDate, $labIds)->paginate(15)->withQueryString();
 
         return view('reports.kepatuhan', [
             'reports' => $reports,
@@ -418,15 +508,7 @@ class ReportController extends Controller
         $labIds = $this->resolveLabScope($request, $period);
         $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
 
-        $query = ComplianceReport::with(['computer', 'softwareCatalog'])
-            ->whereBetween('scanned_at', [$startDate, $endDate])
-            ->orderByDesc('scanned_at');
-
-        if ($labIds !== null) {
-            $query->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
-        }
-
-        $reports = $query->get();
+        $reports = $this->getKepatuhanQuery($startDate, $endDate, $labIds)->get();
 
         if ($format === 'excel') {
             return Excel::download(new KepatuhanExport($reports, $startDate, $endDate, $approvalData), 'kepatuhan-lisensi_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
@@ -443,6 +525,37 @@ class ReportController extends Controller
         ];
 
         return Pdf::loadView('reports.pdf.kepatuhan-pdf', $data)->setPaper('a4', 'portrait')->stream();
+    }
+
+    private function getKepatuhanQuery($startDate, $endDate, ?array $labIds = null)
+    {
+        $hasHistorical = ComplianceSnapshot::whereBetween('scanned_at', [$startDate, $endDate])
+            ->when($labIds !== null, function ($q) use ($labIds) {
+                $q->whereHas('computer', fn ($c) => $c->whereIn('laboratory_id', $labIds));
+            })
+            ->exists();
+
+        if ($hasHistorical) {
+            $query = ComplianceSnapshot::with(['computer.laboratory', 'softwareCatalog'])
+                ->whereBetween('scanned_at', [$startDate, $endDate])
+                ->orderByDesc('scanned_at');
+
+            if ($labIds !== null) {
+                $query->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
+            }
+
+            return $query;
+        }
+
+        $query = ComplianceReport::with(['computer.laboratory', 'softwareCatalog'])
+            ->whereBetween('scanned_at', [$startDate, $endDate])
+            ->orderByDesc('scanned_at');
+
+        if ($labIds !== null) {
+            $query->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
+        }
+
+        return $query;
     }
 
     // --- 5. STATUS LISENSI [PDF + EXCEL] ---
@@ -540,6 +653,227 @@ class ReportController extends Controller
         ];
 
         return Pdf::loadView('reports.pdf.lisensi-pdf', $data)->setPaper('a4', 'portrait')->stream();
+    }
+
+    // --- 6. REKAP MONITORING BERKALA [PDF + EXCEL] ---
+
+    public function showMonitoring(Request $request)
+    {
+        [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
+        $laboratories = $this->getAccessibleLaboratories($period);
+
+        $monitoringData = $this->getMonitoringData($startDate, $endDate, $labIds);
+        $computers = $monitoringData['compQuery']->paginate(15)->withQueryString();
+
+        return view('reports.monitoring', [
+            'computers' => $computers,
+            'summary' => $monitoringData['summary'],
+            'labStats' => $monitoringData['labStats'],
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'period' => $period,
+            'approvalData' => $approvalData,
+            'laboratories' => $laboratories,
+            'selectedLabId' => $request->input('laboratory_id'),
+            'selectedLabName' => $this->getSelectedLabName($request->input('laboratory_id')),
+        ]);
+    }
+
+    public function exportMonitoring(Request $request)
+    {
+        [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
+        $format = $request->query('format', 'pdf');
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
+
+        $monitoringData = $this->getMonitoringData($startDate, $endDate, $labIds);
+        $computers = $monitoringData['compQuery']->get();
+        $summary = $monitoringData['summary'];
+        $labStats = $monitoringData['labStats'];
+
+        if ($format === 'excel') {
+            return Excel::download(
+                new MonitoringRecapExport($computers, $startDate, $endDate, $summary, $approvalData),
+                'rekap-monitoring_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx'
+            );
+        }
+
+        $data = [
+            'computers' => $computers,
+            'summary' => $summary,
+            'labStats' => $labStats,
+            'startDateStr' => $startDate->format('d/m/Y'),
+            'endDateStr' => $endDate->format('d/m/Y'),
+            'print_date' => now()->format('d/m/Y H:i'),
+            'printed_by' => auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')',
+            'period' => $period,
+            'selectedLabName' => $this->getSelectedLabName($request->input('laboratory_id')),
+            'approvalData' => $approvalData,
+        ];
+
+        return Pdf::loadView('reports.pdf.monitoring-recap-pdf', $data)->setPaper('a4', 'portrait')->stream();
+    }
+
+    private function getMonitoringData($startDate, $endDate, ?array $labIds = null): array
+    {
+        $scanQuery = ScanSession::whereBetween('started_at', [$startDate, $endDate]);
+        if ($labIds !== null) {
+            $scanQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
+        }
+
+        $totalScans = (clone $scanQuery)->count();
+        $successfulScans = (clone $scanQuery)->where('status', 'completed')->count();
+        $failedScans = (clone $scanQuery)->where('status', 'failed')->count();
+        $successRate = $totalScans > 0 ? round(($successfulScans / $totalScans) * 100, 1) : 0;
+
+        $computersQuery = Computer::query();
+        if ($labIds !== null) {
+            $computersQuery->whereIn('laboratory_id', $labIds);
+        }
+        $totalComputers = $computersQuery->count();
+
+        $summary = [
+            'total_computers' => $totalComputers,
+            'total_scans' => $totalScans,
+            'successful_scans' => $successfulScans,
+            'failed_scans' => $failedScans,
+            'success_rate' => $successRate,
+        ];
+
+        $labQuery = Laboratory::query();
+        if ($labIds !== null) {
+            $labQuery->whereIn('id', $labIds);
+        }
+
+        $labStats = $labQuery->withCount([
+            'computers',
+            'scanSessions as total_scans' => fn ($q) => $q->whereBetween('scan_sessions.started_at', [$startDate, $endDate]),
+            'scanSessions as successful_scans' => fn ($q) => $q->whereBetween('scan_sessions.started_at', [$startDate, $endDate])->where('scan_sessions.status', 'completed'),
+            'scanSessions as failed_scans' => fn ($q) => $q->whereBetween('scan_sessions.started_at', [$startDate, $endDate])->where('scan_sessions.status', 'failed'),
+        ])->orderBy('name')->get()->map(function ($lab) {
+            $lab->success_rate = $lab->total_scans > 0 ? round(($lab->successful_scans / $lab->total_scans) * 100, 1) : 0;
+
+            return $lab;
+        });
+
+        $compQuery = Computer::with(['laboratory', 'scanSessions' => fn ($q) => $q->latest('started_at')->limit(1)])
+            ->when($labIds !== null, fn ($q) => $q->whereIn('laboratory_id', $labIds))
+            ->withCount([
+                'scanSessions as total_scans' => fn ($q) => $q->whereBetween('scan_sessions.started_at', [$startDate, $endDate]),
+                'scanSessions as successful_scans' => fn ($q) => $q->whereBetween('scan_sessions.started_at', [$startDate, $endDate])->where('scan_sessions.status', 'completed'),
+                'scanSessions as failed_scans' => fn ($q) => $q->whereBetween('scan_sessions.started_at', [$startDate, $endDate])->where('scan_sessions.status', 'failed'),
+            ])
+            ->orderBy('hostname');
+
+        return compact('summary', 'labStats', 'compQuery');
+    }
+
+    // --- 7. REKAP PERUBAHAN SOFTWARE [PDF + EXCEL] ---
+
+    public function showPerubahan(Request $request)
+    {
+        [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
+        $laboratories = $this->getAccessibleLaboratories($period);
+
+        $perubahanData = $this->getPerubahanData($startDate, $endDate, $labIds, $request->input('change_type'));
+
+        $page = (int) $request->get('page', 1);
+        $perPage = 15;
+        $paginatedChanges = new LengthAwarePaginator(
+            $perubahanData['changes']->forPage($page, $perPage),
+            $perubahanData['changes']->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+
+        return view('reports.perubahan', [
+            'paginatedChanges' => $paginatedChanges,
+            'summary' => $perubahanData['summary'],
+            'startDate' => $startDate,
+            'endDate' => $endDate,
+            'period' => $period,
+            'approvalData' => $approvalData,
+            'laboratories' => $laboratories,
+            'selectedLabId' => $request->input('laboratory_id'),
+            'selectedLabName' => $this->getSelectedLabName($request->input('laboratory_id')),
+        ]);
+    }
+
+    public function exportPerubahan(Request $request)
+    {
+        [$startDate, $endDate] = $this->getDateRange($request);
+        $period = $request->input('period', $startDate->format('Y-m'));
+        $format = $request->query('format', 'pdf');
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
+
+        $perubahanData = $this->getPerubahanData($startDate, $endDate, $labIds, $request->input('change_type'));
+        $changes = $perubahanData['changes'];
+        $summary = $perubahanData['summary'];
+
+        if ($format === 'excel') {
+            return Excel::download(
+                new SoftwareChangesExport($changes, $startDate, $endDate, $summary, $approvalData),
+                'rekap-perubahan-software_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx'
+            );
+        }
+
+        $data = [
+            'changes' => $changes,
+            'summary' => $summary,
+            'startDateStr' => $startDate->format('d/m/Y'),
+            'endDateStr' => $endDate->format('d/m/Y'),
+            'print_date' => now()->format('d/m/Y H:i'),
+            'printed_by' => auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')',
+            'period' => $period,
+            'selectedLabName' => $this->getSelectedLabName($request->input('laboratory_id')),
+            'approvalData' => $approvalData,
+        ];
+
+        return Pdf::loadView('reports.pdf.software-changes-pdf', $data)->setPaper('a4', 'landscape')->stream();
+    }
+
+    private function getPerubahanData($startDate, $endDate, ?array $labIds = null, ?string $changeType = null): array
+    {
+        $filters = [
+            'period_start' => $startDate->toDateString(),
+            'period_end' => $endDate->toDateString(),
+        ];
+
+        if ($changeType && $changeType !== 'All') {
+            $filters['change_type'] = $changeType;
+        }
+
+        if ($labIds !== null && count($labIds) === 1) {
+            $filters['laboratory_id'] = $labIds[0];
+        }
+
+        $allChanges = $this->changeDetectionService->getGlobalChanges($filters);
+
+        if ($labIds !== null && count($labIds) > 1) {
+            $allChanges = $allChanges->whereIn('laboratory_id', $labIds)->values();
+        }
+
+        $summary = [
+            'total' => $allChanges->count(),
+            'added' => $allChanges->where('type', 'added')->count(),
+            'removed' => $allChanges->where('type', 'removed')->count(),
+            'version_changed' => $allChanges->where('type', 'version_changed')->count(),
+            'returned' => $allChanges->where('type', 'returned')->count(),
+        ];
+
+        return [
+            'changes' => $allChanges,
+            'summary' => $summary,
+        ];
     }
 
     public function runComplianceScan()

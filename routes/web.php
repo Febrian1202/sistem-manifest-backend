@@ -67,6 +67,8 @@ Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function ()
         Route::get('/software', [ReportController::class, 'showSoftware'])->name('software');
         Route::get('/kepatuhan', [ReportController::class, 'showKepatuhan'])->name('kepatuhan');
         Route::get('/lisensi', [ReportController::class, 'showLisensi'])->name('lisensi');
+        Route::get('/monitoring', [ReportController::class, 'showMonitoring'])->name('monitoring');
+        Route::get('/perubahan', [ReportController::class, 'showPerubahan'])->name('perubahan');
 
         // Export endpoints
         Route::get('/eksekutif/export', [ReportController::class, 'exportEksekutif'])->name('eksekutif.export');
@@ -74,6 +76,8 @@ Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function ()
         Route::get('/software/export', [ReportController::class, 'exportSoftware'])->name('software.export');
         Route::get('/kepatuhan/export', [ReportController::class, 'exportKepatuhan'])->name('kepatuhan.export');
         Route::get('/lisensi/export', [ReportController::class, 'exportLisensi'])->name('lisensi.export');
+        Route::get('/monitoring/export', [ReportController::class, 'exportMonitoring'])->name('monitoring.export');
+        Route::get('/perubahan/export', [ReportController::class, 'exportPerubahan'])->name('perubahan.export');
 
         Route::post('/kepatuhan/scan', [ReportController::class, 'runComplianceScan'])
             ->middleware('role:admin')
@@ -121,7 +125,9 @@ Route::middleware(['auth', 'role:kepala_lab'])->group(function () {
     // Inventaris Lab
     Route::get('/lab/inventory', [LabInventoryController::class, 'index'])->name('lab.inventory.index');
     Route::get('/lab/inventory/{computer}', [LabInventoryController::class, 'show'])->name('lab.inventory.show');
+});
 
+Route::middleware(['auth', 'role:kepala_lab|admin'])->group(function () {
     // Review Laporan
     Route::get('/lab/reports', [ReportApprovalController::class, 'index'])->name('lab.reports.index');
     Route::get('/lab/reports/{reportApproval}', [ReportApprovalController::class, 'show'])->name('lab.reports.show');

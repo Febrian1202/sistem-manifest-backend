@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use App\Models\Traits\ScopedByLaboratory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -31,24 +35,25 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $location
  * @property int|null $laboratory_id
  * @property string $status
- * @property \Illuminate\Support\Carbon|null $last_seen_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Activitylog\Models\Activity> $activitiesAsSubject
+ * @property Carbon|null $last_seen_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Activity> $activitiesAsSubject
  * @property-read int|null $activities_as_subject_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ComplianceReport> $complianceReports
+ * @property-read Collection<int, ComplianceReport> $complianceReports
  * @property-read int|null $compliance_reports_count
- * @property-read \App\Models\Laboratory|null $laboratory
- * @property-read \App\Models\ComplianceReport|null $latestComplianceReport
- * @property-read \App\Models\ScanSession|null $latestScanSession
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ScanSession> $scanSessions
+ * @property-read Laboratory|null $laboratory
+ * @property-read ComplianceReport|null $latestComplianceReport
+ * @property-read ScanSession|null $latestScanSession
+ * @property-read Collection<int, ScanSession> $scanSessions
  * @property-read int|null $scan_sessions_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SoftwareDiscovery> $softwareDiscoveries
+ * @property-read Collection<int, SoftwareDiscovery> $softwareDiscoveries
  * @property-read int|null $software_discoveries_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SoftwareDiscovery> $softwares
+ * @property-read Collection<int, SoftwareDiscovery> $softwares
  * @property-read int|null $softwares_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
+ * @property-read Collection<int, PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Computer active()
  * @method static \Database\Factories\ComputerFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Computer forLaboratory(string|int $laboratoryId)
@@ -79,6 +84,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Computer whereSerialNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Computer whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Computer whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Computer extends Authenticatable

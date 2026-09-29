@@ -247,16 +247,16 @@ if ($request->filled(['period_start', 'period_end'])) {
 
 ## Kriteria Selesai Phase 5
 
-- [ ] Rekap Monitoring report bisa digenerate (PDF + Excel)
-- [ ] Report software menggunakan data historis jika filter periode diberikan
-- [ ] Report kepatuhan menggunakan data historis jika filter periode diberikan
-- [ ] Rekap Perubahan report bisa digenerate
-- [ ] Semua report bisa difilter per laboratorium
-- [ ] Semua report bisa difilter per periode (period_start, period_end)
-- [ ] Report approval mendukung periode eksplisit
-- [ ] Scope lab diterapkan konsisten di semua report
-- [ ] Export PDF/Excel menampilkan data yang benar
-- [ ] `vendor/bin/pint --dirty` clean
+- [x] Rekap Monitoring report bisa digenerate (PDF + Excel)
+- [x] Report software menggunakan data historis jika filter periode diberikan
+- [x] Report kepatuhan menggunakan data historis jika filter periode diberikan
+- [x] Rekap Perubahan report bisa digenerate
+- [x] Semua report bisa difilter per laboratorium
+- [x] Semua report bisa difilter per periode (period_start, period_end)
+- [x] Report approval mendukung periode eksplisit
+- [x] Scope lab diterapkan konsisten di semua report
+- [x] Export PDF/Excel menampilkan data yang benar
+- [x] `vendor/bin/pint --dirty` clean
 
 ---
 

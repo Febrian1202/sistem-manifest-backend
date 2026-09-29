@@ -6,6 +6,7 @@ use App\Models\Traits\ScopedByLaboratory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -17,14 +18,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $status
  * @property string|null $keterangan
  * @property int|null $license_inventory_id
- * @property \Illuminate\Support\Carbon|null $detected_at
- * @property \Illuminate\Support\Carbon $scanned_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Computer|null $computer
- * @property-read \App\Models\LicenseInventory|null $licenseInventory
- * @property-read \App\Models\ScanSession $scanSession
- * @property-read \App\Models\SoftwareCatalog|null $softwareCatalog
+ * @property Carbon|null $detected_at
+ * @property Carbon $scanned_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Computer|null $computer
+ * @property-read LicenseInventory|null $licenseInventory
+ * @property-read ScanSession $scanSession
+ * @property-read SoftwareCatalog|null $softwareCatalog
+ *
  * @method static \Database\Factories\ComplianceSnapshotFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ComplianceSnapshot forLaboratory(string|int $laboratoryId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ComplianceSnapshot forUserLab(?\App\Models\User $user = null)
@@ -44,6 +46,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ComplianceSnapshot whereSoftwareVersion($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ComplianceSnapshot whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ComplianceSnapshot whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ComplianceSnapshot extends Model

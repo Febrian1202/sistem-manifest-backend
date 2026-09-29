@@ -97,6 +97,33 @@
             </div>
         </div>
 
+        @if(isset($monitoringSummary))
+        <!-- Monitoring Activity Summary -->
+        <div class="mb-8">
+            <h3 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-radar text-blue-600"></i> Aktivitas Monitoring Berkala Periode Ini
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Sesi Scan</p>
+                    <h4 class="text-2xl font-bold text-blue-600 mt-1">{{ $monitoringSummary['total_scans'] ?? 0 }}</h4>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Scan Berhasil</p>
+                    <h4 class="text-2xl font-bold text-green-600 mt-1">{{ $monitoringSummary['successful_scans'] ?? 0 }}</h4>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Scan Gagal</p>
+                    <h4 class="text-2xl font-bold text-red-600 mt-1">{{ $monitoringSummary['failed_scans'] ?? 0 }}</h4>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Tingkat Keberhasilan</p>
+                    <h4 class="text-2xl font-bold text-indigo-600 mt-1">{{ $monitoringSummary['scan_success_rate'] ?? 0 }}%</h4>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <!-- Breakdown Table -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

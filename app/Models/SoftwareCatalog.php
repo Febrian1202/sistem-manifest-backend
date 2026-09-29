@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -13,14 +16,15 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $category
  * @property string $status
  * @property string|null $description
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Activitylog\Models\Activity> $activitiesAsSubject
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Activity> $activitiesAsSubject
  * @property-read int|null $activities_as_subject_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SoftwareDiscovery> $discoveries
+ * @property-read Collection<int, SoftwareDiscovery> $discoveries
  * @property-read int|null $discoveries_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LicenseInventory> $licenses
+ * @property-read Collection<int, LicenseInventory> $licenses
  * @property-read int|null $licenses_count
+ *
  * @method static \Database\Factories\SoftwareCatalogFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog newQuery()
@@ -32,6 +36,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog whereNormalizedName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|SoftwareCatalog whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class SoftwareCatalog extends Model

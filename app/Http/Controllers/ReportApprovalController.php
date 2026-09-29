@@ -14,19 +14,26 @@ use Illuminate\View\View;
 
 class ReportApprovalController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
         $user = auth()->user();
-        $labId = $user->laboratory_id;
 
-        if (! $labId) {
-            abort(403, 'Anda belum ditugaskan ke laboratorium manapun.');
+        $query = ReportApproval::with(['laboratory', 'reviewer'])
+            ->orderByDesc('created_at');
+
+        if ($user->hasRole('kepala_lab')) {
+            $labId = $user->laboratory_id;
+
+            if (! $labId) {
+                abort(403, 'Anda belum ditugaskan ke laboratorium manapun.');
+            }
+
+            $query->where('laboratory_id', $labId);
+        } elseif ($request->filled('laboratory_id') && $request->laboratory_id !== 'All') {
+            $query->where('laboratory_id', (int) $request->laboratory_id);
         }
 
-        $approvals = ReportApproval::where('laboratory_id', $labId)
-            ->with(['laboratory', 'reviewer'])
-            ->orderByDesc('created_at')
-            ->paginate(15);
+        $approvals = $query->paginate(15)->withQueryString();
 
         return view('report-approvals.index', compact('approvals'));
     }
@@ -44,8 +51,8 @@ class ReportApprovalController extends Controller
             $periodDate = now();
         }
 
-        $startOfMonth = $periodDate->copy()->startOfMonth();
-        $endOfMonth = $periodDate->copy()->endOfMonth();
+        $startOfMonth = $reportApproval->period_start ?? $periodDate->copy()->startOfMonth();
+        $endOfMonth = $reportApproval->period_end ?? $periodDate->copy()->endOfMonth();
 
         $computers = Computer::where('laboratory_id', $lab->id)
             ->with(['softwares.catalog', 'complianceReports.softwareCatalog'])
@@ -188,7 +195,13 @@ class ReportApprovalController extends Controller
 
     private function authorizeLabAccess(ReportApproval $reportApproval): void
     {
-        if ($reportApproval->laboratory_id !== auth()->user()->laboratory_id) {
+        $user = auth()->user();
+
+        if ($user->hasRole('admin')) {
+            return;
+        }
+
+        if ($reportApproval->laboratory_id !== $user->laboratory_id) {
             abort(403, 'Anda tidak memiliki akses ke laporan laboratorium ini.');
         }
     }

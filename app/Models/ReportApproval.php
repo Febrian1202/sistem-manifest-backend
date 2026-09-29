@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use App\Models\Traits\ScopedByLaboratory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -15,17 +18,18 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property int|null $reviewed_by
  * @property string $report_type
  * @property string $period
- * @property \Illuminate\Support\Carbon|null $period_start
- * @property \Illuminate\Support\Carbon|null $period_end
+ * @property Carbon|null $period_start
+ * @property Carbon|null $period_end
  * @property string $status
  * @property string|null $notes
- * @property \Illuminate\Support\Carbon|null $reviewed_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Activitylog\Models\Activity> $activitiesAsSubject
+ * @property Carbon|null $reviewed_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Activity> $activitiesAsSubject
  * @property-read int|null $activities_as_subject_count
- * @property-read \App\Models\Laboratory $laboratory
- * @property-read \App\Models\User|null $reviewer
+ * @property-read Laboratory $laboratory
+ * @property-read User|null $reviewer
+ *
  * @method static \Database\Factories\ReportApprovalFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ReportApproval forLaboratory(string|int $laboratoryId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ReportApproval forUserLab(?\App\Models\User $user = null)
@@ -44,6 +48,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ReportApproval whereReviewedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ReportApproval whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ReportApproval whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class ReportApproval extends Model

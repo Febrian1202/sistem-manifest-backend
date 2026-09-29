@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Support\Carbon;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -15,16 +19,17 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $building
  * @property string|null $floor
  * @property string|null $description
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Activitylog\Models\Activity> $activitiesAsSubject
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Activity> $activitiesAsSubject
  * @property-read int|null $activities_as_subject_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Computer> $computers
+ * @property-read Collection<int, Computer> $computers
  * @property-read int|null $computers_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $penanggungJawab
+ * @property-read Collection<int, User> $penanggungJawab
  * @property-read int|null $penanggung_jawab_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ReportApproval> $reportApprovals
+ * @property-read Collection<int, ReportApproval> $reportApprovals
  * @property-read int|null $report_approvals_count
+ *
  * @method static \Database\Factories\LaboratoryFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Laboratory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Laboratory newQuery()
@@ -37,6 +42,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Laboratory whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Laboratory whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Laboratory whereUpdatedAt($value)
+ *
  * @mixin \Eloquent
  */
 class Laboratory extends Model
@@ -73,5 +79,10 @@ class Laboratory extends Model
     public function reportApprovals(): HasMany
     {
         return $this->hasMany(ReportApproval::class);
+    }
+
+    public function scanSessions(): HasManyThrough
+    {
+        return $this->hasManyThrough(ScanSession::class, Computer::class);
     }
 }

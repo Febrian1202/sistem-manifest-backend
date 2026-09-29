@@ -6,6 +6,7 @@ use App\Models\Traits\ScopedByLaboratory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -14,11 +15,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $raw_name
  * @property string|null $version
  * @property string|null $vendor
- * @property \Illuminate\Support\Carbon|null $install_date
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\SoftwareCatalog|null $catalog
- * @property-read \App\Models\ScanSession $scanSession
+ * @property Carbon|null $install_date
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read SoftwareCatalog|null $catalog
+ * @property-read ScanSession $scanSession
+ *
  * @method static \Database\Factories\ScanSoftwareResultFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSoftwareResult forLaboratory(string|int $laboratoryId)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSoftwareResult forUserLab(?\App\Models\User $user = null)
@@ -34,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSoftwareResult whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSoftwareResult whereVendor($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ScanSoftwareResult whereVersion($value)
+ *
  * @mixin \Eloquent
  */
 class ScanSoftwareResult extends Model

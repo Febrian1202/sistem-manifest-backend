@@ -80,6 +80,28 @@
         </tr>
     </table>
 
+    @if(isset($monitoringSummary))
+    <div class="section-title">Aktivitas Monitoring Berkala</div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th class="text-center">Total Sesi Scan</th>
+                <th class="text-center">Scan Berhasil</th>
+                <th class="text-center">Scan Gagal</th>
+                <th class="text-center">Tingkat Keberhasilan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="text-center"><strong>{{ $monitoringSummary['total_scans'] ?? 0 }}</strong></td>
+                <td class="text-center" style="color: #15803d; font-weight: bold;">{{ $monitoringSummary['successful_scans'] ?? 0 }}</td>
+                <td class="text-center" style="color: #b91c1c; font-weight: bold;">{{ $monitoringSummary['failed_scans'] ?? 0 }}</td>
+                <td class="text-center"><strong>{{ $monitoringSummary['scan_success_rate'] ?? 0 }}%</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    @endif
+
     <div class="section-title">Status Kepatuhan Lisensi</div>
     <table class="data-table">
         <thead>

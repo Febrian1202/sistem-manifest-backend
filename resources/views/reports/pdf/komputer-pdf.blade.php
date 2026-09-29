@@ -61,6 +61,7 @@
                 <th width="50">Status</th>
                 <th>Terakhir Terlihat</th>
                 <th width="40">Soft.</th>
+                <th width="35">Scan</th>
             </tr>
         </thead>
         <tbody>
@@ -81,6 +82,7 @@
                 </td>
                 <td>{{ $computer->last_seen_at ? $computer->last_seen_at->format('d/m/Y H:i') : '-' }}</td>
                 <td class="text-center">{{ $computer->softwares_count }}</td>
+                <td class="text-center">{{ $computer->total_scans ?? 0 }}</td>
             </tr>
             @endforeach
         </tbody>
