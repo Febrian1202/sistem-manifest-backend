@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\ScopedByLaboratory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,7 +12,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class Computer extends Authenticatable
 {
-    use HasApiTokens, HasFactory, LogsActivity;
+    use HasApiTokens, HasFactory, LogsActivity, ScopedByLaboratory;
 
     public function getActivitylogOptions(): LogOptions
     {

@@ -45,9 +45,12 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     Route::get('/softwares', [SoftwareDataController::class, 'index'])->name('softwares');
     Route::get('/licenses', [LicenseDataController::class, 'index'])->name('licenses');
     Route::get('/licenses/{license}', [LicenseDataController::class, 'show'])->name('licenses.show');
+});
+
+Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function () {
     Route::get('/reports', [ReportController::class, 'index'])->name('reports');
 
-    // New detailed reports
+    // Detailed reports & exports
     Route::prefix('reports')->name('reports.')->group(function () {
         // Preview pages
         Route::get('/eksekutif', [ReportController::class, 'showEksekutif'])->name('eksekutif');
@@ -63,9 +66,13 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
         Route::get('/kepatuhan/export', [ReportController::class, 'exportKepatuhan'])->name('kepatuhan.export');
         Route::get('/lisensi/export', [ReportController::class, 'exportLisensi'])->name('lisensi.export');
 
-        Route::post('/kepatuhan/scan', [ReportController::class, 'runComplianceScan'])->name('kepatuhan.scan');
+        Route::post('/kepatuhan/scan', [ReportController::class, 'runComplianceScan'])
+            ->middleware('role:admin')
+            ->name('kepatuhan.scan');
     });
+});
 
+Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     // Admin-only Mutations
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/agent/download', [AgentDownloadController::class, 'showDownloadPage'])->name('agent.download-page');

@@ -273,15 +273,15 @@ public function scopeForUserLab(Builder $query, ?User $user = null): Builder
 
 ## Kriteria Selesai Phase 3
 
-- [ ] Login sebagai `kepala_lab` Lab A → hanya melihat data Lab A di SEMUA halaman
-- [ ] Login sebagai `kepala_lab` Lab B → hanya melihat data Lab B
-- [ ] Login sebagai `admin` → melihat semua lab
-- [ ] Login sebagai `pimpinan` → melihat dashboard/report semua lab (read-only)
-- [ ] Agent tidak bisa mengirim data untuk computer/lab lain
-- [ ] `laboratory_id` tidak bisa dipindahkan oleh client setelah registrasi
-- [ ] Report bisa difilter per lab
-- [ ] Scope trait/method reusable dan dipakai konsisten
-- [ ] `vendor/bin/pint --dirty` clean
+- [x] Login sebagai `kepala_lab` Lab A → hanya melihat data Lab A di SEMUA halaman
+- [x] Login sebagai `kepala_lab` Lab B → hanya melihat data Lab B
+- [x] Login sebagai `admin` → melihat semua lab
+- [x] Login sebagai `pimpinan` → melihat dashboard/report semua lab (read-only)
+- [x] Agent tidak bisa mengirim data untuk computer/lab lain
+- [x] `laboratory_id` tidak bisa dipindahkan oleh client setelah registrasi
+- [x] Report bisa difilter per lab
+- [x] Scope trait/method reusable dan dipakai konsisten
+- [x] `vendor/bin/pint --dirty` clean
 
 ---
 

@@ -41,16 +41,24 @@ class AgentRegisterController extends Controller
         }
 
         // 2. Find or Create Computer record by mac_address
-        // Per Fix 2 requirements elsewhere, mac_address is the primary identifier
-        $computer = Computer::updateOrCreate(
-            ['mac_address' => $request->mac_address],
-            [
+        // On re-registration, laboratory_id is locked to prevent unauthorized lab switching by client.
+        $computer = Computer::where('mac_address', $request->mac_address)->first();
+
+        if ($computer) {
+            $computer->update([
+                'hostname' => $request->hostname,
+                'serial_number' => $request->serial_number,
+                'last_seen_at' => now(),
+            ]);
+        } else {
+            $computer = Computer::create([
+                'mac_address' => $request->mac_address,
                 'hostname' => $request->hostname,
                 'serial_number' => $request->serial_number,
                 'laboratory_id' => $request->laboratory_id,
                 'last_seen_at' => now(),
-            ]
-        );
+            ]);
+        }
 
         // 3. Revoke all existing tokens for this device
         // This ensures re-registration invalidates old compromised/replaced tokens.

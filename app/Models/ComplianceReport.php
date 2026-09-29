@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\ScopedByLaboratory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ComplianceReport extends Model
 {
-    use HasFactory;
+    use HasFactory, ScopedByLaboratory;
 
     /**
      * The attributes that are mass assignable.

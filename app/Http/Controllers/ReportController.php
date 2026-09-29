@@ -9,6 +9,7 @@ use App\Exports\SoftwareExport;
 use App\Jobs\GenerateComplianceReportJob;
 use App\Models\ComplianceReport;
 use App\Models\Computer;
+use App\Models\Laboratory;
 use App\Models\LicenseInventory;
 use App\Models\ReportApproval;
 use App\Models\SoftwareDiscovery;
@@ -54,15 +55,74 @@ class ReportController extends Controller
     }
 
     /**
+     * Resolve effective laboratory IDs to scope data by role and filters.
+     * Returns:
+     * - array of int (if scoped to specific lab IDs)
+     * - null (if admin with all labs selected)
+     */
+    private function resolveLabScope(Request $request, string $period): ?array
+    {
+        $user = auth()->user();
+
+        if ($user->hasRole('kepala_lab')) {
+            return [$user->laboratory_id ?? 0];
+        }
+
+        if ($user->hasRole('pimpinan')) {
+            $approvedLabIds = $this->getApprovedLabIds('kepatuhan', $period);
+
+            if ($request->filled('laboratory_id') && $request->laboratory_id !== 'All') {
+                $requestedId = (int) $request->laboratory_id;
+
+                return $approvedLabIds->contains($requestedId) ? [$requestedId] : [0];
+            }
+
+            return $approvedLabIds->all();
+        }
+
+        // Admin
+        if ($request->filled('laboratory_id') && $request->laboratory_id !== 'All') {
+            return [(int) $request->laboratory_id];
+        }
+
+        return null;
+    }
+
+    /**
+     * Get accessible laboratories for dropdown filtering in reports.
+     */
+    private function getAccessibleLaboratories(string $period): Collection
+    {
+        $user = auth()->user();
+
+        if ($user->hasRole('kepala_lab')) {
+            return $user->laboratory ? collect([$user->laboratory]) : collect();
+        }
+
+        if ($user->hasRole('pimpinan')) {
+            $approvedLabIds = $this->getApprovedLabIds('kepatuhan', $period);
+
+            return Laboratory::whereIn('id', $approvedLabIds)->orderBy('name')->get();
+        }
+
+        return Laboratory::orderBy('name')->get();
+    }
+
+    /**
      * Get approved report approval records with relations for metadata.
      */
-    private function getApprovalData(string $reportType, string $period): Collection
+    private function getApprovalData(string $reportType, string $period, ?array $labIds = null): Collection
     {
-        return ReportApproval::where('status', 'approved')
+        $query = ReportApproval::where('status', 'approved')
             ->where('report_type', $reportType)
             ->where('period', $period)
-            ->with(['laboratory', 'reviewer'])
-            ->get();
+            ->with(['laboratory', 'reviewer']);
+
+        if ($labIds !== null) {
+            $query->whereIn('laboratory_id', $labIds);
+        }
+
+        return $query->get();
     }
 
     // --- 1. RINGKASAN EKSEKUTIF [PDF ONLY] ---
@@ -72,18 +132,21 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $period = $request->input('period', $startDate->format('Y-m'));
         $isPimpinan = auth()->user()?->hasRole('pimpinan');
-        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
-        $approvalData = $this->getApprovalData('kepatuhan', $period);
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
+        $laboratories = $this->getAccessibleLaboratories($period);
 
-        $data = $this->getEksekutifData($startDate, $endDate, $approvedLabIds);
+        $data = $this->getEksekutifData($startDate, $endDate, $labIds);
 
         return view('reports.eksekutif', array_merge($data, [
             'startDate' => $startDate->toDateString(),
             'endDate' => $endDate->toDateString(),
             'period' => $period,
             'isPimpinan' => $isPimpinan,
-            'hasApprovedLabs' => ! $isPimpinan || ($approvedLabIds && $approvedLabIds->isNotEmpty()),
+            'hasApprovedLabs' => ! $isPimpinan || ! empty($labIds),
             'approvalData' => $approvalData,
+            'laboratories' => $laboratories,
+            'selectedLabId' => $request->input('laboratory_id'),
         ]));
     }
 
@@ -91,11 +154,10 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         $period = $request->input('period', $startDate->format('Y-m'));
-        $isPimpinan = auth()->user()?->hasRole('pimpinan');
-        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
-        $approvalData = $this->getApprovalData('kepatuhan', $period);
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
 
-        $data = $this->getEksekutifData($startDate, $endDate, $approvedLabIds);
+        $data = $this->getEksekutifData($startDate, $endDate, $labIds);
         $data['print_date'] = now()->format('d/m/Y H:i');
         $data['printed_by'] = auth()->user()->name.' ('.(auth()->user()->getRoleNames()->first() ?? 'User').')';
         $data['startDateStr'] = $startDate->format('d/m/Y');
@@ -108,26 +170,24 @@ class ReportController extends Controller
         return $pdf->stream('laporan-eksekutif_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.pdf');
     }
 
-    private function getEksekutifData($startDate, $endDate, ?Collection $approvedLabIds = null)
+    private function getEksekutifData($startDate, $endDate, ?array $labIds = null)
     {
-        $isPimpinan = auth()->user()?->hasRole('pimpinan');
-
         $computersQuery = Computer::query();
-        if ($isPimpinan) {
-            $computersQuery->whereIn('laboratory_id', $approvedLabIds ?? collect());
+        if ($labIds !== null) {
+            $computersQuery->whereIn('laboratory_id', $labIds);
         }
         $totalComputers = $computersQuery->count();
 
         $installationsQuery = SoftwareDiscovery::whereBetween('created_at', [$startDate, $endDate]);
-        if ($isPimpinan) {
-            $installationsQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $approvedLabIds ?? collect()));
+        if ($labIds !== null) {
+            $installationsQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
         }
         $totalInstallations = $installationsQuery->count();
 
         // Compliance stats
         $licensedQuery = Computer::where('os_license_status', 'Licensed');
-        if ($isPimpinan) {
-            $licensedQuery->whereIn('laboratory_id', $approvedLabIds ?? collect());
+        if ($labIds !== null) {
+            $licensedQuery->whereIn('laboratory_id', $labIds);
         }
         $licensed = $licensedQuery->count();
         $complianceRate = $totalComputers > 0 ? round(($licensed / $totalComputers) * 100, 2) : 0;
@@ -135,16 +195,16 @@ class ReportController extends Controller
         $criticalAlertsQuery = SoftwareDiscovery::whereHas('catalog', function ($q) {
             $q->where('category', 'Commercial')->whereDoesntHave('licenses');
         })->whereBetween('created_at', [$startDate, $endDate]);
-        if ($isPimpinan) {
-            $criticalAlertsQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $approvedLabIds ?? collect()));
+        if ($labIds !== null) {
+            $criticalAlertsQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
         }
         $criticalAlerts = $criticalAlertsQuery->count();
 
         $graceQuery = Computer::where('os_license_status', 'Grace Period');
         $actionNeededQuery = Computer::whereNotIn('os_license_status', ['Licensed', 'Grace Period']);
-        if ($isPimpinan) {
-            $graceQuery->whereIn('laboratory_id', $approvedLabIds ?? collect());
-            $actionNeededQuery->whereIn('laboratory_id', $approvedLabIds ?? collect());
+        if ($labIds !== null) {
+            $graceQuery->whereIn('laboratory_id', $labIds);
+            $actionNeededQuery->whereIn('laboratory_id', $labIds);
         }
         $graceCount = $graceQuery->count();
         $actionNeededCount = $actionNeededQuery->count();
@@ -158,8 +218,8 @@ class ReportController extends Controller
         $topUnlicensedQuery = SoftwareDiscovery::whereHas('catalog', function ($q) {
             $q->where('category', 'Commercial')->whereDoesntHave('licenses');
         })->whereBetween('created_at', [$startDate, $endDate]);
-        if ($isPimpinan) {
-            $topUnlicensedQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $approvedLabIds ?? collect()));
+        if ($labIds !== null) {
+            $topUnlicensedQuery->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
         }
 
         $topUnlicensed = $topUnlicensedQuery
@@ -179,12 +239,13 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $period = $request->input('period', $startDate->format('Y-m'));
         $isPimpinan = auth()->user()?->hasRole('pimpinan');
-        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
-        $approvalData = $this->getApprovalData('kepatuhan', $period);
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
+        $laboratories = $this->getAccessibleLaboratories($period);
 
         $query = Computer::withCount('softwares')->whereBetween('created_at', [$startDate, $endDate])->orderBy('hostname');
-        if ($isPimpinan) {
-            $query->whereIn('laboratory_id', $approvedLabIds ?? collect());
+        if ($labIds !== null) {
+            $query->whereIn('laboratory_id', $labIds);
         }
 
         $computers = $query->paginate(15)->withQueryString();
@@ -195,8 +256,10 @@ class ReportController extends Controller
             'endDate' => $endDate,
             'period' => $period,
             'isPimpinan' => $isPimpinan,
-            'hasApprovedLabs' => ! $isPimpinan || ($approvedLabIds && $approvedLabIds->isNotEmpty()),
+            'hasApprovedLabs' => ! $isPimpinan || ! empty($labIds),
             'approvalData' => $approvalData,
+            'laboratories' => $laboratories,
+            'selectedLabId' => $request->input('laboratory_id'),
         ]);
     }
 
@@ -205,13 +268,12 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $period = $request->input('period', $startDate->format('Y-m'));
         $format = $request->query('format', 'pdf');
-        $isPimpinan = auth()->user()?->hasRole('pimpinan');
-        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
-        $approvalData = $this->getApprovalData('kepatuhan', $period);
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
 
         $query = Computer::withCount('softwares')->whereBetween('created_at', [$startDate, $endDate])->orderBy('hostname');
-        if ($isPimpinan) {
-            $query->whereIn('laboratory_id', $approvedLabIds ?? collect());
+        if ($labIds !== null) {
+            $query->whereIn('laboratory_id', $labIds);
         }
 
         $computers = $query->get();
@@ -240,10 +302,11 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $period = $request->input('period', $startDate->format('Y-m'));
         $isPimpinan = auth()->user()?->hasRole('pimpinan');
-        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
-        $approvalData = $this->getApprovalData('kepatuhan', $period);
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
+        $laboratories = $this->getAccessibleLaboratories($period);
 
-        $softwares = $this->getSoftwareData($startDate, $endDate, $approvedLabIds)->paginate(15)->withQueryString();
+        $softwares = $this->getSoftwareData($startDate, $endDate, $labIds)->paginate(15)->withQueryString();
 
         return view('reports.software', [
             'softwares' => $softwares,
@@ -251,8 +314,10 @@ class ReportController extends Controller
             'endDate' => $endDate,
             'period' => $period,
             'isPimpinan' => $isPimpinan,
-            'hasApprovedLabs' => ! $isPimpinan || ($approvedLabIds && $approvedLabIds->isNotEmpty()),
+            'hasApprovedLabs' => ! $isPimpinan || ! empty($labIds),
             'approvalData' => $approvalData,
+            'laboratories' => $laboratories,
+            'selectedLabId' => $request->input('laboratory_id'),
         ]);
     }
 
@@ -261,11 +326,10 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $period = $request->input('period', $startDate->format('Y-m'));
         $format = $request->query('format', 'pdf');
-        $isPimpinan = auth()->user()?->hasRole('pimpinan');
-        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
-        $approvalData = $this->getApprovalData('kepatuhan', $period);
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
 
-        $softwares = $this->getSoftwareData($startDate, $endDate, $approvedLabIds)->get();
+        $softwares = $this->getSoftwareData($startDate, $endDate, $labIds)->get();
 
         if ($format === 'excel') {
             return Excel::download(new SoftwareExport($softwares, $startDate, $endDate, $approvalData), 'inventaris-software_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');
@@ -284,14 +348,14 @@ class ReportController extends Controller
         return Pdf::loadView('reports.pdf.software-pdf', $data)->setPaper('a4', 'portrait')->stream();
     }
 
-    private function getSoftwareData($startDate, $endDate, ?Collection $approvedLabIds = null)
+    private function getSoftwareData($startDate, $endDate, ?array $labIds = null)
     {
         $query = SoftwareDiscovery::whereBetween('software_discoveries.created_at', [$startDate, $endDate])
             ->join('software_catalogs', 'software_discoveries.catalog_id', '=', 'software_catalogs.id');
 
-        if ($approvedLabIds !== null) {
+        if ($labIds !== null) {
             $query->join('computers', 'software_discoveries.computer_id', '=', 'computers.id')
-                ->whereIn('computers.laboratory_id', $approvedLabIds);
+                ->whereIn('computers.laboratory_id', $labIds);
         }
 
         return $query
@@ -319,15 +383,16 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $period = $request->input('period', $startDate->format('Y-m'));
         $isPimpinan = auth()->user()?->hasRole('pimpinan');
-        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
-        $approvalData = $this->getApprovalData('kepatuhan', $period);
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
+        $laboratories = $this->getAccessibleLaboratories($period);
 
         $query = ComplianceReport::with(['computer', 'softwareCatalog'])
             ->whereBetween('scanned_at', [$startDate, $endDate])
             ->orderByDesc('scanned_at');
 
-        if ($isPimpinan) {
-            $query->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $approvedLabIds ?? collect()));
+        if ($labIds !== null) {
+            $query->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
         }
 
         $reports = $query->paginate(15)->withQueryString();
@@ -338,8 +403,10 @@ class ReportController extends Controller
             'endDate' => $endDate,
             'period' => $period,
             'isPimpinan' => $isPimpinan,
-            'hasApprovedLabs' => ! $isPimpinan || ($approvedLabIds && $approvedLabIds->isNotEmpty()),
+            'hasApprovedLabs' => ! $isPimpinan || ! empty($labIds),
             'approvalData' => $approvalData,
+            'laboratories' => $laboratories,
+            'selectedLabId' => $request->input('laboratory_id'),
         ]);
     }
 
@@ -348,16 +415,15 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $period = $request->input('period', $startDate->format('Y-m'));
         $format = $request->query('format', 'pdf');
-        $isPimpinan = auth()->user()?->hasRole('pimpinan');
-        $approvedLabIds = $isPimpinan ? $this->getApprovedLabIds('kepatuhan', $period) : null;
-        $approvalData = $this->getApprovalData('kepatuhan', $period);
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
 
         $query = ComplianceReport::with(['computer', 'softwareCatalog'])
             ->whereBetween('scanned_at', [$startDate, $endDate])
             ->orderByDesc('scanned_at');
 
-        if ($isPimpinan) {
-            $query->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $approvedLabIds ?? collect()));
+        if ($labIds !== null) {
+            $query->whereHas('computer', fn ($q) => $q->whereIn('laboratory_id', $labIds));
         }
 
         $reports = $query->get();
@@ -385,11 +451,19 @@ class ReportController extends Controller
     {
         [$startDate, $endDate] = $this->getDateRange($request);
         $period = $request->input('period', $startDate->format('Y-m'));
-        $approvalData = $this->getApprovalData('kepatuhan', $period);
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
+        $laboratories = $this->getAccessibleLaboratories($period);
+
+        $usedCountSubQuery = 'SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id';
+        if ($labIds !== null) {
+            $labIdList = implode(',', array_map('intval', $labIds));
+            $usedCountSubQuery .= " AND software_discoveries.computer_id IN (SELECT id FROM computers WHERE laboratory_id IN ({$labIdList}))";
+        }
 
         $licenses = LicenseInventory::with('catalog')
             ->select('*')
-            ->selectRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) as used_count')
+            ->selectRaw("({$usedCountSubQuery}) as used_count")
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
 
@@ -419,6 +493,8 @@ class ReportController extends Controller
             'endDate' => $endDate,
             'period' => $period,
             'approvalData' => $approvalData,
+            'laboratories' => $laboratories,
+            'selectedLabId' => $request->input('laboratory_id'),
         ]);
     }
 
@@ -427,11 +503,18 @@ class ReportController extends Controller
         [$startDate, $endDate] = $this->getDateRange($request);
         $period = $request->input('period', $startDate->format('Y-m'));
         $format = $request->query('format', 'pdf');
-        $approvalData = $this->getApprovalData('kepatuhan', $period);
+        $labIds = $this->resolveLabScope($request, $period);
+        $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
+
+        $usedCountSubQuery = 'SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id';
+        if ($labIds !== null) {
+            $labIdList = implode(',', array_map('intval', $labIds));
+            $usedCountSubQuery .= " AND software_discoveries.computer_id IN (SELECT id FROM computers WHERE laboratory_id IN ({$labIdList}))";
+        }
 
         $licenses = LicenseInventory::with('catalog')
             ->select('*')
-            ->selectRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) as used_count')
+            ->selectRaw("({$usedCountSubQuery}) as used_count")
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get()
             ->map(function ($license) {

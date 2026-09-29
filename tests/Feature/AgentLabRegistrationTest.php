@@ -68,7 +68,7 @@ test('rejects registration with invalid laboratory_id', function () {
         ->assertJsonValidationErrors(['laboratory_id']);
 });
 
-test('updates laboratory_id on re-registration', function () {
+test('locks laboratory_id on re-registration (silent lock)', function () {
     $lab1 = Laboratory::factory()->create(['name' => 'Lab 1']);
     $lab2 = Laboratory::factory()->create(['name' => 'Lab 2']);
 
@@ -87,18 +87,24 @@ test('updates laboratory_id on re-registration', function () {
         'laboratory_id' => $lab1->id,
     ]);
 
-    $this->withHeader('X-Agent-Key', 'TEST_AGENT_KEY_123')
+    $response = $this->withHeader('X-Agent-Key', 'TEST_AGENT_KEY_123')
         ->postJson('/api/agent/register', [
             'hostname' => 'PC-01-MOVED',
             'mac_address' => $mac,
             'laboratory_id' => $lab2->id,
-        ])
-        ->assertStatus(201);
+        ]);
+
+    $response->assertStatus(201)
+        ->assertJson([
+            'status' => 'registered',
+            'hostname' => 'PC-01-MOVED',
+            'laboratory_id' => $lab1->id,
+        ]);
 
     $this->assertDatabaseHas('computers', [
         'mac_address' => $mac,
         'hostname' => 'PC-01-MOVED',
-        'laboratory_id' => $lab2->id,
+        'laboratory_id' => $lab1->id,
     ]);
 
     expect(Computer::where('mac_address', $mac)->count())->toBe(1);

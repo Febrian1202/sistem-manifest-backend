@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Models\Traits\ScopedByLaboratory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SoftwareDiscovery extends Model
 {
-    use HasFactory;
+    use HasFactory, ScopedByLaboratory;
 
     protected $fillable = [
         'computer_id',

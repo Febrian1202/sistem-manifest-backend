@@ -84,3 +84,23 @@ test('agent cannot submit scan without scan:submit ability', function () {
 
     $response->assertStatus(403);
 });
+
+test('retired computer cannot submit scan results', function () {
+    $computer = Computer::factory()->create([
+        'status' => 'retired',
+    ]);
+
+    $token = $computer->createToken('agent', ['scan:submit'])->plainTextToken;
+
+    $response = $this->withHeader('Authorization', 'Bearer '.$token)
+        ->postJson('/api/scan-result', [
+            'hostname' => 'RETIRED-PC',
+            'installed_software' => [],
+        ]);
+
+    $response->assertStatus(403)
+        ->assertJson([
+            'status' => 'error',
+            'message' => 'Komputer dalam status retired tidak dapat mengirimkan hasil scan.',
+        ]);
+});

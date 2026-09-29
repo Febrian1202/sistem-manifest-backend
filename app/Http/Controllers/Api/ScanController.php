@@ -23,6 +23,14 @@ class ScanController extends Controller
             return response()->json(['message' => 'Token does not have scan submission abilities.'], 403);
         }
 
+        // 2. Reject retired computers
+        if ($request->user()->status === 'retired') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Komputer dalam status retired tidak dapat mengirimkan hasil scan.',
+            ], 403);
+        }
+
         // 2. Validate Input
         $request->validate([
             'scan_uuid' => 'nullable|uuid',

@@ -6,12 +6,12 @@
                 <p class="text-gray-600">Daftar perangkat lunak yang terdeteksi di seluruh jaringan.</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                <a href="{{ route('reports.software.export', ['format' => 'pdf', 'start_date' => $startDate->toDateString(), 'end_date' => $endDate->toDateString()]) }}"
+                <a href="{{ route('reports.software.export', array_filter(['format' => 'pdf', 'start_date' => $startDate->toDateString(), 'end_date' => $endDate->toDateString(), 'laboratory_id' => request('laboratory_id')])) }}"
                     target="_blank"
                     class="inline-flex justify-center items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md shadow-sm w-full sm:w-auto">
                     Export PDF
                 </a>
-                <a href="{{ route('reports.software.export', ['format' => 'excel', 'start_date' => $startDate->toDateString(), 'end_date' => $endDate->toDateString()]) }}"
+                <a href="{{ route('reports.software.export', array_filter(['format' => 'excel', 'start_date' => $startDate->toDateString(), 'end_date' => $endDate->toDateString(), 'laboratory_id' => request('laboratory_id')])) }}"
                     class="inline-flex justify-center items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md shadow-sm w-full sm:w-auto">
                     Export Excel
                 </a>
@@ -31,6 +31,24 @@
                     <input type="date" name="end_date" value="{{ $endDate->toDateString() }}"
                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                 </div>
+                @if(isset($laboratories) && $laboratories->isNotEmpty())
+                <div class="w-full md:flex-1">
+                    <label class="block text-xs font-medium text-gray-700 mb-1">Laboratorium</label>
+                    @if(auth()->user()->hasRole('kepala_lab'))
+                        <input type="text" readonly disabled value="{{ auth()->user()->laboratory?->name ?? 'Belum Ditugaskan' }}"
+                            class="block w-full rounded-md border-gray-200 bg-gray-50 text-gray-600 shadow-sm sm:text-sm">
+                    @else
+                        <select name="laboratory_id" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                            <option value="All">Semua Laboratorium</option>
+                            @foreach($laboratories as $lab)
+                                <option value="{{ $lab->id }}" {{ request('laboratory_id') == $lab->id ? 'selected' : '' }}>
+                                    {{ $lab->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
+                </div>
+                @endif
                 <div class="flex justify-end items-center gap-2 w-full md:w-auto">
                     <button type="submit"
                         class="inline-flex justify-center items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md">
