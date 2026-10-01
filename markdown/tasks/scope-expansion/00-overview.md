@@ -138,6 +138,6 @@ P2 — PENGUAT (hanya jika waktu tersedia)
 - [x] Job processing deterministic/chained
 - [x] Agent enrollment mengikat komputer ke lab di sisi server
 - [x] Status komputer active/inactive/retired (bukan hard delete)
-- [ ] Fakultas dimodelkan sebagai entitas terpisah
+- [x] Fakultas dimodelkan sebagai entitas terpisah
 - [x] Histori perubahan versi software
 - [x] Trend compliance

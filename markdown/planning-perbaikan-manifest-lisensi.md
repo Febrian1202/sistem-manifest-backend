@@ -140,12 +140,12 @@ Memastikan perubahan dapat dilakukan tanpa merusak data existing.
 
 ### Pekerjaan
 
-- [ ] Backup database project saat ini.
-- [ ] Buat branch Git khusus, misalnya:
+- [x] Backup database project saat ini.
+- [x] Buat branch Git khusus, misalnya:
   - `feature/faculty-license-allocation`
-- [ ] Pastikan project dapat dijalankan dari kondisi baseline.
-- [ ] Jalankan migration dan test yang tersedia sebelum perubahan.
-- [ ] Catat struktur tabel existing yang berhubungan dengan lisensi.
+- [x] Pastikan project dapat dijalankan dari kondisi baseline.
+- [x] Jalankan migration dan test yang tersedia sebelum perubahan.
+- [x] Catat struktur tabel existing yang berhubungan dengan lisensi.
 
 ### Output
 Baseline project yang dapat dibandingkan sebelum dan sesudah perubahan.
@@ -233,8 +233,8 @@ Kemudian setiap laboratorium existing harus diberikan `faculty_id`.
 
 ### Checklist
 
-- [ ] Tentukan daftar fakultas resmi.
-- [ ] Tentukan kode tiap fakultas.
+- [x] Tentukan daftar fakultas resmi.
+- [x] Tentukan kode tiap fakultas.
 - [ ] Mapping seluruh laboratorium existing ke fakultas.
 - [ ] Validasi bahwa tidak ada laboratorium tanpa fakultas kecuali memang sengaja dibuat sebagai fasilitas universitas/pusat.
 
@@ -1136,9 +1136,9 @@ Tidak semua fitur harus dikerjakan sekaligus.
 
 ## Priority A — Wajib
 
-- [ ] `faculties` table
+- [x] `faculties` table
 - [ ] `faculty_id` pada laboratories
-- [ ] model Faculty
+- [x] model Faculty
 - [ ] relasi Faculty ↔ Laboratory
 - [ ] `license_allocations` table
 - [ ] model LicenseAllocation
