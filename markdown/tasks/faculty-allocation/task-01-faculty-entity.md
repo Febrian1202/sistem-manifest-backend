@@ -133,13 +133,13 @@ Konsisten dengan styling Tailwind CSS 4 dan komponen Blade yang ada (`<x-layout.
 ---
 
 ## 4. Kriteria Keberhasilan (Acceptance Criteria)
-- [ ] Migration `create_faculties_table` berhasil dieksekusi tanpa error di MySQL dan SQLite.
-- [ ] Admin dapat membuat, melihat, mengedit, dan menghapus fakultas melalui antarmuka web.
-- [ ] Validasi kode fakultas unik bekerja dengan pesan kesalahan yang informatif.
-- [ ] Fakultas yang masih memiliki laboratorium tidak dapat dihapus (proteksi integritas data).
-- [ ] Aktivitas manipulasi fakultas tercatat di `activity_log`.
-- [ ] Menu navigasi baru muncul pada sidebar untuk admin.
-- [ ] Seluruh unit/feature test untuk `Faculty` lulus dengan status hijau (100% pass).
+- [x] Migration `create_faculties_table` berhasil dieksekusi tanpa error di MySQL dan SQLite.
+- [x] Admin dapat membuat, melihat, mengedit, dan menghapus fakultas melalui antarmuka web.
+- [x] Validasi kode fakultas unik bekerja dengan pesan kesalahan yang informatif.
+- [x] Fakultas yang masih memiliki laboratorium tidak dapat dihapus (proteksi integritas data).
+- [x] Aktivitas manipulasi fakultas tercatat di `activity_log`.
+- [x] Menu navigasi baru muncul pada sidebar untuk admin.
+- [x] Seluruh unit/feature test untuk `Faculty` lulus dengan status hijau (100% pass).
 
 ---
 

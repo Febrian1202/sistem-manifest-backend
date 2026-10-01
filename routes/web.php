@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ComplianceDataController;
 use App\Http\Controllers\ComputerDataController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\LabInventoryController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\LicenseDataController;
@@ -109,6 +110,9 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
         Route::put('/accounts/{user}', [AccountController::class, 'update'])->name('accounts.update');
         Route::delete('/accounts/{user}', [AccountController::class, 'destroy'])->name('accounts.destroy');
         Route::put('/accounts/{user}/reset-password', [AccountController::class, 'resetPassword'])->name('accounts.reset-password');
+
+        // Manajemen Fakultas
+        Route::resource('faculties', FacultyController::class);
 
         // Manajemen Laboratorium
         Route::resource('laboratories', LaboratoryController::class);

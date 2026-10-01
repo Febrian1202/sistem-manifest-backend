@@ -141,6 +141,15 @@
             </a>
 
             @role('admin')
+                <a href="{{ route('faculties.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('faculties*') ? $activeClass : $inactiveClass }}">
+                    <div class="w-6 flex justify-center">
+                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    </div>
+                    <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                        :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Fakultas</span>
+                </a>
+
                 <a href="{{ route('laboratories.index') }}"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('laboratories*') ? $activeClass : $inactiveClass }}">
                     <div class="w-6 flex justify-center">
