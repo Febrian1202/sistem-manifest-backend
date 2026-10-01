@@ -39,4 +39,9 @@ class Faculty extends Model
     {
         return $this->hasManyThrough(Computer::class, Laboratory::class);
     }
+
+    public function licenseAllocations(): HasMany
+    {
+        return $this->hasMany(LicenseAllocation::class);
+    }
 }

@@ -285,11 +285,11 @@ public function withValidator($validator)
 ---
 
 ## 4. Kriteria Keberhasilan (Acceptance Criteria)
-- [ ] Admin dapat mendistribusikan kuota lisensi ke fakultas.
-- [ ] Sistem menolak secara otomatis jika kuota alokasi melebihi sisa kapasitas lisensi yang dimiliki universitas.
-- [ ] Tidak terjadi double-counting alokasi saat proses edit data.
-- [ ] Status alokasi dapat diubah menjadi `inactive` atau `revoked` yang secara otomatis mengembalikan sisa kuota ke pool universitas.
-- [ ] Menu Alokasi Lisensi tampil pada sidebar admin dan terproteksi dari akses user non-admin.
+- [x] Admin dapat mendistribusikan kuota lisensi ke fakultas.
+- [x] Sistem menolak secara otomatis jika kuota alokasi melebihi sisa kapasitas lisensi yang dimiliki universitas.
+- [x] Tidak terjadi double-counting alokasi saat proses edit data.
+- [x] Status alokasi dapat diubah menjadi `inactive` atau `revoked` yang secara otomatis mengembalikan sisa kuota ke pool universitas.
+- [x] Menu Alokasi Lisensi tampil pada sidebar admin dan terproteksi dari akses user non-admin.
 
 ---
 

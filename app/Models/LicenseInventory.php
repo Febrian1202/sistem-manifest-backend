@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -119,8 +121,34 @@ class LicenseInventory extends Model
     }
 
     // Relasi ke Katalog
-    public function catalog()
+    public function catalog(): BelongsTo
     {
         return $this->belongsTo(SoftwareCatalog::class, 'catalog_id');
+    }
+
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(LicenseAllocation::class);
+    }
+
+    public function activeAllocations(): HasMany
+    {
+        return $this->hasMany(LicenseAllocation::class)->where('status', 'active');
+    }
+
+    /**
+     * Total kursi yang sudah dialokasikan ke semua fakultas.
+     */
+    public function getTotalAllocatedAttribute(): int
+    {
+        return (int) $this->activeAllocations()->sum('allocated_quota');
+    }
+
+    /**
+     * Sisa kursi universitas yang masih belum dialokasikan.
+     */
+    public function getRemainingUnallocatedAttribute(): int
+    {
+        return max(0, $this->quota_limit - $this->total_allocated);
     }
 }

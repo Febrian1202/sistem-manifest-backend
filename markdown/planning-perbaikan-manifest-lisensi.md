@@ -1140,10 +1140,10 @@ Tidak semua fitur harus dikerjakan sekaligus.
 - [x] `faculty_id` pada laboratories
 - [x] model Faculty
 - [x] relasi Faculty ↔ Laboratory
-- [ ] `license_allocations` table
-- [ ] model LicenseAllocation
-- [ ] LicenseInventory ↔ Allocation ↔ Faculty
-- [ ] validasi total allocation ≤ ownership
+- [x] `license_allocations` table
+- [x] model LicenseAllocation
+- [x] LicenseInventory ↔ Allocation ↔ Faculty
+- [x] validasi total allocation ≤ ownership
 - [ ] perhitungan Owned / Allocated / Installed
 - [ ] compliance per fakultas
 - [ ] dashboard pimpinan per fakultas
@@ -1269,23 +1269,23 @@ Perubahan fitur dianggap selesai apabila seluruh kondisi berikut terpenuhi:
 
 ### Database
 
-- [ ] Fakultas tersimpan sebagai master data.
-- [ ] Laboratorium mempunyai fakultas.
-- [ ] Allocation tersimpan dalam tabel terpisah.
-- [ ] License inventory tetap merepresentasikan ownership universitas.
+- [x] Fakultas tersimpan sebagai master data.
+- [x] Laboratorium mempunyai fakultas.
+- [x] Allocation tersimpan dalam tabel terpisah.
+- [x] License inventory tetap merepresentasikan ownership universitas.
 
 ### Backend
 
-- [ ] Relasi Eloquent benar.
-- [ ] Validation allocation berjalan.
+- [x] Relasi Eloquent benar.
+- [x] Validation allocation berjalan.
 - [ ] Owned dihitung dari seluruh inventory relevan.
 - [ ] Installed dihitung dari discovery.
 - [ ] Deficit/surplus dihitung konsisten.
 
 ### Frontend
 
-- [ ] Admin dapat mengelola fakultas.
-- [ ] Admin dapat mengelola alokasi lisensi.
+- [x] Admin dapat mengelola fakultas.
+- [x] Admin dapat mengelola alokasi lisensi.
 - [ ] Pimpinan dapat melihat semua fakultas.
 - [ ] Pimpinan dapat melihat status per fakultas.
 - [ ] User dapat drill-down ke laboratorium.
@@ -1299,9 +1299,9 @@ Perubahan fitur dianggap selesai apabila seluruh kondisi berikut terpenuhi:
 ### Quality
 
 - [ ] Test case utama lulus.
-- [ ] Tidak ada alokasi melebihi ownership.
+- [x] Tidak ada alokasi melebihi ownership.
 - [ ] Tidak ada error pembagian dengan nol.
-- [ ] Data existing tetap aman.
+- [x] Data existing tetap aman.
 
 ### Skripsi
 

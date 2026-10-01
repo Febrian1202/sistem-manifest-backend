@@ -10,6 +10,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\LabInventoryController;
 use App\Http\Controllers\LaboratoryController;
+use App\Http\Controllers\LicenseAllocationController;
 use App\Http\Controllers\LicenseDataController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\ReportApprovalController;
@@ -119,6 +120,10 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
 
         // Manajemen Laboratorium
         Route::resource('laboratories', LaboratoryController::class);
+
+        // Alokasi Lisensi
+        Route::resource('license-allocations', LicenseAllocationController::class)
+            ->parameters(['license-allocations' => 'license_allocation']);
 
         // Kirim Laporan ke PJ Lab
         Route::get('/reports/submit-to-lab', [ReportSubmissionController::class, 'index'])->name('report-submissions.index');
