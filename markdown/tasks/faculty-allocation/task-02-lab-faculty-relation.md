@@ -170,12 +170,12 @@ Laboratory::firstOrCreate(
 ---
 
 ## 4. Kriteria Keberhasilan (Acceptance Criteria)
-- [ ] Kolom `faculty_id` berhasil ditambahkan pada tabel `laboratories`.
-- [ ] Laboratorium wajib memilih satu fakultas saat create/update.
-- [ ] Halaman daftar laboratorium dapat difilter berdasarkan fakultas.
-- [ ] Relasi `Laboratory -> faculty` dan `Faculty -> laboratories` dapat diakses secara Eloquent.
-- [ ] Relasi `Faculty -> computers` dapat diakses melalui `hasManyThrough`.
-- [ ] Seeder menghasilkan data laboratorium yang valid dengan relasi fakultas.
+- [x] Kolom `faculty_id` berhasil ditambahkan pada tabel `laboratories`.
+- [x] Laboratorium wajib memilih satu fakultas saat create/update.
+- [x] Halaman daftar laboratorium dapat difilter berdasarkan fakultas.
+- [x] Relasi `Laboratory -> faculty` dan `Faculty -> laboratories` dapat diakses secara Eloquent.
+- [x] Relasi `Faculty -> computers` dapat diakses melalui `hasManyThrough`.
+- [x] Seeder menghasilkan data laboratorium yang valid dengan relasi fakultas.
 
 ---
 
