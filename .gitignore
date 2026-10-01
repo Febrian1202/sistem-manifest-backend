@@ -25,3 +25,5 @@ Homestead.yaml
 Thumbs.db
 /script/agent/*.txt
 /script/agent/config.json
+/test-results
+/playwright-report
