@@ -6,21 +6,36 @@ use App\Http\Requests\StoreLicenseRequest;
 use App\Http\Requests\UpdateLicenseRequest;
 use App\Models\LicenseInventory;
 use App\Models\SoftwareCatalog;
+use App\Models\SoftwareDiscovery;
+use App\Services\LicenseComplianceService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class LicenseDataController extends Controller
 {
-    //
+    public function __construct(
+        protected LicenseComplianceService $complianceService
+    ) {}
+
     public function index(Request $request)
     {
+        $today = now()->toDateString();
+        $thirtyDaysLater = now()->addDays(30)->toDateString();
+
+        $activeQuotaSub = '(SELECT COALESCE(SUM(li2.quota_limit), 0) FROM license_inventories li2 WHERE li2.catalog_id = license_inventories.catalog_id AND (li2.expiry_date IS NULL OR li2.expiry_date >= CURRENT_DATE))';
+        $installedSub = "(SELECT COUNT(DISTINCT sd.computer_id) FROM software_discoveries sd WHERE sd.catalog_id = license_inventories.catalog_id AND EXISTS (SELECT 1 FROM computers c WHERE c.id = sd.computer_id AND c.status = 'active'))";
+
         // Data inventaris beserta relasi antar Katalog dan hitung jumlah instalasi (Usage)
         $query = LicenseInventory::with([
             'catalog' => function ($q) {
-                $q->withCount('discoveries'); // Hitung jumlah instalasi
+                $q->withCount([
+                    'discoveries' => fn ($sub) => $sub->whereHas('computer', fn ($c) => $c->where('status', 'active')),
+                ]);
             },
+            'allocations',
         ]);
 
         // Fitur Pencarian
@@ -39,25 +54,23 @@ class LicenseDataController extends Controller
             switch ($request->status) {
                 case 'Aman':
                     // Usage <= Quota DAN Belum Expired
-                    $query->where(function ($q) {
-                        $q->whereRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) <= license_inventories.quota_limit')
-                            ->where(function ($sub) {
-                                $sub->whereNull('expiry_date')->orWhere('expiry_date', '>=', now()->toDateString());
-                            });
-                    });
+                    $query->whereRaw("{$installedSub} <= {$activeQuotaSub}")
+                        ->where(function ($sub) use ($today) {
+                            $sub->whereNull('expiry_date')->orWhere('expiry_date', '>=', $today);
+                        });
                     break;
                 case 'Segera Habis':
                     // Usage > 80% Quota ATAU Expiring Soon (30 days)
-                    $query->where(function ($q) {
-                        $q->whereRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) > (license_inventories.quota_limit * 0.8)')
-                            ->orWhereBetween('expiry_date', [now()->toDateString(), now()->addDays(30)->toDateString()]);
+                    $query->where(function ($q) use ($installedSub, $activeQuotaSub, $today, $thirtyDaysLater) {
+                        $q->whereRaw("({$activeQuotaSub} > 0 AND {$installedSub} > ({$activeQuotaSub} * 0.8))")
+                            ->orWhereBetween('expiry_date', [$today, $thirtyDaysLater]);
                     });
                     break;
                 case 'Kedaluwarsa':
-                    $query->where('expiry_date', '<', now()->toDateString());
+                    $query->where('expiry_date', '<', $today);
                     break;
                 case 'Over Limit':
-                    $query->whereRaw('(SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id) > license_inventories.quota_limit');
+                    $query->whereRaw("{$installedSub} > {$activeQuotaSub}");
                     break;
             }
         }
@@ -67,6 +80,28 @@ class LicenseDataController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        $catalogIds = $licenses->pluck('catalog_id')->unique()->filter()->all();
+        $catalogEntitlements = LicenseInventory::whereIn('catalog_id', $catalogIds)
+            ->where(function ($q) use ($today) {
+                $q->whereNull('expiry_date')->orWhere('expiry_date', '>=', $today);
+            })
+            ->groupBy('catalog_id')
+            ->selectRaw('catalog_id, SUM(quota_limit) as total_quota')
+            ->pluck('total_quota', 'catalog_id');
+
+        $catalogInstallCounts = SoftwareDiscovery::whereIn('catalog_id', $catalogIds)
+            ->whereHas('computer', fn ($c) => $c->where('status', 'active'))
+            ->groupBy('catalog_id')
+            ->selectRaw('catalog_id, COUNT(DISTINCT computer_id) as total_installed')
+            ->pluck('total_installed', 'catalog_id');
+
+        foreach ($licenses as $license) {
+            $license->total_catalog_quota = (int) ($catalogEntitlements[$license->catalog_id] ?? $license->quota_limit);
+            $license->allocated_seats = $license->total_allocated;
+            $license->remaining_unallocated = $license->remaining_unallocated;
+            $license->total_catalog_installed = (int) ($catalogInstallCounts[$license->catalog_id] ?? 0);
+        }
+
         // Menyiapkan data untuk dropdown Tambah Lisensi
         $catalogs = SoftwareCatalog::whereIn('status', ['Whitelist', 'Unreviewed'])
             ->orderBy('normalized_name')
@@ -75,7 +110,7 @@ class LicenseDataController extends Controller
         // Hitung statistik untuk Dashboard Card
         $stats = [
             'total_licenses' => LicenseInventory::sum('quota_limit'),
-            'total_value' => LicenseInventory::sum(\DB::raw('quota_limit * COALESCE(price_per_unit, 0)')),
+            'total_value' => LicenseInventory::sum(DB::raw('quota_limit * COALESCE(price_per_unit, 0)')),
             'expiring_soon' => LicenseInventory::where('expiry_date', '<=', now()->addDays(30))
                 ->where('expiry_date', '>', now())
                 ->count(),
@@ -90,10 +125,15 @@ class LicenseDataController extends Controller
      */
     public function show(LicenseInventory $license)
     {
-        $license->load(['catalog']);
+        $license->load(['catalog', 'allocations.faculty']);
 
         // Ambil software catalog terkait
         $catalog = $license->catalog;
+
+        $license->total_catalog_quota = $this->complianceService->getActiveEntitlement($license->catalog_id);
+        $license->allocated_seats = $license->total_allocated;
+        $license->remaining_unallocated = $license->remaining_unallocated;
+        $license->total_catalog_installed = $this->complianceService->getInstalledCount($license->catalog_id);
 
         // Ambil daftar discovery (komputer) yang menggunakan software ini
         $discoveries = $catalog->discoveries()->with('computer')->paginate(10);

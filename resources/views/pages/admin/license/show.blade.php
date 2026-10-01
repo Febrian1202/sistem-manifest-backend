@@ -18,17 +18,22 @@
             
             <div class="flex items-center gap-2">
                 @php
-                    $usageCount = $catalog->discoveries_count ?? $discoveries->total();
                     $quota = $license->quota_limit;
-                    $isExpired = $license->expiry_date && \Carbon\Carbon::parse($license->expiry_date)->isPast();
-                    
+                    $catalogQuota = $license->total_catalog_quota ?? $quota;
+                    $usageCount = $license->total_catalog_installed ?? ($catalog->discoveries_count ?? $discoveries->total());
+                    $allocatedSeats = $license->allocated_seats ?? $license->total_allocated;
+                    $remainingUnallocated = $license->remaining_unallocated ?? $license->remaining_unallocated;
+                    $expiryDate = $license->expiry_date ? \Carbon\Carbon::parse($license->expiry_date) : null;
+                    $isExpired = $expiryDate && $expiryDate->isPast() && ! $expiryDate->isToday();
+                    $isExpiringSoon = $expiryDate && $expiryDate->isBetween(now(), now()->addDays(30));
+
                     if ($isExpired) {
                         $statusBadge = 'bg-destructive/10 text-destructive border-destructive/20';
                         $statusText = 'Kedaluwarsa';
-                    } elseif ($usageCount > $quota) {
+                    } elseif ($usageCount > $catalogQuota) {
                         $statusBadge = 'bg-destructive/10 text-destructive border-destructive/20';
                         $statusText = 'Over Limit';
-                    } elseif ($usageCount > ($quota * 0.8)) {
+                    } elseif ($usageCount > ($catalogQuota * 0.8) || $isExpiringSoon) {
                         $statusBadge = 'bg-warning/10 text-warning border-warning/20';
                         $statusText = 'Segera Habis';
                     } else {
@@ -268,32 +273,38 @@
 
             {{-- Sidebar Info --}}
             <div class="space-y-6">
-                {{-- Pemakaian Card --}}
+                {{-- Pemakaian & Alokasi Card --}}
                 <div class="bg-card border border-border rounded-xl p-6 shadow-sm">
-                    <h4 class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4">Statistik Pemakaian</h4>
+                    <h4 class="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-4">Statistik Pemakaian & Alokasi</h4>
                     <div class="flex items-end justify-between mb-2">
-                        <span class="text-3xl font-black text-foreground">{{ $usageCount }}</span>
-                        <span class="text-sm text-muted-foreground">dari {{ $quota }} Lisensi</span>
+                        <span class="text-3xl font-black text-foreground">{{ $allocatedSeats }}</span>
+                        <span class="text-sm text-muted-foreground">dari {{ $quota }} Kursi Dialokasikan</span>
                     </div>
                     @php
-                        $usagePercent = $quota > 0 ? min(($usageCount / $quota) * 100, 100) : 0;
+                        $allocPercent = $quota > 0 ? min(($allocatedSeats / $quota) * 100, 100) : 0;
                         $barColor = 'bg-success';
-                        if ($usagePercent > 80) $barColor = 'bg-destructive';
-                        elseif ($usagePercent > 60) $barColor = 'bg-warning';
+                        if ($allocPercent > 80) $barColor = 'bg-destructive';
+                        elseif ($allocPercent > 60) $barColor = 'bg-warning';
                     @endphp
                     <div class="h-3 w-full bg-muted rounded-full overflow-hidden mb-4">
-                        <div class="h-full {{ $barColor }} transition-all duration-1000" style="width: {{ $usagePercent }}%"></div>
+                        <div class="h-full {{ $barColor }} transition-all duration-1000" style="width: {{ $allocPercent }}%"></div>
                     </div>
                     <div class="space-y-3">
                         <div class="flex justify-between text-xs">
-                            <span class="text-muted-foreground">Tersedia</span>
-                            <span class="font-bold {{ ($quota - $usageCount) < 0 ? 'text-destructive' : 'text-success' }}">
-                                {{ max(0, $quota - $usageCount) }} Lisensi
+                            <span class="text-muted-foreground">Sisa Belum Dialokasikan</span>
+                            <span class="font-bold text-foreground">
+                                {{ $remainingUnallocated }} Kursi
                             </span>
                         </div>
                         <div class="flex justify-between text-xs">
-                            <span class="text-muted-foreground">Persentase</span>
-                            <span class="font-bold">{{ number_format($usagePercent, 1) }}%</span>
+                            <span class="text-muted-foreground">Total Instalasi Kampus</span>
+                            <span class="font-bold {{ $usageCount > $catalogQuota ? 'text-destructive' : 'text-foreground' }}">
+                                {{ $usageCount }} / {{ $catalogQuota }} Perangkat
+                            </span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-muted-foreground">Persentase Alokasi</span>
+                            <span class="font-bold">{{ number_format($allocPercent, 1) }}%</span>
                         </div>
                     </div>
                 </div>

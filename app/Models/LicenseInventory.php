@@ -141,6 +141,10 @@ class LicenseInventory extends Model
      */
     public function getTotalAllocatedAttribute(): int
     {
+        if ($this->relationLoaded('allocations')) {
+            return (int) $this->allocations->where('status', 'active')->sum('allocated_quota');
+        }
+
         return (int) $this->activeAllocations()->sum('allocated_quota');
     }
 

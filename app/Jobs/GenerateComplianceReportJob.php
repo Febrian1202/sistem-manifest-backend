@@ -8,6 +8,7 @@ use App\Models\Computer;
 use App\Models\ScanSession;
 use App\Models\ScanSoftwareResult;
 use App\Models\SoftwareDiscovery;
+use App\Services\LicenseComplianceService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -69,8 +70,10 @@ class GenerateComplianceReportJob implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(?LicenseComplianceService $complianceService = null): void
     {
+        $complianceService = $complianceService ?? app(LicenseComplianceService::class);
+
         try {
             Log::info('Generating compliance report for computer: '.$this->computer->hostname);
 
@@ -131,32 +134,48 @@ class GenerateComplianceReportJob implements ShouldQueue
                     $keterangan = 'Software gratis, tidak memerlukan lisensi';
                 } else {
                     // Software is Commercial, need to check license
-                    $license = $catalog->licenses->first();
+                    $allLicenses = $catalog->licenses;
 
                     // 3. CEK LISENSI ADA ATAU TIDAK
-                    if (! $license) {
+                    if ($allLicenses->isEmpty()) {
                         $status = 'Tidak Berlisensi';
                         $keterangan = 'Lisensi tidak ditemukan dalam sistem';
                     } else {
-                        $licenseId = $license->id;
                         $today = now()->startOfDay();
 
-                        // 4. CEK EXPIRED
-                        if ($license->expiry_date && $license->expiry_date->isPast() && ! $license->expiry_date->isToday()) {
+                        $activeLicenses = $allLicenses->filter(function ($lic) use ($today) {
+                            return is_null($lic->expiry_date) || $lic->expiry_date->startOfDay()->gte($today);
+                        });
+
+                        // 4. CEK EXPIRED (Semua lisensi telah expired)
+                        if ($activeLicenses->isEmpty()) {
                             $status = 'Tidak Berlisensi';
                             $keterangan = 'Lisensi telah kedaluwarsa';
-                        }
-                        // 5. CEK KUOTA
-                        else {
-                            $installationCount = SoftwareDiscovery::where('catalog_id', $catalog->id)->count();
-                            if ($license->quota_limit > 0 && $installationCount > $license->quota_limit) {
+                            $licenseId = $allLicenses->first()?->id;
+                        } else {
+                            $totalQuota = (int) $activeLicenses->sum('quota_limit');
+                            $installationCount = $complianceService->getInstalledCount($catalog->id);
+
+                            // 5. CEK KUOTA TOTAL
+                            if ($totalQuota > 0 && $installationCount > $totalQuota) {
                                 $status = 'Tidak Berlisensi';
                                 $keterangan = 'Kuota lisensi penuh';
-                            }
-                            // 6. CEK HAMPIR EXPIRED (Grace Period)
-                            elseif ($license->expiry_date && $license->expiry_date->isBetween($today, $today->copy()->addDays(30))) {
-                                $status = 'Grace Period';
-                                $keterangan = 'Lisensi akan segera berakhir';
+                                $licenseId = $activeLicenses->first()?->id;
+                            } else {
+                                // 6. CEK HAMPIR EXPIRED (Grace Period)
+                                $expiringSoonLicense = $activeLicenses->first(function ($lic) use ($today) {
+                                    return $lic->expiry_date && $lic->expiry_date->isBetween($today, $today->copy()->addDays(30));
+                                });
+
+                                if ($expiringSoonLicense) {
+                                    $status = 'Grace Period';
+                                    $keterangan = 'Lisensi akan segera berakhir';
+                                    $licenseId = $expiringSoonLicense->id;
+                                } else {
+                                    $status = 'Berlisensi';
+                                    $keterangan = 'Lisensi aktif dan valid';
+                                    $licenseId = $activeLicenses->first()?->id;
+                                }
                             }
                         }
                     }

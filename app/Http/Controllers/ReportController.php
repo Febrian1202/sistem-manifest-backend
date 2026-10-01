@@ -18,6 +18,7 @@ use App\Models\ReportApproval;
 use App\Models\ScanSession;
 use App\Models\ScanSoftwareResult;
 use App\Models\SoftwareDiscovery;
+use App\Services\LicenseComplianceService;
 use App\Services\SoftwareChangeDetectionService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -29,7 +30,8 @@ use Maatwebsite\Excel\Facades\Excel;
 class ReportController extends Controller
 {
     public function __construct(
-        protected SoftwareChangeDetectionService $changeDetectionService
+        protected SoftwareChangeDetectionService $changeDetectionService,
+        protected LicenseComplianceService $complianceService
     ) {}
 
     // Menampilkan halaman Pusat Laporan
@@ -560,6 +562,69 @@ class ReportController extends Controller
 
     // --- 5. STATUS LISENSI [PDF + EXCEL] ---
 
+    /**
+     * Get license inventories with aggregated catalog entitlement and proportional usage.
+     */
+    private function getEnrichedLicenses(Carbon $startDate, Carbon $endDate, ?array $labIds): Collection
+    {
+        $today = now()->toDateString();
+
+        $licenses = LicenseInventory::with(['catalog', 'allocations'])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+        $catalogIds = $licenses->pluck('catalog_id')->unique()->filter()->all();
+
+        // 1. Ambil total entitlement aktif untuk setiap catalog
+        $catalogEntitlements = LicenseInventory::whereIn('catalog_id', $catalogIds)
+            ->where(function ($q) use ($today) {
+                $q->whereNull('expiry_date')->orWhere('expiry_date', '>=', $today);
+            })
+            ->groupBy('catalog_id')
+            ->selectRaw('catalog_id, SUM(quota_limit) as total_quota')
+            ->pluck('total_quota', 'catalog_id');
+
+        // 2. Ambil total instalasi unik pada komputer aktif untuk setiap catalog
+        $installedQuery = SoftwareDiscovery::whereIn('catalog_id', $catalogIds)
+            ->whereHas('computer', function ($q) use ($labIds) {
+                $q->where('status', 'active');
+                if ($labIds !== null) {
+                    $q->whereIn('laboratory_id', $labIds);
+                }
+            });
+
+        $catalogInstallCounts = $installedQuery
+            ->groupBy('catalog_id')
+            ->selectRaw('catalog_id, COUNT(DISTINCT computer_id) as total_installed')
+            ->pluck('total_installed', 'catalog_id');
+
+        return $licenses->map(function ($license) use ($catalogEntitlements, $catalogInstallCounts) {
+            $catalogQuota = (int) ($catalogEntitlements[$license->catalog_id] ?? 0);
+            $totalInstalled = (int) ($catalogInstallCounts[$license->catalog_id] ?? 0);
+            $quotaLimit = (int) $license->quota_limit;
+
+            if ($catalogQuota > 0) {
+                $used = (int) round($quotaLimit * ($totalInstalled / $catalogQuota));
+                $remaining = max(0, $quotaLimit - $used);
+                $usagePct = $quotaLimit > 0 ? round(($used / $quotaLimit) * 100, 1) : 0;
+            } else {
+                $used = $totalInstalled;
+                $remaining = 0;
+                $usagePct = 0;
+            }
+
+            $license->used_count = $used;
+            $license->remaining = $remaining;
+            $license->usage_pct = $usagePct;
+            $license->allocated_seats = $license->total_allocated;
+            $license->unallocated_seats = $license->remaining_unallocated;
+            $license->catalog_total_quota = $catalogQuota;
+            $license->catalog_total_installed = $totalInstalled;
+
+            return $license;
+        })->sortByDesc('usage_pct')->values();
+    }
+
     public function showLisensi(Request $request)
     {
         [$startDate, $endDate] = $this->getDateRange($request);
@@ -568,26 +633,7 @@ class ReportController extends Controller
         $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
         $laboratories = $this->getAccessibleLaboratories($period);
 
-        $usedCountSubQuery = 'SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id';
-        if ($labIds !== null) {
-            $labIdList = implode(',', array_map('intval', $labIds));
-            $usedCountSubQuery .= " AND software_discoveries.computer_id IN (SELECT id FROM computers WHERE laboratory_id IN ({$labIdList}))";
-        }
-
-        $licenses = LicenseInventory::with('catalog')
-            ->select('*')
-            ->selectRaw("({$usedCountSubQuery}) as used_count")
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->get();
-
-        // Enrich data then sort by usage_pct DESC
-        $licenses = $licenses->map(function ($license) {
-            $usage = $license->used_count;
-            $license->remaining = max(0, $license->quota_limit - $usage);
-            $license->usage_pct = $license->quota_limit > 0 ? round(($usage / $license->quota_limit) * 100, 1) : 0;
-
-            return $license;
-        })->sortByDesc('usage_pct')->values();
+        $licenses = $this->getEnrichedLicenses($startDate, $endDate, $labIds);
 
         // Manual pagination
         $page = request()->get('page', 1);
@@ -619,24 +665,7 @@ class ReportController extends Controller
         $labIds = $this->resolveLabScope($request, $period);
         $approvalData = $this->getApprovalData('kepatuhan', $period, $labIds);
 
-        $usedCountSubQuery = 'SELECT COUNT(*) FROM software_discoveries WHERE software_discoveries.catalog_id = license_inventories.catalog_id';
-        if ($labIds !== null) {
-            $labIdList = implode(',', array_map('intval', $labIds));
-            $usedCountSubQuery .= " AND software_discoveries.computer_id IN (SELECT id FROM computers WHERE laboratory_id IN ({$labIdList}))";
-        }
-
-        $licenses = LicenseInventory::with('catalog')
-            ->select('*')
-            ->selectRaw("({$usedCountSubQuery}) as used_count")
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->get()
-            ->map(function ($license) {
-                $usage = $license->used_count;
-                $license->remaining = max(0, $license->quota_limit - $usage);
-                $license->usage_pct = $license->quota_limit > 0 ? round(($usage / $license->quota_limit) * 100, 1) : 0;
-
-                return $license;
-            });
+        $licenses = $this->getEnrichedLicenses($startDate, $endDate, $labIds);
 
         if ($format === 'excel') {
             return Excel::download(new LisensiExport($licenses, $startDate, $endDate, $approvalData), 'status-lisensi_'.$startDate->format('Y-m-d').'_'.$endDate->format('Y-m-d').'.xlsx');

@@ -3,22 +3,26 @@
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
     @forelse($licenses as $license)
         @php
-            // Kalkulasi Penggunaan
-            $usageCount = $license->catalog->discoveries_count ?? 0;
+            // Kalkulasi Penggunaan & Alokasi
             $quota = $license->quota_limit;
-            $usagePercent = $quota > 0 ? min(($usageCount / $quota) * 100, 100) : 0;
+            $catalogQuota = $license->total_catalog_quota ?? $quota;
+            $usageCount = $license->total_catalog_installed ?? ($license->catalog->discoveries_count ?? 0);
+            $allocatedSeats = $license->allocated_seats ?? $license->total_allocated;
+            $remainingUnallocated = $license->remaining_unallocated ?? $license->remaining_unallocated;
+
+            $allocationPercent = $quota > 0 ? min(($allocatedSeats / $quota) * 100, 100) : 0;
 
             // Warna Progress Bar Dinamis
             $progressColor = 'bg-success'; // Hijau (0-60)
-            if ($usagePercent > 80) {
+            if ($allocationPercent > 80) {
                 $progressColor = 'bg-destructive'; // Merah (81-100)
-            } elseif ($usagePercent > 60) {
+            } elseif ($allocationPercent > 60) {
                 $progressColor = 'bg-warning'; // Kuning (61-80)
             }
 
             // Cek Kedaluwarsa
             $expiryDate = $license->expiry_date ? \Carbon\Carbon::parse($license->expiry_date) : null;
-            $isExpired = $expiryDate && $expiryDate->isPast();
+            $isExpired = $expiryDate && $expiryDate->isPast() && ! $expiryDate->isToday();
             $isExpiringSoon = $expiryDate && $expiryDate->isBetween(now(), now()->addDays(30));
 
             // Badge Status
@@ -26,7 +30,7 @@
                 $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/20"><i class="fa-solid fa-clock mr-1.5"></i> Kedaluwarsa</span>';
             } elseif ($isExpiringSoon) {
                 $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-warning/10 text-warning border border-warning/20"><i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Segera Habis</span>';
-            } elseif ($usageCount > $quota) {
+            } elseif ($usageCount > $catalogQuota) {
                 $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-destructive/10 text-destructive border border-destructive/20"><i class="fa-solid fa-ban mr-1.5"></i> Melebihi Batas</span>';
             } else {
                 $statusBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-success/10 text-success border border-success/20"><i class="fa-solid fa-circle-check mr-1.5"></i> Aman</span>';
@@ -230,18 +234,22 @@
                 @endrole
             </div>
 
-            {{-- BODY CARD: Progress Bar & Status Angka --}}
+            {{-- BODY CARD: Alokasi & Penggunaan --}}
             <div class="space-y-2 mt-1">
                 <div class="flex justify-between items-end text-sm">
-                    <span class="text-muted-foreground font-medium">Pemakaian Lisensi</span>
+                    <span class="text-muted-foreground font-medium">Alokasi Kursi</span>
                     <span
-                        class="font-bold text-lg {{ $usageCount > $quota ? 'text-destructive' : 'text-foreground' }} leading-none">
-                        {{ $usageCount }} <span class="text-xs text-muted-foreground font-normal">/ {{ $quota }}</span>
+                        class="font-bold text-base {{ $allocatedSeats >= $quota ? 'text-warning' : 'text-foreground' }} leading-none">
+                        {{ $allocatedSeats }} <span class="text-xs text-muted-foreground font-normal">/ {{ $quota }}</span>
                     </span>
                 </div>
                 <div class="h-2 w-full bg-muted rounded-full overflow-hidden">
                     <div class="h-full {{ $progressColor }} transition-all duration-500 ease-out"
-                        style="width: {{ $usagePercent }}%"></div>
+                        style="width: {{ $allocationPercent }}%"></div>
+                </div>
+                <div class="flex items-center justify-between text-[11px] pt-1 text-muted-foreground">
+                    <span>Sisa Kuota: <strong class="text-foreground font-semibold">{{ $remainingUnallocated }}</strong></span>
+                    <span>Total Software: <strong class="{{ $usageCount > $catalogQuota ? 'text-destructive font-bold' : 'text-foreground font-semibold' }}">{{ $usageCount }}/{{ $catalogQuota }}</strong></span>
                 </div>
             </div>
 

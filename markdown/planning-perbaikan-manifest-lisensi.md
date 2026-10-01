@@ -437,12 +437,12 @@ Owned = 20
 
 ### Checklist
 
-- [ ] Audit semua controller yang menghitung license quantity.
-- [ ] Audit Job compliance.
-- [ ] Audit dashboard.
-- [ ] Audit report generator.
-- [ ] Audit endpoint/API yang mengembalikan license count.
-- [ ] Gunakan aggregate yang konsisten.
+- [x] Audit semua controller yang menghitung license quantity.
+- [x] Audit Job compliance.
+- [x] Audit dashboard.
+- [x] Audit report generator.
+- [x] Audit endpoint/API yang mengembalikan license count.
+- [x] Gunakan aggregate yang konsisten.
 
 ---
 
@@ -1019,7 +1019,7 @@ Periksa kondisi berikut:
 - [ ] Software ditemukan tetapi belum masuk katalog.
 - [ ] Alokasi = 0.
 - [ ] Tidak ada lisensi tetapi software terinstal.
-- [ ] Satu software memiliki beberapa license inventory.
+- [x] Satu software memiliki beberapa license inventory.
 
 Aturan foreign key dan cascade harus ditentukan dengan hati-hati agar histori laporan tidak rusak.
 
@@ -1157,8 +1157,8 @@ Tidak semua fitur harus dikerjakan sekaligus.
 - [ ] filter laboratorium
 - [ ] detail alokasi per software
 - [ ] status Deficit / Surplus / Sufficient
-- [ ] audit seluruh query license count
-- [ ] perbaikan multiple license inventory
+- [x] audit seluruh query license count
+- [x] perbaikan multiple license inventory
 
 ## Priority C — Pengembangan lanjutan
 
@@ -1278,9 +1278,9 @@ Perubahan fitur dianggap selesai apabila seluruh kondisi berikut terpenuhi:
 
 - [x] Relasi Eloquent benar.
 - [x] Validation allocation berjalan.
-- [ ] Owned dihitung dari seluruh inventory relevan.
-- [ ] Installed dihitung dari discovery.
-- [ ] Deficit/surplus dihitung konsisten.
+- [x] Owned dihitung dari seluruh inventory relevan.
+- [x] Installed dihitung dari discovery.
+- [x] Deficit/surplus dihitung konsisten.
 
 ### Frontend
 

@@ -200,11 +200,11 @@ Pada `ReportController::showLisensi()`:
 ---
 
 ## 4. Kriteria Keberhasilan (Acceptance Criteria)
-- [ ] Tidak ada lagi pemanggilan kode `$catalog->licenses->first()` yang mengevaluasi kuota software secara parsial di `GenerateComplianceReportJob`.
-- [ ] Software dengan multiple inventory lisensi (misal 20 seat + 30 seat) memiliki total entitlement yang benar dihitung sebesar 50 seat.
-- [ ] Jika instalasi aktual sebanyak 45 komputer, sistem menetapkan status **Berlisensi** (karena 45 $\le$ 50), dan BUKAN over limit.
-- [ ] Lisensi yang telah kedaluwarsa (*expired*) secara otomatis dikeluarkan dari perhitungan kuota aktif.
-- [ ] Seluruh controller yang menampilkan agregasi lisensi menggunakan metode kalkulasi yang konsisten.
+- [x] Tidak ada lagi pemanggilan kode `$catalog->licenses->first()` yang mengevaluasi kuota software secara parsial di `GenerateComplianceReportJob`.
+- [x] Software dengan multiple inventory lisensi (misal 20 seat + 30 seat) memiliki total entitlement yang benar dihitung sebesar 50 seat.
+- [x] Jika instalasi aktual sebanyak 45 komputer, sistem menetapkan status **Berlisensi** (karena 45 $\le$ 50), dan BUKAN over limit.
+- [x] Lisensi yang telah kedaluwarsa (*expired*) secara otomatis dikeluarkan dari perhitungan kuota aktif.
+- [x] Seluruh controller yang menampilkan agregasi lisensi menggunakan metode kalkulasi yang konsisten.
 
 ---
 
