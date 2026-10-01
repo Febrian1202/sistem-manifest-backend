@@ -163,11 +163,11 @@ Update method `index(Request $request)`:
 ---
 
 ## 4. Kriteria Keberhasilan (Acceptance Criteria)
-- [ ] Pengguna dapat melihat status kepatuhan secara global (Universitas) maupun terfilter per Fakultas.
-- [ ] Kolom `Allocated`, `Installed`, `Deficit`, dan `Surplus` dihitung dengan benar sesuai rumus bisnis.
-- [ ] Kasus di mana software terinstall tetapi belum pernah diberi alokasi (`Allocated = 0`) ditangani secara aman dengan status "Tanpa Alokasi" dan utilisasi tidak menyebabkan error division by zero.
-- [ ] Badge status menampilkan warna yang intuitif (Merah untuk defisit, Kuning/Biru untuk surplus, Hijau untuk patuh/cukup).
-- [ ] Ringkasan perbandingan antar-fakultas menampilkan fakultas mana yang paling banyak mengalami defisit.
+- [x] Pengguna dapat melihat status kepatuhan secara global (Universitas) maupun terfilter per Fakultas.
+- [x] Kolom `Allocated`, `Installed`, `Deficit`, dan `Surplus` dihitung dengan benar sesuai rumus bisnis.
+- [x] Kasus di mana software terinstall tetapi belum pernah diberi alokasi (`Allocated = 0`) ditangani secara aman dengan status "Tanpa Alokasi" dan utilisasi tidak menyebabkan error division by zero.
+- [x] Badge status menampilkan warna yang intuitif (Merah untuk defisit, Kuning/Biru untuk surplus, Hijau untuk patuh/cukup).
+- [x] Ringkasan perbandingan antar-fakultas menampilkan fakultas mana yang paling banyak mengalami defisit.
 
 ---
 

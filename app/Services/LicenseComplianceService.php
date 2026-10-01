@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Faculty;
 use App\Models\LicenseInventory;
 use App\Models\SoftwareCatalog;
 use App\Models\SoftwareDiscovery;
@@ -102,5 +103,97 @@ class LicenseComplianceService
             'status' => $status,
             'is_compliant' => $deficit === 0,
         ];
+    }
+
+    /**
+     * Menghitung total alokasi lisensi aktif untuk sebuah software catalog di fakultas tertentu.
+     */
+    public function getFacultyAllocated(int $catalogId, int $facultyId): int
+    {
+        return (int) DB::table('license_allocations')
+            ->join('license_inventories', 'license_allocations.license_inventory_id', '=', 'license_inventories.id')
+            ->where('license_inventories.catalog_id', $catalogId)
+            ->where('license_allocations.faculty_id', $facultyId)
+            ->where('license_allocations.status', 'active')
+            ->sum('license_allocations.allocated_quota');
+    }
+
+    /**
+     * Menghitung rekapitulasi kepatuhan seluruh software komersial untuk sebuah fakultas tertentu.
+     *
+     * @param  \Illuminate\Support\Collection|array|null  $allowedLabIds
+     */
+    public function getFacultyComplianceBreakdown(int $facultyId, mixed $allowedLabIds = null): \Illuminate\Support\Collection
+    {
+        $commercialCatalogs = SoftwareCatalog::where('category', 'Commercial')->get();
+
+        return $commercialCatalogs->map(function ($catalog) use ($facultyId, $allowedLabIds) {
+            $allocated = $this->getFacultyAllocated($catalog->id, $facultyId);
+
+            $discoveryQuery = SoftwareDiscovery::where('catalog_id', $catalog->id)
+                ->whereHas('computer', function ($q) use ($facultyId, $allowedLabIds) {
+                    $q->where('status', 'active')
+                        ->whereHas('laboratory', fn ($l) => $l->where('faculty_id', $facultyId));
+
+                    if ($allowedLabIds !== null) {
+                        $q->whereIn('laboratory_id', $allowedLabIds);
+                    }
+                });
+
+            $installed = (int) $discoveryQuery->distinct('computer_id')->count('computer_id');
+
+            $deficit = max(0, $installed - $allocated);
+            $surplus = max(0, $allocated - $installed);
+
+            $utilizationRate = $allocated > 0
+                ? round(($installed / $allocated) * 100, 1)
+                : null;
+
+            $status = match (true) {
+                $allocated === 0 && $installed > 0 => 'Tanpa Alokasi (Defisit Penuh)',
+                $installed > $allocated => 'Defisit',
+                $installed < $allocated => 'Surplus',
+                default => 'Cukup (Sesuai Alokasi)',
+            };
+
+            return [
+                'catalog_id' => $catalog->id,
+                'software_name' => $catalog->normalized_name,
+                'normalized_name' => $catalog->normalized_name,
+                'allocated' => $allocated,
+                'installed' => $installed,
+                'installed_count' => $installed,
+                'deficit' => $deficit,
+                'surplus' => $surplus,
+                'utilization_rate' => $utilizationRate,
+                'status' => $status,
+                'is_compliant' => $deficit === 0,
+            ];
+        })->filter(fn ($item) => $item['allocated'] > 0 || $item['installed'] > 0)->values();
+    }
+
+    /**
+     * Menghasilkan matriks komparasi kepatuhan seluruh fakultas untuk ringkasan eksekutif.
+     */
+    public function getCrossFacultyMatrix(): \Illuminate\Support\Collection
+    {
+        $faculties = Faculty::withCount(['laboratories', 'computers'])->get();
+
+        return $faculties->map(function ($faculty) {
+            $breakdown = $this->getFacultyComplianceBreakdown($faculty->id);
+
+            return [
+                'faculty_id' => $faculty->id,
+                'faculty_code' => $faculty->code,
+                'faculty_name' => $faculty->name,
+                'total_labs' => $faculty->laboratories_count,
+                'total_computers' => $faculty->computers_count,
+                'total_allocated_seats' => (int) $breakdown->sum('allocated'),
+                'total_installed_seats' => (int) $breakdown->sum('installed'),
+                'total_deficit' => (int) $breakdown->sum('deficit'),
+                'total_surplus' => (int) $breakdown->sum('surplus'),
+                'non_compliant_software_count' => $breakdown->where('deficit', '>', 0)->count(),
+            ];
+        });
     }
 }

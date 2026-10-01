@@ -1017,7 +1017,7 @@ Periksa kondisi berikut:
 - [ ] Komputer belum pernah scan.
 - [ ] Komputer offline.
 - [ ] Software ditemukan tetapi belum masuk katalog.
-- [ ] Alokasi = 0.
+- [x] Alokasi = 0.
 - [ ] Tidak ada lisensi tetapi software terinstal.
 - [x] Satu software memiliki beberapa license inventory.
 
@@ -1144,19 +1144,19 @@ Tidak semua fitur harus dikerjakan sekaligus.
 - [x] model LicenseAllocation
 - [x] LicenseInventory ↔ Allocation ↔ Faculty
 - [x] validasi total allocation ≤ ownership
-- [ ] perhitungan Owned / Allocated / Installed
-- [ ] compliance per fakultas
+- [x] perhitungan Owned / Allocated / Installed
+- [x] compliance per fakultas
 - [ ] dashboard pimpinan per fakultas
 - [ ] laporan kebutuhan lisensi
 - [ ] test case utama
 
 ## Priority B — Sangat disarankan
 
-- [ ] drill-down Faculty → Lab → Computer → Software
+- [x] drill-down Faculty → Lab → Computer → Software
 - [x] filter fakultas
 - [ ] filter laboratorium
 - [ ] detail alokasi per software
-- [ ] status Deficit / Surplus / Sufficient
+- [x] status Deficit / Surplus / Sufficient
 - [x] audit seluruh query license count
 - [x] perbaikan multiple license inventory
 
@@ -1286,9 +1286,9 @@ Perubahan fitur dianggap selesai apabila seluruh kondisi berikut terpenuhi:
 
 - [x] Admin dapat mengelola fakultas.
 - [x] Admin dapat mengelola alokasi lisensi.
-- [ ] Pimpinan dapat melihat semua fakultas.
-- [ ] Pimpinan dapat melihat status per fakultas.
-- [ ] User dapat drill-down ke laboratorium.
+- [x] Pimpinan dapat melihat semua fakultas.
+- [x] Pimpinan dapat melihat status per fakultas.
+- [x] User dapat drill-down ke laboratorium.
 
 ### Reporting
 
@@ -1300,7 +1300,7 @@ Perubahan fitur dianggap selesai apabila seluruh kondisi berikut terpenuhi:
 
 - [ ] Test case utama lulus.
 - [x] Tidak ada alokasi melebihi ownership.
-- [ ] Tidak ada error pembagian dengan nol.
+- [x] Tidak ada error pembagian dengan nol.
 - [x] Data existing tetap aman.
 
 ### Skripsi
