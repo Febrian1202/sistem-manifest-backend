@@ -279,12 +279,26 @@
             <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
 
             <a href="{{ route('reports') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('reports*') && !request()->is('report-submissions*') ? $activeClass : $inactiveClass }}">
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ (request()->is('reports') || (request()->is('reports/*') && !request()->is('reports/kebutuhan-lisensi*'))) && !request()->is('report-submissions*') ? $activeClass : $inactiveClass }}">
                 <div class="w-6 flex justify-center">
                     <i class="fa-solid fa-file-pdf text-lg"></i>
                 </div>
                 <span class="font-medium whitespace-nowrap transition-opacity duration-200"
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">{{ auth()->user()->hasRole('admin') ? 'Pusat Laporan' : 'Laporan & Cetak' }}</span>
+            </a>
+
+            <a href="{{ route('reports.kebutuhan-lisensi') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('reports/kebutuhan-lisensi*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-file-invoice text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Kebutuhan Lisensi</span>
+
+                <div class="absolute left-16 bg-popover text-popover-foreground border border-border text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 md:hidden"
+                    :class="!sidebarOpen ? 'md:block' : ''">
+                    Kebutuhan Lisensi
+                </div>
             </a>
 
             @role('admin')

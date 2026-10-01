@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\KepatuhanExport;
 use App\Exports\KomputerExport;
+use App\Exports\LicenseNeedsExport;
 use App\Exports\LisensiExport;
 use App\Exports\MonitoringRecapExport;
 use App\Exports\SoftwareChangesExport;
@@ -919,5 +920,75 @@ class ReportController extends Controller
             'status' => 'success',
             'message' => 'Pemeriksaan kepatuhan untuk semua komputer telah dijadwalkan di background.',
         ]);
+    }
+
+    /**
+     * Menampilkan preview halaman Laporan Analisis Kebutuhan dan Alokasi Lisensi.
+     */
+    public function showKebutuhanLisensi(Request $request)
+    {
+        $user = auth()->user();
+        $isPimpinan = $user?->hasRole('pimpinan');
+        $currentPeriod = now()->format('Y-m');
+
+        $approvedLabIds = null;
+        if ($isPimpinan) {
+            $approvedLabIds = ReportApproval::where('status', 'approved')
+                ->where('report_type', 'kepatuhan')
+                ->where('period', $currentPeriod)
+                ->pluck('laboratory_id');
+        }
+
+        $analysis = $this->complianceService->getLicenseNeedsAnalysis($isPimpinan ? $approvedLabIds : null);
+
+        return view('reports.kebutuhan-lisensi', [
+            'summary' => $analysis['summary'],
+            'facultyDistributions' => $analysis['faculty_distributions'],
+            'procurementInsights' => $analysis['procurement_insights'],
+            'isPimpinan' => $isPimpinan,
+            'currentPeriod' => $currentPeriod,
+        ]);
+    }
+
+    /**
+     * Mengekspor Laporan Analisis Kebutuhan dan Alokasi Lisensi (PDF / Excel).
+     */
+    public function exportKebutuhanLisensi(Request $request)
+    {
+        $user = auth()->user();
+        $isPimpinan = $user?->hasRole('pimpinan');
+        $currentPeriod = now()->format('Y-m');
+        $format = $request->query('format', 'pdf');
+
+        $approvedLabIds = null;
+        if ($isPimpinan) {
+            $approvedLabIds = ReportApproval::where('status', 'approved')
+                ->where('report_type', 'kepatuhan')
+                ->where('period', $currentPeriod)
+                ->pluck('laboratory_id');
+        }
+
+        $analysis = $this->complianceService->getLicenseNeedsAnalysis($isPimpinan ? $approvedLabIds : null);
+
+        if ($format === 'excel') {
+            return Excel::download(
+                new LicenseNeedsExport($analysis),
+                'laporan-kebutuhan-lisensi_'.now()->format('Y-m-d').'.xlsx'
+            );
+        }
+
+        $data = [
+            'summary' => $analysis['summary'],
+            'facultyDistributions' => $analysis['faculty_distributions'],
+            'procurementInsights' => $analysis['procurement_insights'],
+            'isPimpinan' => $isPimpinan,
+            'print_date' => now()->format('d/m/Y H:i'),
+            'printed_by' => $user->name.' ('.($user->getRoleNames()->first() ?? 'User').')',
+            'period' => $currentPeriod,
+        ];
+
+        return Pdf::loadView('reports.pdf.kebutuhan-lisensi-pdf', $data)
+            ->setPaper('a4', 'portrait')
+            ->stream();
     }
 }

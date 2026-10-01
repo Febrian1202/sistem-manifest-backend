@@ -174,13 +174,15 @@ class LicenseComplianceService
 
     /**
      * Menghasilkan matriks komparasi kepatuhan seluruh fakultas untuk ringkasan eksekutif.
+     *
+     * @param  \Illuminate\Support\Collection|array|null  $allowedLabIds
      */
-    public function getCrossFacultyMatrix(): \Illuminate\Support\Collection
+    public function getCrossFacultyMatrix(mixed $allowedLabIds = null): \Illuminate\Support\Collection
     {
         $faculties = Faculty::withCount(['laboratories', 'computers'])->get();
 
-        return $faculties->map(function ($faculty) {
-            $breakdown = $this->getFacultyComplianceBreakdown($faculty->id);
+        return $faculties->map(function ($faculty) use ($allowedLabIds) {
+            $breakdown = $this->getFacultyComplianceBreakdown($faculty->id, $allowedLabIds);
 
             return [
                 'faculty_id' => $faculty->id,
@@ -195,5 +197,142 @@ class LicenseComplianceService
                 'non_compliant_software_count' => $breakdown->where('deficit', '>', 0)->count(),
             ];
         });
+    }
+
+    /**
+     * Menghasilkan analisis kebutuhan dan alokasi lisensi software komprehensif.
+     *
+     * @param  \Illuminate\Support\Collection|array|null  $allowedLabIds
+     * @return array{
+     *     summary: array{
+     *         total_commercial_software: int,
+     *         total_owned: int,
+     *         total_allocated: int,
+     *         total_unallocated: int,
+     *         total_installed: int,
+     *         total_deficit: int,
+     *         total_surplus: int
+     *     },
+     *     faculty_distributions: \Illuminate\Support\Collection,
+     *     procurement_insights: \Illuminate\Support\Collection
+     * }
+     */
+    public function getLicenseNeedsAnalysis(mixed $allowedLabIds = null): array
+    {
+        $commercialCatalogs = SoftwareCatalog::where('category', 'Commercial')
+            ->orderBy('normalized_name')
+            ->get();
+
+        $faculties = Faculty::withCount(['laboratories', 'computers'])
+            ->orderBy('name')
+            ->get();
+
+        $facultyDistributions = $faculties->map(function ($faculty) use ($allowedLabIds) {
+            $breakdown = $this->getFacultyComplianceBreakdown($faculty->id, $allowedLabIds)
+                ->map(function ($item) {
+                    $recommendation = match (true) {
+                        $item['deficit'] > 0 => "Perlu tambahan {$item['deficit']} lisensi",
+                        $item['surplus'] > 0 => "Surplus {$item['surplus']} lisensi (potensi redistribusi)",
+                        default => 'Alokasi optimal (seimbang)',
+                    };
+
+                    $item['recommendation'] = $recommendation;
+
+                    return $item;
+                });
+
+            return [
+                'faculty' => $faculty,
+                'breakdown' => $breakdown,
+                'total_allocated' => (int) $breakdown->sum('allocated'),
+                'total_installed' => (int) $breakdown->sum('installed'),
+                'total_deficit' => (int) $breakdown->sum('deficit'),
+                'total_surplus' => (int) $breakdown->sum('surplus'),
+            ];
+        });
+
+        $procurementInsights = $commercialCatalogs->map(function ($catalog) use ($facultyDistributions, $allowedLabIds) {
+            $owned = $this->getActiveEntitlement($catalog->id);
+
+            // Total instalasi universitas
+            $discoveryQuery = SoftwareDiscovery::where('catalog_id', $catalog->id)
+                ->whereHas('computer', function ($q) use ($allowedLabIds) {
+                    $q->where('status', 'active');
+                    if ($allowedLabIds !== null) {
+                        $q->whereIn('laboratory_id', $allowedLabIds);
+                    }
+                });
+            $installed = (int) $discoveryQuery->distinct('computer_id')->count('computer_id');
+
+            $allocated = $this->getTotalAllocated($catalog->id);
+            $universityDeficit = max(0, $installed - $owned);
+            $universitySurplus = max(0, $owned - $installed);
+
+            // Deteksi persebaran defisit & surplus di level fakultas
+            $facultyDeficits = [];
+            $facultySurpluses = [];
+
+            foreach ($facultyDistributions as $dist) {
+                $softwareItem = $dist['breakdown']->firstWhere('catalog_id', $catalog->id);
+                if ($softwareItem) {
+                    if ($softwareItem['deficit'] > 0) {
+                        $facultyDeficits[] = [
+                            'faculty_name' => $dist['faculty']->name,
+                            'faculty_code' => $dist['faculty']->code,
+                            'deficit' => $softwareItem['deficit'],
+                        ];
+                    } elseif ($softwareItem['surplus'] > 0) {
+                        $facultySurpluses[] = [
+                            'faculty_name' => $dist['faculty']->name,
+                            'faculty_code' => $dist['faculty']->code,
+                            'surplus' => $softwareItem['surplus'],
+                        ];
+                    }
+                }
+            }
+
+            $recommendation = match (true) {
+                $universityDeficit > 0 && ! empty($facultySurpluses) => "Pengadaan baru minimal {$universityDeficit} unit disarankan. Evaluasi redistribusi dari fakultas yang surplus.",
+                $universityDeficit > 0 => "Pengadaan baru minimal {$universityDeficit} unit lisensi disarankan untuk memenuhi kebutuhan instalasi.",
+                ! empty($facultyDeficits) => 'Kapasitas lisensi universitas mencukupi secara total. Disarankan redistribusi alokasi antarfakultas.',
+                default => 'Kapasitas dan alokasi lisensi berada dalam kondisi seimbang.',
+            };
+
+            return [
+                'catalog_id' => $catalog->id,
+                'software_name' => $catalog->normalized_name,
+                'owned' => $owned,
+                'allocated' => $allocated,
+                'installed' => $installed,
+                'net_deficit' => $universityDeficit,
+                'net_surplus' => $universitySurplus,
+                'faculty_deficits' => $facultyDeficits,
+                'faculty_surpluses' => $facultySurpluses,
+                'has_issues' => $universityDeficit > 0 || ! empty($facultyDeficits),
+                'recommendation' => $recommendation,
+            ];
+        })->filter(fn ($item) => $item['has_issues'] || $item['installed'] > 0 || $item['owned'] > 0)
+            ->sortByDesc('net_deficit')
+            ->values();
+
+        $totalOwned = $procurementInsights->sum('owned');
+        $totalAllocated = $procurementInsights->sum('allocated');
+        $totalInstalled = $procurementInsights->sum('installed');
+        $totalDeficit = $procurementInsights->sum('net_deficit');
+        $totalSurplus = $procurementInsights->sum('net_surplus');
+
+        return [
+            'summary' => [
+                'total_commercial_software' => $commercialCatalogs->count(),
+                'total_owned' => (int) $totalOwned,
+                'total_allocated' => (int) $totalAllocated,
+                'total_unallocated' => (int) max(0, $totalOwned - $totalAllocated),
+                'total_installed' => (int) $totalInstalled,
+                'total_deficit' => (int) $totalDeficit,
+                'total_surplus' => (int) $totalSurplus,
+            ],
+            'faculty_distributions' => $facultyDistributions,
+            'procurement_insights' => $procurementInsights,
+        ];
     }
 }

@@ -15,6 +15,25 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
+            {{-- Modul: Analisis Kebutuhan & Alokasi Lisensi --}}
+            @role('admin|pimpinan')
+            <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full border-cyan-100 bg-cyan-50/10">
+                <div class="h-10 w-10 bg-cyan-500/10 text-cyan-600 rounded-lg flex items-center justify-center text-lg mb-4">
+                    <i class="fa-solid fa-file-invoice"></i>
+                </div>
+                <h3 class="font-bold text-lg mb-1">Kebutuhan & Alokasi Lisensi</h3>
+                <p class="text-sm text-muted-foreground mb-6 grow">Pemetaan kapasitas lisensi universitas, distribusi alokasi ke fakultas, dan rekomendasi pengadaan lisensi baru.</p>
+
+                <div class="mt-auto">
+                    <a href="{{ route('reports.kebutuhan-lisensi') }}" class="block">
+                        <x-ui.button variant="default" class="w-full">
+                            <i class="fa-solid fa-eye mr-2"></i> Preview & Filter
+                        </x-ui.button>
+                    </a>
+                </div>
+            </div>
+            @endrole
+
             {{-- Modul: Ringkasan Eksekutif --}}
             <div class="bg-card border border-border p-5 rounded-xl shadow-sm flex flex-col h-full border-blue-100 bg-blue-50/10">
                 <div class="h-10 w-10 bg-blue-500/10 text-blue-500 rounded-lg flex items-center justify-center text-lg mb-4">

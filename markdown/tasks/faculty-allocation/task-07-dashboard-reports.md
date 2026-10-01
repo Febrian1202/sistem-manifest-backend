@@ -136,12 +136,12 @@ Menghasilkan 2 sheet:
 ---
 
 ## 4. Kriteria Keberhasilan (Acceptance Criteria)
-- [ ] Dashboard pimpinan memuat kartu ringkasan universitas dan tabel perbandingan fakultas yang akurat.
-- [ ] Pimpinan dapat mengidentifikasi fakultas mana yang surplus dan fakultas mana yang defisit dalam satu layar.
-- [ ] Halaman preview Laporan Kebutuhan Lisensi menampilkan kalkulasi data yang sinkron dengan database.
-- [ ] Ekspor PDF berhasil di-generate dengan layout rapi dan format kop surat resmi.
-- [ ] Ekspor Excel menghasilkan spreadsheet dengan header dan styling sel yang terbaca jelas.
-- [ ] Teks laporan menjaga netralitas ilmiah: menyatakan data sebagai "bahan pertimbangan evaluasi dan pengambilan keputusan pengadaan".
+- [x] Dashboard pimpinan memuat kartu ringkasan universitas dan tabel perbandingan fakultas yang akurat.
+- [x] Pimpinan dapat mengidentifikasi fakultas mana yang surplus dan fakultas mana yang defisit dalam satu layar.
+- [x] Halaman preview Laporan Kebutuhan Lisensi menampilkan kalkulasi data yang sinkron dengan database.
+- [x] Ekspor PDF berhasil di-generate dengan layout rapi dan format kop surat resmi.
+- [x] Ekspor Excel menghasilkan spreadsheet dengan header dan styling sel yang terbaca jelas.
+- [x] Teks laporan menjaga netralitas ilmiah: menyatakan data sebagai "bahan pertimbangan evaluasi dan pengambilan keputusan pengadaan".
 
 ---
 

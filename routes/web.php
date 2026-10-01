@@ -72,6 +72,9 @@ Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function ()
         Route::get('/lisensi', [ReportController::class, 'showLisensi'])->name('lisensi');
         Route::get('/monitoring', [ReportController::class, 'showMonitoring'])->name('monitoring');
         Route::get('/perubahan', [ReportController::class, 'showPerubahan'])->name('perubahan');
+        Route::get('/kebutuhan-lisensi', [ReportController::class, 'showKebutuhanLisensi'])
+            ->middleware('role:admin|pimpinan')
+            ->name('kebutuhan-lisensi');
 
         // Export endpoints
         Route::get('/eksekutif/export', [ReportController::class, 'exportEksekutif'])->name('eksekutif.export');
@@ -81,6 +84,9 @@ Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function ()
         Route::get('/lisensi/export', [ReportController::class, 'exportLisensi'])->name('lisensi.export');
         Route::get('/monitoring/export', [ReportController::class, 'exportMonitoring'])->name('monitoring.export');
         Route::get('/perubahan/export', [ReportController::class, 'exportPerubahan'])->name('perubahan.export');
+        Route::get('/kebutuhan-lisensi/export', [ReportController::class, 'exportKebutuhanLisensi'])
+            ->middleware('role:admin|pimpinan')
+            ->name('kebutuhan-lisensi.export');
 
         Route::post('/kepatuhan/scan', [ReportController::class, 'runComplianceScan'])
             ->middleware('role:admin')

@@ -4,12 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\ComplianceSnapshot;
 use App\Models\Computer;
+use App\Models\Faculty;
 use App\Models\Laboratory;
+use App\Models\LicenseAllocation;
+use App\Models\LicenseInventory;
 use App\Models\ReportApproval;
 use App\Models\ScanSession;
 use App\Models\ScanSoftwareResult;
 use App\Models\SoftwareDiscovery;
 use App\Models\User;
+use App\Services\LicenseComplianceService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,6 +22,10 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        protected LicenseComplianceService $complianceService
+    ) {}
+
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -147,12 +155,49 @@ class DashboardController extends Controller
         $licensedOS = Computer::whereIn('laboratory_id', $approvedLabIds)->where('os_license_status', 'Licensed')->count();
         $complianceRate = $totalComputers > 0 ? round(($licensedOS / $totalComputers) * 100, 1) : 0;
 
+        $facultyMatrix = $this->complianceService->getCrossFacultyMatrix();
+
+        $globalStats = [
+            'total_faculties' => Faculty::count(),
+            'total_laboratories' => Laboratory::count(),
+            'total_computers' => Computer::where('status', 'active')->count(),
+            'total_owned_licenses' => (int) LicenseInventory::sum('quota_limit'),
+            'total_allocated_seats' => (int) LicenseAllocation::where('status', 'active')->sum('allocated_quota'),
+            'total_software_deficits' => (int) $facultyMatrix->sum('total_deficit'),
+        ];
+
+        // Top 5 software dengan defisit kumulatif tertinggi di seluruh fakultas
+        $topDeficitSoftwares = DB::table('software_catalogs')
+            ->where('category', 'Commercial')
+            ->get()
+            ->map(function ($catalog) {
+                $entitlement = $this->complianceService->getActiveEntitlement($catalog->id);
+                $installed = $this->complianceService->getInstalledCount($catalog->id);
+                $deficit = max(0, $installed - $entitlement);
+
+                return [
+                    'catalog_id' => $catalog->id,
+                    'name' => $catalog->normalized_name,
+                    'owned' => $entitlement,
+                    'installed' => $installed,
+                    'deficit' => $deficit,
+                ];
+            })
+            ->filter(fn ($item) => $item['deficit'] > 0)
+            ->sortByDesc('deficit')
+            ->take(5)
+            ->values();
+
         $stats = [
             'total_computers' => $totalComputers,
             'approved_labs' => $approvedLabsCount,
             'total_labs' => $totalLabs,
             'compliance_rate' => $complianceRate,
             'licensed_os' => $licensedOS,
+            'total_faculties' => $globalStats['total_faculties'],
+            'total_owned_licenses' => $globalStats['total_owned_licenses'],
+            'total_allocated_seats' => $globalStats['total_allocated_seats'],
+            'total_software_deficits' => $globalStats['total_software_deficits'],
         ];
 
         $laboratoriesStatus = Laboratory::withCount('computers')
@@ -163,6 +208,9 @@ class DashboardController extends Controller
 
         return view('dashboard.pimpinan', compact(
             'stats',
+            'globalStats',
+            'facultyMatrix',
+            'topDeficitSoftwares',
             'approvedLabIds',
             'laboratoriesStatus',
             'currentPeriod',
