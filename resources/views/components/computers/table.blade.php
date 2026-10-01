@@ -83,7 +83,11 @@
                                 @if($computer->laboratory)
                                     <div>
                                         <span class="font-medium text-foreground">{{ $computer->laboratory->name }}</span>
-                                        <span class="text-[10px] text-muted-foreground">({{ $computer->laboratory->code }})</span>
+                                        @if($computer->laboratory->faculty)
+                                            <span class="text-[10px] text-primary block font-medium">{{ $computer->laboratory->faculty->name }}</span>
+                                        @else
+                                            <span class="text-[10px] text-muted-foreground">({{ $computer->laboratory->code }})</span>
+                                        @endif
                                     </div>
                                 @elseif($computer->location)
                                     <span>{{ $computer->location }}</span>

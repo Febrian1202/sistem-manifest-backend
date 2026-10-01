@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ComplianceSnapshot;
 use App\Models\Computer;
+use App\Models\Faculty;
 use App\Models\Laboratory;
 use App\Models\ScanSession;
 use App\Services\SoftwareChangeDetectionService;
@@ -22,13 +23,19 @@ class MonitoringController extends Controller
 
         $query = ScanSession::query()
             ->forUserLab($user)
-            ->with(['computer.laboratory']);
+            ->with(['computer.laboratory.faculty']);
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('computer', function ($q) use ($search) {
                 $q->where('hostname', 'like', "%{$search}%")
                     ->orWhere('ip_address', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('faculty_id') && $request->faculty_id !== 'All' && ! $user->hasRole('kepala_lab')) {
+            $query->whereHas('computer.laboratory', function ($q) use ($request) {
+                $q->where('faculty_id', $request->faculty_id);
             });
         }
 
@@ -60,7 +67,8 @@ class MonitoringController extends Controller
 
         $scanSessions = $query->latest('started_at')->latest('id')->paginate(15)->withQueryString();
 
-        $laboratories = Laboratory::orderBy('name')->get();
+        $laboratories = Laboratory::with('faculty')->orderBy('name')->get();
+        $faculties = Faculty::orderBy('name')->get();
 
         $computerQuery = Computer::query();
         if ($user->hasRole('kepala_lab') && $user->laboratory_id) {
@@ -68,7 +76,7 @@ class MonitoringController extends Controller
         }
         $computers = $computerQuery->orderBy('hostname')->get();
 
-        return view('monitoring.index', compact('scanSessions', 'laboratories', 'computers'));
+        return view('monitoring.index', compact('scanSessions', 'laboratories', 'computers', 'faculties'));
     }
 
     /**

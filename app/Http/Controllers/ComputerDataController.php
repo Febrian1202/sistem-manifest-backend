@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateComputerRequest;
 use App\Models\Computer;
+use App\Models\Faculty;
 use App\Models\Laboratory;
 use App\Services\SoftwareChangeDetectionService;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ class ComputerDataController extends Controller
     public function index(Request $request)
     {
         // 1. Mulai Query
-        $query = Computer::with('laboratory');
+        $query = Computer::with(['laboratory.faculty']);
 
         // 2. Logika Search (Hostname, IP, atau OS)
         if ($request->filled('search')) {
@@ -29,41 +30,51 @@ class ComputerDataController extends Controller
             });
         }
 
-        // 3. Filter Berdasarkan Laboratorium
+        // 3. Filter Berdasarkan Fakultas
+        if ($request->filled('faculty_id') && $request->faculty_id !== 'All') {
+            $query->whereHas('laboratory', function ($q) use ($request) {
+                $q->where('faculty_id', $request->faculty_id);
+            });
+        }
+
+        // 4. Filter Berdasarkan Laboratorium
         if ($request->filled('laboratory_id') && $request->laboratory_id !== 'All') {
             $query->where('laboratory_id', $request->laboratory_id);
         }
 
-        // 4. Filter Berdasarkan Lokasi
+        // 5. Filter Berdasarkan Lokasi
         if ($request->filled('location') && $request->location !== 'All') {
             $query->where('location', $request->location);
         }
 
-        // 5. Filter Berdasarkan Status Lisensi
+        // 6. Filter Berdasarkan Status Lisensi
         if ($request->filled('license_status') && $request->license_status !== 'All') {
             $query->where('os_license_status', $request->license_status);
         }
 
-        // 6. Ambil data (Pagination)
+        // 7. Ambil data (Pagination)
         $computers = $query->latest('last_seen_at')->paginate(10)->withQueryString();
 
-        // 7. Ambil daftar lokasi unik untuk opsi Filter
+        // 8. Ambil daftar lokasi unik untuk opsi Filter
         $locations = Computer::select('location')
             ->whereNotNull('location')
             ->distinct()
             ->orderBy('location')
             ->pluck('location');
 
-        // 8. Ambil daftar laboratorium untuk opsi Filter
-        $laboratories = Laboratory::orderBy('name')->get();
+        // 9. Ambil daftar fakultas untuk opsi Filter
+        $faculties = Faculty::orderBy('name')->get();
 
-        return view('pages.admin.computers', compact('computers', 'locations', 'laboratories'));
+        // 10. Ambil daftar laboratorium untuk opsi Filter (dengan relasi fakultas)
+        $laboratories = Laboratory::with('faculty')->orderBy('name')->get();
+
+        return view('pages.admin.computers', compact('computers', 'locations', 'laboratories', 'faculties'));
     }
 
     public function show(Computer $computer)
     {
         $computer->load([
-            'laboratory',
+            'laboratory.faculty',
             'softwares' => function ($q) {
                 $q->orderBy('raw_name');
             },

@@ -72,10 +72,29 @@
 
         {{-- FORM PENCARIAN & FILTER --}}
         <form method="GET" action="{{ url()->current() }}"
+            x-data="{
+                selectedFaculty: '{{ request('faculty_id', 'All') }}',
+                selectedLab: '{{ request('laboratory_id', 'All') }}',
+                allLabs: {{ \Illuminate\Support\Js::from($laboratories->map(fn($l) => ['id' => (string)$l->id, 'name' => $l->name, 'faculty_id' => (string)$l->faculty_id])) }},
+                get filteredLabs() {
+                    if (!this.selectedFaculty || this.selectedFaculty === 'All') {
+                        return this.allLabs;
+                    }
+                    return this.allLabs.filter(l => l.faculty_id === this.selectedFaculty);
+                },
+                onFacultyChange() {
+                    if (this.selectedLab !== 'All') {
+                        const match = this.filteredLabs.some(l => l.id === this.selectedLab);
+                        if (!match) {
+                            this.selectedLab = 'All';
+                        }
+                    }
+                }
+            }"
             class="flex flex-col md:flex-row md:items-center gap-4 bg-card p-4 rounded-lg border border-border shadow-sm">
 
             {{-- LEFT: Search --}}
-            <div class="relative flex-1 w-full md:max-w-md">
+            <div class="relative flex-1 w-full md:max-w-xs">
                 <i
                     class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"></i>
                 <x-form.input name="search" value="{{ request('search') }}" placeholder="Cari Hostname, IP, atau OS..."
@@ -83,23 +102,35 @@
             </div>
 
             {{-- RIGHT: Filters + Actions --}}
-            <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 md:ml-auto w-full md:w-auto">
+            <div class="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:ml-auto w-full md:w-auto">
+
+                {{-- Faculty --}}
+                <div class="w-full md:w-44">
+                    <select name="faculty_id" x-model="selectedFaculty" @change="onFacultyChange()"
+                        class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <option value="All">Semua Fakultas</option>
+                        @foreach ($faculties as $fac)
+                            <option value="{{ $fac->id }}" @selected(request('faculty_id') == $fac->id)>{{ $fac->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
                 {{-- Laboratory --}}
-                <div class="w-full md:w-48">
-                    <x-ui.select.index name="laboratory_id" value="{{ request('laboratory_id') }}" placeholder="Semua Lab">
-                        <x-ui.select.trigger />
-                        <x-ui.select.content>
-                            <x-ui.select.item value="All">Semua Lab</x-ui.select.item>
-                            @foreach ($laboratories as $lab)
-                                <x-ui.select.item value="{{ $lab->id }}">{{ $lab->name }}</x-ui.select.item>
-                            @endforeach
-                        </x-ui.select.content>
-                    </x-ui.select.index>
+                <div class="w-full md:w-44">
+                    <select name="laboratory_id" x-model="selectedLab"
+                        class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <option value="All">Semua Lab</option>
+                        <template x-for="lab in filteredLabs" :key="lab.id">
+                            <option :value="lab.id" x-text="lab.name" :selected="selectedLab === lab.id"></option>
+                        </template>
+                        @foreach ($laboratories as $lab)
+                            <option value="{{ $lab->id }}" x-show="false" @selected(request('laboratory_id') == $lab->id)>{{ $lab->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 {{-- Location --}}
-                <div class="w-full md:w-48">
+                <div class="w-full md:w-40">
                     <x-ui.select.index name="location" value="{{ request('location') }}" placeholder="Semua Lokasi">
                         <x-ui.select.trigger />
                         <x-ui.select.content>
@@ -112,7 +143,7 @@
                 </div>
 
                 {{-- License Status --}}
-                <div class="w-full md:w-48">
+                <div class="w-full md:w-40">
                     <x-ui.select.index name="license_status" value="{{ request('license_status') }}"
                         placeholder="Semua Status">
                         <x-ui.select.trigger />
@@ -137,7 +168,7 @@
                         <i class="fa-solid fa-filter mr-2"></i> Filter
                     </x-ui.button>
 
-                    @if (request()->hasAny(['search', 'laboratory_id', 'location', 'license_status']))
+                    @if (request()->hasAny(['search', 'faculty_id', 'laboratory_id', 'location', 'license_status']))
                         <a href="{{ url()->current() }}">
                             <x-ui.button type="button" variant="outline" title="Reset Filter">
                                 <i class="fa-solid fa-xmark"></i>

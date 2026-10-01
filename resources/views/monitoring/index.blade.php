@@ -31,8 +31,21 @@
                     </div>
                 </div>
 
-                {{-- Laboratorium --}}
+                {{-- Fakultas --}}
                 @unless(auth()->user()->hasRole('kepala_lab'))
+                <div class="space-y-1">
+                    <x-form.label for="faculty_id">Fakultas</x-form.label>
+                    <select id="faculty_id" name="faculty_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                        <option value="All">Semua Fakultas</option>
+                        @foreach($faculties as $fac)
+                            <option value="{{ $fac->id }}" {{ request('faculty_id') == $fac->id ? 'selected' : '' }}>
+                                {{ $fac->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Laboratorium --}}
                 <div class="space-y-1">
                     <x-form.label for="laboratory_id">Laboratorium</x-form.label>
                     <select id="laboratory_id" name="laboratory_id" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
@@ -96,7 +109,7 @@
             </div>
 
             <div class="flex justify-end items-center gap-2 pt-2 border-t border-border/50">
-                @if(request()->anyFilled(['search', 'laboratory_id', 'computer_id', 'status', 'trigger', 'period_start', 'period_end']))
+                @if(request()->anyFilled(['search', 'faculty_id', 'laboratory_id', 'computer_id', 'status', 'trigger', 'period_start', 'period_end']))
                     <a href="{{ route('monitoring.index') }}">
                         <x-ui.button type="button" variant="outline" class="h-9">
                             <i class="fa-solid fa-xmark mr-2"></i> Reset

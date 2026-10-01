@@ -214,9 +214,9 @@ Buat file pengujian komprehensif di `tests/Feature/FacultyLicenseSystemIntegrati
 ---
 
 ## 5. Kriteria Keberhasilan (Acceptance Criteria)
-- [ ] Struktur menu navigasi sidebar tersusun rapi sesuai kategori fungsional.
-- [ ] Filter hierarkis Fakultas → Laboratorium berfungsi dengan baik.
-- [ ] Seluruh 8 test case utama lolos pengujian otomatis dengan status hijau.
-- [ ] Seluruh test suite aplikasi (`php artisan test`) lulus 100%.
-- [ ] Kode terformat rapi sesuai standar Laravel Pint.
-- [ ] Sistem siap didemonstrasikan untuk sidang skripsi dengan skenario komparasi alokasi vs instalasi.
+- [x] Struktur menu navigasi sidebar tersusun rapi sesuai kategori fungsional.
+- [x] Filter hierarkis Fakultas → Laboratorium berfungsi dengan baik.
+- [x] Seluruh 8 test case utama lolos pengujian otomatis dengan status hijau.
+- [x] Seluruh test suite aplikasi (`php artisan test`) lulus 100%.
+- [x] Kode terformat rapi sesuai standar Laravel Pint.
+- [x] Sistem siap didemonstrasikan untuk sidang skripsi dengan skenario komparasi alokasi vs instalasi.
