@@ -35,7 +35,7 @@ RUN npm run build
 # -------------------------------------------------------------------
 # Stage 3: Final Production Image
 # -------------------------------------------------------------------
-FROM php:8.2-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 # Install system dependencies and PHP extensions
 RUN apk add --no-cache \
@@ -49,12 +49,11 @@ RUN apk add --no-cache \
     curl \
     oniguruma-dev \
     icu-dev \
-    supervisor \
     linux-headers \
     pcre-dev \
     ${PHPIZE_DEPS} \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl opcache posix \
     && pecl install redis \
     && docker-php-ext-enable redis \
     && apk del pcre-dev ${PHPIZE_DEPS} \
@@ -70,6 +69,14 @@ COPY --from=vendor /app/vendor/ ./vendor/
 
 # Copy built frontend assets from 'frontend' stage
 COPY --from=frontend /app/public/build/ ./public/build/
+COPY --from=frontend /app/public/build/ /var/www/html/public-build-source/
+
+# Copy custom PHP production configuration
+COPY .docker/php/php-production.ini $PHP_INI_DIR/conf.d/99-production.ini
+
+# Copy entrypoint script
+COPY .docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Setup permissions
 RUN chown -R www-data:www-data /var/www/html \
@@ -79,5 +86,8 @@ RUN chown -R www-data:www-data /var/www/html \
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
-# Start PHP-FPM
+# Set entrypoint to run migrations and caches before running CMD
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Default command
 CMD ["php-fpm"]

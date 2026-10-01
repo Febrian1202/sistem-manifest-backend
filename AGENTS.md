@@ -2,7 +2,7 @@
 
 ## Project
 
-Laravel 12 (PHP 8.2+) IT asset & software license compliance system for USN Kolaka. Blade + Tailwind CSS 4 frontend, REST API for remote agent scanners, MySQL in production, SQLite for tests.
+Laravel 12 (PHP 8.2+, production on PHP 8.4 Alpine) IT asset & software license compliance system for Universitas Sembilanbelas November (USN) Kolaka. Blade + Tailwind CSS 4 + Alpine.js frontend (ApexCharts & Chart.js), REST API for remote agent scanners (PowerShell), MySQL in production, SQLite for tests, Redis for queue/cache, and Laravel Horizon for queue worker orchestration.
 
 ## Commands
 
@@ -11,14 +11,18 @@ Laravel 12 (PHP 8.2+) IT asset & software license compliance system for USN Kola
 composer dev
 
 # Run tests (Pest on SQLite :memory:, no external services needed)
-composer test          # clears config cache then runs `php artisan test`
-php artisan test --filter=SomeTest   # single test
+composer test                         # clears config cache then runs `php artisan test`
+php artisan test --filter=SomeTest    # single test
+npm run test:e2e                      # Playwright E2E test suite (all roles)
 
 # Code formatting
 ./vendor/bin/pint
 
-# Migrations
-php artisan migrate --seed   # seeds roles + default admin/pimpinan users
+# Queue worker & monitoring (Horizon)
+php artisan horizon
+
+# Migrations & Seeding (roles, faculties, sample labs, and default accounts)
+php artisan migrate --seed
 
 # One-shot setup (composer install, key:generate, migrate, npm install, npm build)
 composer setup
@@ -26,63 +30,97 @@ composer setup
 
 ## Architecture
 
-- **Two auth guards**: `web` (User model, session) and `sanctum` (Computer model as Authenticatable, token-based for agent API).
-- **Computer is Authenticatable** (`app/Models/Computer.php` extends `Illuminate\Foundation\Auth\User`), not a regular Model. It uses `HasApiTokens` for Sanctum.
-- **Queue processing is required** for scan results. Jobs dispatch to named queues: `scans`, `compliance`, `default`. Worker command: `php artisan queue:listen --queue=scans,compliance,default --tries=3 --timeout=120`. Redis is the queue driver (predis client).
-- **Key jobs**: `ProcessScanResultJob` (processes agent scan data), `GenerateComplianceReportJob` (runs compliance checks).
-- **Services**: `SoftwareFilterService` (filters/normalizes discovered software names), `SoftwareCatalogService` (manages the master software catalog).
-- **License key encryption**: `LicenseInventory.license_key` uses Laravel's `encrypted` cast. Never change encryption logic in the model. The field is in `$hidden` and exposed only via the `masked_license_key` accessor.
+- **Two auth guards**: `web` (User model, session-based) and `sanctum` (Computer model as Authenticatable, token-based for agent API).
+- **Computer is Authenticatable** (`app/Models/Computer.php` extends `Illuminate\Foundation\Auth\User`), using `HasApiTokens` for Sanctum.
+- **Organizational Hierarchy & Multi-tier Scoping**:
+  - Entity hierarchy: `Faculty` -> `Laboratory` -> `Computer` -> `ScanSession` -> `ScanSoftwareResult`.
+  - Data isolation and laboratory-level scoping via `App\Models\Traits\ScopedByLaboratory` and `User::getAccessibleLaboratoryIds()`.
+- **Queue Processing with Laravel Horizon**:
+  - Redis queue driver (`predis` in local/app config, pecl redis in production container).
+  - Horizon worker orchestrator (`php artisan horizon`). Horizon dashboard available at `/horizon` (restricted to `admin` role via `HorizonServiceProvider`).
+  - Dedicated queue priorities: `scans`, `compliance`, `default`.
+- **Key jobs**:
+  - `ProcessScanResultJob` (processes agent scan payload, diffs software changes, updates computer and scan metadata).
+  - `GenerateComplianceReportJob` (evaluates software installations against licenses, whitelist, and blocked rules).
+- **Key services**:
+  - `LicenseComplianceService`: centralized compliance calculation, multi-level faculty/lab quota tracking, entitlement vs installed calculation.
+  - `SoftwareChangeDetectionService`: detects software state changes between scan sessions (`added`, `removed`, `changed`, `returned`).
+  - `SoftwareFilterService`: filters OS updates and noise, normalizes raw software names.
+  - `SoftwareCatalogService`: manages master software catalog and categorization.
+- **License key encryption & auditing**:
+  - `LicenseInventory.license_key` uses Laravel's `encrypted` cast. Never decrypted in views; exposed only via `masked_license_key` accessor.
+  - Decryption endpoint (`POST /licenses/{license}/key`) is throttled (10 req/min) and audit-logged.
+- **Activity Logging & Backups**:
+  - `spatie/laravel-activitylog`: tracks entity mutations, user accounts, password changes, and license key reveals.
+  - `spatie/laravel-backup`: automated database and storage file backups.
 
 ## Roles & Permissions (spatie/laravel-permission)
 
-- `admin` -- full access, all mutations
-- `pimpinan` -- read-only (dashboard, reports, view computers/licenses/compliance)
-- Routes enforce roles via `role:admin|pimpinan` and `role:admin` middleware in `routes/web.php`
+- `admin` -- full system access: user accounts, faculties, laboratories, licenses & allocations, compliance scans, activity logs, Horizon.
+- `pimpinan` -- read-only executive view across all faculties: executive dashboard, license needs reports, computer/software/license inventory, compliance status.
+- `kepala_lab` -- laboratory coordinator scoped to assigned laboratory/faculty: review/approve/reject laboratory compliance reports, view lab computer inventory & software changes, download lab agent scanner.
+- `staff_lab` -- laboratory operator scoped to assigned laboratory/faculty: view lab computer inventory, download lab agent scanner.
+- Routes enforce roles via `role:admin|pimpinan|kepala_lab|staff_lab`, `role:admin|pimpinan|kepala_lab`, `role:admin|pimpinan`, `role:admin|kepala_lab`, and `role:admin` middleware in `routes/web.php`.
 
 ## Custom Config Files
 
 - `config/compliance.php` -- blocked software list (piracy tools like KMSPico, uTorrent, etc.)
 - `config/software_whitelist.php` -- freeware/open-source auto-approval keywords with category mapping
+- `config/horizon.php` -- Laravel Horizon supervisors, balancing strategies, and queue configuration
+- `config/backup.php` -- Spatie backup configuration (database dump and file backup)
 
 ## Testing
 
-- Framework: **Pest** (not PHPUnit directly)
-- Tests use SQLite `:memory:` (configured in `phpunit.xml`), no Redis/MySQL needed
-- `RefreshDatabase` is commented out in `tests/Pest.php`; individual feature tests handle their own DB setup
-- Feature tests cover: agent auth, scan processing, compliance report generation, RBAC, license key encryption, account management, activity logs
+- Framework: **Pest** (with underlying PHPUnit 11)
+- Tests run on SQLite `:memory:` (configured in `phpunit.xml`), no external Redis/MySQL required
+- `RefreshDatabase` is configured in individual feature tests or test traits
+- Feature tests cover:
+  - Role-based Golden Paths (`AdminGoldenPathTest`, `PimpinanGoldenPathTest`, `KepalaLabGoldenPathTest`, `StaffLabGoldenPathTest`)
+  - Faculty & Laboratory scoping (`ScopedByLaboratoryTest`, `MultiLabScopeTest`)
+  - License calculations & allocation (`LicenseCalculationAccuracyTest`, `LicenseAllocationTest`)
+  - Software change detection & periodic scanning
+  - Report submission and approval workflows (`ReportApprovalTest`, `ReportSubmissionTest`)
+  - Agent authentication, registration, scan payload processing
+  - License key encryption & Activity Log auditing
+- End-to-End: **Playwright** (`npm run test:e2e`) covering critical user flows for all 4 roles
 - CI runs on PHP 8.4 + Node 20 (`.github/workflows/deploy.yml`)
 
 ## Environment Quirks
 
-- `AGENT_REGISTRATION_KEY` and `DEFAULT_USER_PASSWORD` are env vars used by seeders/agent registration -- not standard Laravel vars
+- `AGENT_REGISTRATION_KEY` -- shared secret key required by client scanner agents to register a computer
+- `DEFAULT_USER_PASSWORD` -- seed default user password (default: `ManifestUSN_2026!`)
 - Default timezone is `Asia/Makassar` (WITA, UTC+8), locale is `id` (Indonesian)
-- `REDIS_CLIENT=predis` (not phpredis extension)
-- `QUEUE_CONNECTION=redis` in production, `sync` in tests
-- Docker setup uses MySQL 8.0 + Redis 7; the `app` service is PHP-FPM behind Nginx
+- `REDIS_CLIENT=predis` (in Laravel `.env`), `QUEUE_CONNECTION=redis`, `CACHE_STORE=redis`
+- Docker setup: Multi-stage build (`php:8.4-fpm-alpine`, Node 20, Composer 2.7), Nginx web server (host port `8080:80` in `docker-compose.yml`, `127.0.0.1:8080` behind host reverse proxy in `docker-compose.prod.yml`), MySQL 8.0, Redis 7, Horizon worker container, and cron scheduler container.
 
 ## API Endpoints (routes/api.php)
 
-- `POST /api/agent/register` -- public, throttled 5/min, registers a Computer and returns Sanctum token
-- `POST /api/scan-result` -- sanctum-authed, receives software scan payload
-- `GET /api/agent/scan-command` -- sanctum-authed, agent polls for scan requests
+- `GET /api/ping` -- public health-check endpoint
+- `POST /api/agent/register` -- public, throttled 5/min, registers Computer (with `laboratory_id`) and returns Sanctum token
+- `POST /api/scan-result` -- sanctum-authed, throttled 60/min, receives software scan payload (`ScanSoftwareResult`, OS metadata)
+- `GET /api/agent/scan-command` -- sanctum-authed, throttled 60/min, agent polls for scan requests
 
 ## Directory Guide
 
-- `app/Http/Controllers/Api/` -- agent-facing API controllers
-- `app/Http/Controllers/` -- web admin panel controllers
-- `app/Http/Requests/` -- form request validation (Store/Update for License, Computer, Account, Software)
+- `app/Http/Controllers/Api/` -- agent-facing API controllers (`AgentRegisterController`, `ScanController`, `AgentCommandController`)
+- `app/Http/Controllers/` -- web admin & lab portal controllers (Faculties, Laboratories, LicenseAllocations, Reports, Approvals, Submissions, Monitoring, etc.)
+- `app/Http/Requests/` -- form request validation classes
+- `app/Models/Traits/` -- `ScopedByLaboratory` multi-tenant scoping trait
+- `app/Services/` -- `LicenseComplianceService`, `SoftwareChangeDetectionService`, `SoftwareCatalogService`, `SoftwareFilterService`
 - `app/Observers/` -- model observers for Computer, LicenseInventory, SoftwareCatalog
-- `app/Exports/` -- Excel/PDF export classes (maatwebsite/excel, barryvdh/laravel-dompdf)
-- `script/agent/` -- PowerShell scanner scripts deployed to client machines (not part of the Laravel app)
+- `app/Exports/` -- Excel/PDF export classes (LicenseNeedsExport, SoftwareChangesExport, MonitoringRecapExport, KepatuhanExport, etc.)
+- `e2e/` -- Playwright end-to-end tests for all roles (`admin`, `pimpinan`, `kepala_lab`, `staff_lab`)
+- `script/agent/` -- PowerShell scanner scripts deployed to client machines (`scanner.ps1`, `setup_tasks.ps1`, `config.example.json`)
+- `.docker/` -- Docker entrypoint, Nginx configurations, PHP production INI
 - `lang/id/` -- Indonesian translations
-- `prompt/` -- reference prompts and data files (not application code)
+- `prompt/` -- reference prompts and planning documents (not application code)
 
 ## Conventions
 
-- Commit messages follow conventional commits: `feat:`, `fix:`, etc.
+- Commit messages follow conventional commits: `feat:`, `fix:`, `docs:`, `test:`, etc.
 - Indonesian used in UI labels, seeder descriptions, and log messages. Code (variables, classes, comments in logic) is in English.
 - Feature branches named `feature/FeatureName`, PRs target `main`.
-- Deployment: push to `main` triggers CI test then SSH deploy to VPS (`docker compose up -d --build`).
+- Deployment: push to `main` triggers GitHub Actions CI (linting, tests, Docker build & push to GHCR) followed by automated SSH deploy to VPS.
 
 ===
 

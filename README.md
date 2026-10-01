@@ -1,226 +1,329 @@
 # Sistem Manifest (USN Kolaka)
 
-Sistem Informasi Manifest Lisensi Software untuk mengelola aset IT dan mencegah pelanggaran hak cipta perangkat lunak.
+Sistem Informasi Manifest Lisensi Software & Manajemen Aset IT Laboratorium Universitas Sembilanbelas November (USN) Kolaka. Sistem ini dirancang untuk mendata aset komputer, memetakan lisensi perangkat lunak resmi, memantau perubahan instalasi software secara periodik, dan mengaudit kepatuhan legalitas software di seluruh fakultas dan laboratorium.
 
-![Build Status](https://img.shields.io/github/actions/workflow/status/Febrian1202/sistem-manifest-backend/tests.yml?branch=main)
+![Build Status](https://img.shields.io/github/actions/workflow/status/Febrian1202/sistem-manifest-backend/deploy.yml?branch=main)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Version](https://img.shields.io/badge/version-1.0.0-green)
+![PHP](https://img.shields.io/badge/PHP-8.2%2B%20%2F%208.4-777BB4?logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?logo=laravel&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?logo=tailwindcss&logoColor=white)
 
 ---
 
-## 📸 Demo
+## 📸 Demo & Tangkapan Layar
 
 > _(Placeholder: Tambahkan screenshot atau GIF dashboard aplikasi di sini)_
 > `![Dashboard Preview](/docs/images/dashboard-preview.png)`
 
+---
+
 ## ✨ Fitur Utama
 
-- **Role-Based Access Control (RBAC):** Pemisahan hak akses antara Administrator dan Pimpinan.
-- **Manajemen Aset IT:** Pendataan komputer dan perangkat lunak yang terinstal di setiap unit/fakultas.
-- **Manajemen Lisensi:** Pencatatan lisensi software resmi untuk memantau legalitas penggunaan.
-- **Audit Kepatuhan (Compliance):** Deteksi otomatis perangkat lunak tanpa lisensi atau bajakan.
-- **REST API Terintegrasi:** Endpoint khusus untuk agen (client) di setiap komputer agar dapat mengirim hasil _scan_ secara otomatis.
-- **Laporan & Ekspor:** Menghasilkan laporan kepatuhan dalam format PDF dan Excel.
-
-## 🛠️ Prerequisites (Prasyarat)
-
-Sebelum menjalankan proyek ini, pastikan sistem Anda telah menginstal perangkat lunak berikut:
-
-- **PHP** >= 8.2
-- **Composer** (Dependency Manager untuk PHP)
-- **Node.js & NPM** (Untuk kompilasi aset _frontend_)
-- **Database** (MySQL atau SQLite)
-- **Git**
-
-## 🚀 Instalasi (Docker / Direkomendasikan)
-
-Ikuti langkah-langkah berikut untuk menjalankan proyek di lingkungan lokal menggunakan Docker secara otomatis:
-
-1. **Clone repositori:**
-
-    ```bash
-    git clone https://github.com/Febrian1202/sistem-manifest-backend.git
-    cd sistem-manifest-backend
-    ```
-
-2. **Salin file konfigurasi _environment_:**
-
-    ```bash
-    cp .env.example .env
-    ```
-
-3. **Build dan Jalankan Container Docker:**
-
-    ```bash
-    docker compose up -d --build
-    ```
-
-4. **Generate Application Key:**
-
-    > **Catatan Penting:** Karena adanya batasan permission mount (seperti SELinux) dari file lokal ke dalam container, sangat disarankan untuk me-generate *key* menggunakan flag `--show` lalu menambahkannya ke `.env` secara manual:
-
-    ```bash
-    docker compose exec app php artisan key:generate --show
-    ```
-    *Salin teks output `base64:...` tersebut, buka file `.env`, lalu tempelkan pada bagian `APP_KEY=...`*
-
-5. **Jalankan Migrasi dan Seeder (untuk membuat tabel dan data awal):**
-
-    ```bash
-    docker compose exec app php artisan migrate --seed
-    ```
-
-6. **Akses Aplikasi:**
-    Aplikasi sekarang berjalan dan dapat diakses melalui `http://localhost`. Worker dan cron-job sudah berjalan secara otomatis di belakang layar.
+- **Role-Based Access Control (4 Peran Pengguna):**
+  - **Administrator:** Akses penuh konfigurasi sistem, manajemen akun pengguna, master fakultas & laboratorium, alokasi lisensi, audit kepatuhan, activity log, dan dashboard queue Laravel Horizon.
+  - **Pimpinan (Rektorat/Dekanat):** Akses *read-only* tingkat universitas/fakultas untuk dashboard eksekutif, laporan kebutuhan lisensi (*procurement planning*), inventaris komputer, dan rekap kepatuhan.
+  - **Kepala Laboratorium (PJ Lab):** Akses terisolasi (*scoped*) sesuai laboratorium yang ditugaskan untuk mereview, menyetujui (*approve*), atau menolak (*reject*) laporan audit berkala, memantau riwayat perubahan software lab, serta mengunduh agent scanner.
+  - **Staff Laboratorium (Operator):** Akses terisolasi (*scoped*) untuk memantau inventaris komputer laboratorium dan mengunduh paket agent scanner terkonfigurasi.
+- **Hierarki Multi-tier & Data Scoping:** Struktur bertingkat **Fakultas &rarr; Laboratorium &rarr; Komputer &rarr; Sesi Pemindaian**, dengan isolasi data otomatis berbasis trait `ScopedByLaboratory`.
+- **Manajemen Lisensi & Alokasi Kuota:** Pencatatan inventaris lisensi software resmi (OEM, Retail, Volume, Subscription), enkripsi aman *license key* dengan auditing reveal log, dan alokasi kuota lisensi bertingkat per fakultas/laboratorium.
+- **Audit Kepatuhan & Engine Deteksi:**
+  - Sentralisasi kepatuhan melalui `LicenseComplianceService` untuk menghitung kapasitas *entitlement* vs *installed*.
+  - Deteksi otomatis software berlisensi resmi, *freeware/open-source* terverifikasi (`config/software_whitelist.php`), dan software ilegal/terlarang (`config/compliance.php`).
+- **Deteksi Perubahan Software (Software Change Detection):** Pelacakan komparatif otomatis status software antar sesi pemindaian: *added* (baru diinstal), *removed* (dihapus), *changed* (perubahan versi), dan *returned* (terinstal kembali).
+- **Alur Kerja Persetujuan Laporan (Approval Workflow):** Admin dapat membuat dan mendistribusikan laporan kepatuhan ke Kepala Lab. Kepala Lab dapat memeriksa rincian, melihat pratinjau PDF, dan memberikan persetujuan atau catatan penolakan.
+- **Dashboard Visual & Grafik Interaktif:** Visualisasi data real-time menggunakan ApexCharts dan Chart.js (status kepatuhan, tren audit, distribusi sistem operasi, dan top software terinstal) serta *cascading filter* (Fakultas &rarr; Laboratorium).
+- **Agent Scanner Windows Otomatis:** Script scanner PowerShell (`scanner.ps1`) ringan yang dapat diunduh langsung dari aplikasi dalam bentuk ZIP terkonfigurasi per lab, terintegrasi Windows Scheduled Task (`setup_tasks.ps1`).
+- **Background Queue & Orkestrasi Horizon:** Pemrosesan asinkron untuk penerimaan data scan dan kalkulasi audit beban tinggi menggunakan Redis dan Laravel Horizon dashboard (`/horizon`).
+- **Keamanan, Audit Trail & Backup:**
+  - Enkripsi native untuk kunci lisensi (`encrypted` Eloquent cast) dengan throttling ketat.
+  - Pencatatan seluruh aktivitas mutasi sistem via `spatie/laravel-activitylog`.
+  - Cadangan otomatis database dan berkas media via `spatie/laravel-backup`.
 
 ---
 
-## 🚀 Instalasi Manual (Tanpa Docker)
+## 🛠️ Prerequisites (Prasyarat)
 
-Jika Anda tidak menggunakan Docker, ikuti langkah berikut:
+Sebelum menjalankan proyek ini, pastikan sistem Anda memenuhi persyaratan berikut:
+
+- **PHP** >= 8.2 (Direkomendasikan PHP 8.4)
+- **Composer** >= 2.7
+- **Node.js** >= 20.x & **NPM**
+- **Database:** MySQL 8.0 (Production) atau SQLite (Testing/Development)
+- **Redis Server** >= 7.0 (untuk Queue Worker & Caching)
+- **Git**
+- **Docker & Docker Compose** (Opsional, untuk deployment berbasis kontainer)
+
+---
+
+## 🚀 Panduan Instalasi Docker (Direkomendasikan)
+
+Proyek ini telah dilengkapi arsitektur kontainer multi-stage (PHP 8.4-FPM Alpine, Nginx, MySQL 8, Redis 7, Horizon Worker, dan Cron Scheduler):
 
 1. **Clone repositori:**
 
-    ```bash
-    git clone https://github.com/Febrian1202/sistem-manifest-backend.git
-    cd sistem-manifest-backend
-    ```
+   ```bash
+   git clone https://github.com/Febrian1202/sistem-manifest-backend.git
+   cd sistem-manifest-backend
+   ```
+
+2. **Salin file konfigurasi environment:**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Build dan jalankan seluruh container:**
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+4. **Generate Application Key:**
+
+   ```bash
+   docker compose exec app php artisan key:generate --show
+   ```
+
+   *Salin teks output `base64:...` dan pastikan tersimpan pada variabel `APP_KEY` di file `.env`.*
+
+5. **Jalankan Migrasi dan Seeder Awal:**
+
+   ```bash
+   docker compose exec app php artisan migrate --seed
+   ```
+
+6. **Akses Aplikasi:**
+   Buka peramban di `http://localhost:8080`.
+   - Web App: `http://localhost:8080`
+   - Horizon Dashboard (Admin only): `http://localhost:8080/horizon`
+
+---
+
+## 💻 Panduan Instalasi Manual (Lokal / Development)
+
+Jika ingin menjalankan secara langsung pada mesin lokal tanpa Docker:
+
+1. **Clone repositori dan masuk ke direktori:**
+
+   ```bash
+   git clone https://github.com/Febrian1202/sistem-manifest-backend.git
+   cd sistem-manifest-backend
+   ```
 
 2. **Instal dependensi PHP:**
 
-    ```bash
-    composer install
-    ```
+   ```bash
+   composer install
+   ```
 
-3. **Salin file konfigurasi _environment_:**
+3. **Salin konfigurasi environment:**
 
-    ```bash
-    cp .env.example .env
-    ```
+   ```bash
+   cp .env.example .env
+   ```
 
-4. **Konfigurasi Database:**
-   Buka file `.env` dan sesuaikan pengaturan koneksi database (misalnya menggunakan SQLite untuk kemudahan lokal atau MySQL).
+4. **Generate Application Key:**
 
-    ```env
-    DB_CONNECTION=sqlite
-    # Atau jika menggunakan MySQL:
-    # DB_CONNECTION=mysql
-    # DB_HOST=127.0.0.1
-    # DB_PORT=3306
-    # DB_DATABASE=sistem_manifest
-    # DB_USERNAME=root
-    # DB_PASSWORD=
-    ```
+   ```bash
+   php artisan key:generate
+   ```
 
-5. **Generate Application Key:**
+5. **Konfigurasi Database & Redis di `.env`:**
 
-    ```bash
-    php artisan key:generate
-    ```
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=db_manifest
+   DB_USERNAME=root
+   DB_PASSWORD=
 
-6. **Jalankan Migrasi dan Seeder (untuk membuat tabel dan data awal):**
+   QUEUE_CONNECTION=redis
+   CACHE_STORE=redis
+   REDIS_CLIENT=predis
+   REDIS_HOST=127.0.0.1
+   REDIS_PORT=6379
+   ```
 
-    ```bash
-    php artisan migrate --seed
-    ```
+6. **Jalankan Migrasi Database dan Seeder:**
 
-7. **Instal dependensi Node.js & bangun aset UI (Tailwind CSS):**
+   ```bash
+   php artisan migrate --seed
+   ```
 
-    ```bash
-    npm install
-    npm run build
-    ```
+7. **Instal dependensi Node.js & bangun aset frontend:**
 
-8. **Jalankan _Development Server_:**
-    ```bash
-    php artisan serve
-    ```
-    Aplikasi sekarang dapat diakses melalui `http://localhost:8000`.
+   ```bash
+   npm install
+   npm run build
+   ```
 
-## 💻 Penggunaan Dasar
+8. **Jalankan Lingkungan Development:**
+   Gunakan perintah all-in-one yang menjalankan server, queue worker, tail log, dan Vite secara bersamaan:
 
-**Akses Panel Admin:**
+   ```bash
+   composer dev
+   ```
 
-1. Buka `http://localhost:8000/login`
-2. Gunakan kredensial _default_ (biasanya diatur pada seeder):
-    - **Email:** `admin@usn.ac.id` (atau sesuai konfigurasi seeder)
-    - **Password:** `password`
+   *Atau jika dijalankan di terminal terpisah:*
+   ```bash
+   php artisan serve                       # Terminal 1: Web server (http://localhost:8000)
+   php artisan horizon                     # Terminal 2: Queue worker
+   npm run dev                             # Terminal 3: Vite hot-reload
+   ```
 
-**Menambahkan Lisensi Baru:**
+---
 
-1. Login sebagai Admin.
-2. Navigasi ke menu **Lisensi & Audit > Kelola Lisensi**.
-3. Klik tombol **Tambah Lisensi** dan isi formulir yang disediakan.
+## 🔑 Akun Default Seeder
 
-## 📡 API Reference
+Setelah menjalankan `php artisan migrate --seed`, akun berikut siap digunakan. Password default adalah `ManifestUSN_2026!` (dapat dikonfigurasi melalui `DEFAULT_USER_PASSWORD` di `.env`):
 
-Aplikasi ini menyediakan REST API berbasis Laravel Sanctum untuk menerima data _scan_ dari perangkat agen (komputer klien).
+| Peran (Role) | Email | Password | Cakupan Akses |
+|---|---|---|---|
+| **Administrator** | `admin@usn.ac.id` | `ManifestUSN_2026!` | Penuh ke seluruh modul & Horizon |
+| **Pimpinan** | `pimpinan@usn.ac.id` | `ManifestUSN_2026!` | Read-only eksekutif seluruh fakultas |
+| **Kepala Laboratorium** | `kepalalab@usn.ac.id` | `ManifestUSN_2026!` | Scoped ke Laboratorium Komputer 1 |
+| **Staff Laboratorium** | `staff.lab@usn.ac.id` | `ManifestUSN_2026!` | Scoped ke Laboratorium Komputer 1 |
 
-### 1. Registrasi Agen (Komputer Baru)
+---
 
+## 📡 API Reference (Agent Scanner)
+
+REST API dilindungi oleh Laravel Sanctum dengan model `Computer` sebagai entitas terautentikasi:
+
+### 1. Health Check
+- **Endpoint:** `GET /api/ping`
+- **Auth:** Public
+- **Response:** `{"status": "success"}`
+
+### 2. Registrasi Komputer Klien (Agent Register)
 - **Endpoint:** `POST /api/agent/register`
-- **Deskripsi:** Mendaftarkan komputer baru ke dalam sistem dan mendapatkan _Bearer Token_.
-- **Payload:** `{"mac_address": "00:1A:2B:3C:4D", "hostname": "PC-LAB-01"}`
+- **Auth:** Public (Rate limit: 5 req/menit)
+- **Header:** `Content-Type: application/json`
+- **Payload:**
+  ```json
+  {
+    "registration_key": "SECRET_REGISTRATION_KEY",
+    "laboratory_id": 1,
+    "hostname": "LABKOM1-PC01",
+    "mac_address": "00:1A:2B:3C:4D:5E",
+    "ip_address": "192.168.10.15",
+    "os_name": "Windows 11 Pro 64-bit"
+  }
+  ```
+- **Response:** Mengembalikan token akses Sanctum (`token`) untuk request berikutnya.
 
-### 2. Mengirim Hasil Scan Software
-
+### 3. Pengiriman Hasil Pemindaian Software (Scan Result)
 - **Endpoint:** `POST /api/scan-result`
-- **Auth:** Bearer Token (Sanctum)
-- **Deskripsi:** Mengirimkan daftar _software_ yang terinstal pada komputer agen.
-- **Payload:** `{"softwares": [{"name": "Microsoft Office", "version": "2019"}]}`
+- **Auth:** Bearer Token (Sanctum, Rate limit: 60 req/menit)
+- **Payload:**
+  ```json
+  {
+    "scan_session_id": "SCAN-20261001-0001",
+    "os_name": "Windows 11 Pro",
+    "os_version": "23H2",
+    "scan_duration_seconds": 18,
+    "softwares": [
+      {
+        "name": "Visual Studio Code",
+        "version": "1.92.0",
+        "publisher": "Microsoft Corporation",
+        "install_date": "2026-02-15"
+      }
+    ]
+  }
+  ```
 
-### 3. Memeriksa Perintah Scan
-
+### 4. Polling Perintah Pemindaian Ulang (Scan Command)
 - **Endpoint:** `GET /api/agent/scan-command`
-- **Auth:** Bearer Token (Sanctum)
-- **Deskripsi:** Agen melakukan _polling_ secara berkala untuk mengecek apakah server memerintahkan pemindaian ulang.
+- **Auth:** Bearer Token (Sanctum, Rate limit: 60 req/menit)
+- **Deskripsi:** Komputer klien melakukan polling untuk mendeteksi apakah administrator meminta pemindaian manual.
+
+---
+
+## 🧪 Pengujian (Automated Testing)
+
+Proyek ini menggunakan **Pest** (PHPUnit 11) dan **Playwright** untuk pengujian menyeluruh:
+
+```bash
+# Jalankan seluruh unit & feature test suite (SQLite in-memory, 350+ tests)
+composer test
+
+# Jalankan pengujian spesifik
+php artisan test --filter=AdminGoldenPathTest
+php artisan test --filter=LicenseCalculationAccuracyTest
+
+# Jalankan End-to-End (E2E) testing dengan Playwright (semua 4 peran)
+npm run test:e2e
+```
+
+---
 
 ## 📂 Struktur Proyek
 
 ```text
 sistem-manifest-backend/
 ├── app/
-│   ├── Http/Controllers/    # Logika bisnis (Web & API Controllers)
-│   ├── Models/              # Representasi tabel database (Eloquent)
-│   └── Observers/           # Event listeners untuk model (misal: ComputerObserver)
+│   ├── Console/Commands/        # Custom Artisan Commands (ClearDashboardCache, dll.)
+│   ├── Exports/                 # Export Excel & Sheets (LicenseNeeds, SoftwareChanges, Kepatuhan)
+│   ├── Http/
+│   │   ├── Controllers/         # Web & API Controllers (Admin, Lab, Pimpinan, Scan)
+│   │   ├── Middleware/          # Role check, Force HTTPS, Sanitization
+│   │   └── Requests/            # Form Request Validation
+│   ├── Jobs/                    # Background Jobs (ProcessScanResult, GenerateComplianceReport)
+│   ├── Models/                  # Eloquent Models (Computer, LicenseInventory, Faculty, Lab)
+│   │   └── Traits/              # ScopedByLaboratory scoping trait
+│   ├── Observers/               # Model Observers (Computer, LicenseInventory, SoftwareCatalog)
+│   ├── Providers/               # Service Providers (HorizonServiceProvider, AppServiceProvider)
+│   ├── Services/                # Business Services (LicenseCompliance, SoftwareChangeDetection, dll.)
+│   └── View/Components/         # Reusable Blade UI & Chart Components
+├── config/                      # Konfigurasi aplikasi (compliance, software_whitelist, horizon, backup)
 ├── database/
-│   ├── migrations/          # Skema database
-│   └── seeders/             # Data dummy/awal (Roles, Admin User)
-├── lang/id/                 # Lokalisasi/Terjemahan Bahasa Indonesia
+│   ├── factories/               # Model factories untuk testing
+│   ├── migrations/              # Database schema migrations
+│   └── seeders/                 # Role, permission, master data, dan sample user seeders
+├── e2e/                         # Playwright End-to-End Test Suite (Golden paths per role)
+├── lang/id/                     # Lokalisasi Bahasa Indonesia
 ├── resources/
-│   ├── css/ & js/           # Aset statis & Tailwind entry
-│   └── views/               # File antarmuka pengguna (Blade Templates)
-│       └── components/      # Reusable Blade UI Components
+│   ├── css/ & js/               # Tailwind CSS v4, Alpine.js, ApexCharts, Chart.js
+│   └── views/                   # Blade templates (Dashboard, Lab, Reports, Monitoring)
 ├── routes/
-│   ├── api.php              # Definisi route untuk Agent API
-│   └── web.php              # Definisi route untuk Admin Panel
-└── tests/                   # Automated Testing (Pest/PHPUnit)
-```
-## ⚙️ Deployment & Server Configuration
-
-Untuk menjalankan aplikasi di lingkungan production dengan optimal, Anda perlu melakukan konfigurasi tambahan pada sisi server untuk mengelola background queue worker dan task scheduling.
-
-Templat konfigurasi server telah disediakan di dalam folder `.server/`:
-
-*   **Queue Supervisor:** Memastikan queue worker tetap berjalan secara nonstop. File konfigurasinya dapat ditemukan di [.server/supervisor/manifest-worker.conf](.server/supervisor/manifest-worker.conf).
-*   **Task Scheduling (Cron Job):** Memicu command scheduler Laravel setiap menit. Panduan setup cron job dapat ditemukan di [.server/cron/schedule-setup.md](.server/cron/schedule-setup.md).
-
-## 🤝 Contributing
-
-Bagi _developer_ yang ingin berkontribusi:
-
-1. _Fork_ repositori ini.
-2. Buat _branch_ fitur baru (`git checkout -b feature/FiturBaru`).
-3. Lakukan _commit_ pada perubahan Anda (`git commit -m 'feat: menambahkan FiturBaru'`).
-4. _Push_ ke _branch_ tersebut (`git push origin feature/FiturBaru`).
-5. Buat _Pull Request_.
-
-Pastikan kode Anda lolos _testing_ standar sebelum membuat Pull Request:
-
-```bash
-php artisan test
+│   ├── api.php                  # Endpoint REST API agent scanner
+│   ├── console.php              # Scheduled tasks & console routes
+│   └── web.php                  # Web portal routes & role middleware
+├── script/agent/                # Script PowerShell Agent Scanner (scanner.ps1, setup_tasks.ps1)
+├── .docker/                     # Nginx configurations, PHP INI, dan entrypoint container
+├── docker-compose.yml           # Definisi service Docker untuk development/staging
+├── docker-compose.prod.yml      # Definisi service Docker production (reverse proxy bound)
+└── tests/                       # Pest & PHPUnit Feature & Unit tests
 ```
 
-## 📄 License
+---
 
-Proyek ini dirilis di bawah [MIT License](https://opensource.org/licenses/MIT).
+## ⚙️ Deployment & Continuous Integration
+
+- **CI/CD Workflow (`.github/workflows/deploy.yml`):**
+  1. Menjalankan linter code style (`pint`).
+  2. Menjalankan test suite otomatis (`composer test`).
+  3. Membangun Docker image multi-stage dan mem-push ke GitHub Container Registry (GHCR).
+  4. Melakukan deployment otomatis ke server VPS via SSH dengan `docker compose -f docker-compose.prod.yml up -d`.
+- **Produksi Queue & Scheduler:** Dikelola otomatis di dalam kontainer `worker` (`php artisan horizon`) dan `cron` (`php artisan schedule:run`).
+
+---
+
+## 🤝 Kontribusi
+
+1. Fork repositori ini.
+2. Buat branch fitur baru (`git checkout -b feature/NamaFitur`).
+3. Pastikan format kode rapi: `./vendor/bin/pint`.
+4. Pastikan semua pengujian lolos: `composer test`.
+5. Commit perubahan (`git commit -m 'feat: deskripsi perubahan'`).
+6. Push ke branch Anda (`git push origin feature/NamaFitur`).
+7. Buat Pull Request ke branch `main`.
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dilisensikan di bawah [MIT License](LICENSE). Hak Cipta &copy; 2026 Universitas Sembilanbelas November Kolaka.
+

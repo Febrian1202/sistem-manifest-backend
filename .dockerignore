@@ -36,5 +36,11 @@ phpunit.xml
 markdown
 README.md
 GEMINI.md
+AGENTS.md
+CLAUDE.md
 .server
+docs
+prompt
+script
+
 
