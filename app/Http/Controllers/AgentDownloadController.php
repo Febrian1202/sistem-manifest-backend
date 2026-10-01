@@ -12,7 +12,12 @@ class AgentDownloadController extends Controller
 {
     public function showDownloadPage(): View
     {
-        $laboratories = Laboratory::orderBy('name')->get();
+        $user = auth()->user();
+        $accessibleLabIds = $user->getAccessibleLaboratoryIds();
+
+        $laboratories = Laboratory::whereIn('id', $accessibleLabIds)
+            ->orderBy('name')
+            ->get();
 
         return view('pages.admin.agent-download', compact('laboratories'));
     }
@@ -22,6 +27,13 @@ class AgentDownloadController extends Controller
         $request->validate([
             'laboratory_id' => 'required|exists:laboratories,id',
         ]);
+
+        $user = auth()->user();
+        $accessibleLabIds = $user->getAccessibleLaboratoryIds();
+
+        if (! in_array((int) $request->laboratory_id, array_map('intval', $accessibleLabIds))) {
+            abort(403, 'Anda tidak memiliki hak untuk mengunduh scanner untuk laboratorium ini.');
+        }
 
         $lab = Laboratory::findOrFail($request->laboratory_id);
 

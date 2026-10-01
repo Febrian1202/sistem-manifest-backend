@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreAccountRequest extends FormRequest
 {
@@ -26,8 +27,18 @@ class StoreAccountRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'string', 'in:admin,kepala_lab,pimpinan'],
-            'laboratory_id' => ['nullable', 'required_if:role,kepala_lab', 'exists:laboratories,id'],
+            'role' => ['required', 'string', 'in:admin,kepala_lab,pimpinan,staff_lab'],
+            'laboratory_id' => [
+                'nullable',
+                'required_if:role,kepala_lab',
+                Rule::requiredIf(fn () => $this->input('role') === 'staff_lab' && ! $this->filled('faculty_id')),
+                'exists:laboratories,id',
+            ],
+            'faculty_id' => [
+                'nullable',
+                Rule::requiredIf(fn () => $this->input('role') === 'staff_lab' && ! $this->filled('laboratory_id')),
+                'exists:faculties,id',
+            ],
         ];
     }
 
@@ -48,8 +59,11 @@ class StoreAccountRequest extends FormRequest
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
             'role.required' => 'Role wajib dipilih.',
             'role.in' => 'Role tidak valid.',
+            'laboratory_id.required' => 'Laboratorium atau Fakultas wajib dipilih untuk role Staff Lab.',
             'laboratory_id.required_if' => 'Laboratorium wajib dipilih untuk role Kepala Lab.',
             'laboratory_id.exists' => 'Laboratorium yang dipilih tidak valid.',
+            'faculty_id.required' => 'Fakultas atau Laboratorium wajib dipilih untuk role Staff Lab.',
+            'faculty_id.exists' => 'Fakultas yang dipilih tidak valid.',
         ];
     }
 }

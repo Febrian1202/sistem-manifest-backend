@@ -27,7 +27,7 @@
                         </x-ui.sheet.description>
                     </x-ui.sheet.header>
 
-                    <form action="{{ route('accounts.store') }}" method="POST" class="mt-6 space-y-4" x-data="{ selectedRole: '{{ old('role', 'admin') }}' }">
+                    <form action="{{ route('accounts.store') }}" method="POST" class="mt-6 space-y-4" x-data="{ selectedRole: '{{ old('role', 'admin') }}', staffScope: '{{ old('faculty_id') ? 'faculty' : 'laboratory' }}' }">
                         @csrf
 
                         <div class="space-y-1.5">
@@ -65,13 +65,14 @@
                             <select id="new_role" name="role" x-model="selectedRole" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                                 <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
                                 <option value="kepala_lab" {{ old('role') === 'kepala_lab' ? 'selected' : '' }}>Kepala Lab / PJ Lab</option>
+                                <option value="staff_lab" {{ old('role') === 'staff_lab' ? 'selected' : '' }}>Staff Lab</option>
                                 <option value="pimpinan" {{ old('role') === 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
                             </select>
                         </div>
 
                         <div class="space-y-1.5" x-show="selectedRole === 'kepala_lab'" x-cloak>
                             <x-form.label for="new_laboratory_id">Laboratorium <span class="text-destructive">*</span></x-form.label>
-                            <select id="new_laboratory_id" name="laboratory_id" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                            <select id="new_laboratory_id" name="laboratory_id" :disabled="selectedRole !== 'kepala_lab'" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                                 <option value="">-- Pilih Laboratorium --</option>
                                 @foreach($laboratories as $lab)
                                     <option value="{{ $lab->id }}" {{ old('laboratory_id') == $lab->id ? 'selected' : '' }}>
@@ -80,6 +81,49 @@
                                 @endforeach
                             </select>
                             <p class="text-[11px] text-muted-foreground">Pilih laboratorium yang akan diampu oleh Kepala Lab.</p>
+                        </div>
+
+                        {{-- Section Penugasan Staff Lab --}}
+                        <div class="space-y-3 p-3 rounded-lg border border-border bg-muted/40" x-show="selectedRole === 'staff_lab'" x-cloak>
+                            <div class="space-y-1">
+                                <label class="text-xs font-semibold text-foreground">Cakupan Penugasan Staff Lab</label>
+                                <div class="flex gap-4 pt-1">
+                                    <label class="flex items-center gap-2 text-xs cursor-pointer">
+                                        <input type="radio" value="laboratory" x-model="staffScope" class="text-primary focus:ring-primary">
+                                        <span>Spesifik Laboratorium</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 text-xs cursor-pointer">
+                                        <input type="radio" value="faculty" x-model="staffScope" class="text-primary focus:ring-primary">
+                                        <span>Seluruh Fakultas</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="space-y-1.5" x-show="staffScope === 'laboratory'">
+                                <x-form.label for="new_staff_laboratory_id">Laboratorium <span class="text-destructive">*</span></x-form.label>
+                                <select id="new_staff_laboratory_id" name="laboratory_id" :disabled="selectedRole !== 'staff_lab' || staffScope !== 'laboratory'" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                    <option value="">-- Pilih Laboratorium --</option>
+                                    @foreach($laboratories as $lab)
+                                        <option value="{{ $lab->id }}" {{ old('laboratory_id') == $lab->id ? 'selected' : '' }}>
+                                            {{ $lab->name }} ({{ $lab->code }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="text-[11px] text-muted-foreground">Staff hanya dapat mengakses komputer dan scanner di lab ini.</p>
+                            </div>
+
+                            <div class="space-y-1.5" x-show="staffScope === 'faculty'">
+                                <x-form.label for="new_staff_faculty_id">Fakultas <span class="text-destructive">*</span></x-form.label>
+                                <select id="new_staff_faculty_id" name="faculty_id" :disabled="selectedRole !== 'staff_lab' || staffScope !== 'faculty'" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                    <option value="">-- Pilih Fakultas --</option>
+                                    @foreach($faculties as $fac)
+                                        <option value="{{ $fac->id }}" {{ old('faculty_id') == $fac->id ? 'selected' : '' }}>
+                                            {{ $fac->name }} ({{ $fac->code }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="text-[11px] text-muted-foreground">Staff dapat mengakses seluruh lab di bawah fakultas ini.</p>
+                            </div>
                         </div>
 
                         <x-ui.sheet.footer>
@@ -149,7 +193,7 @@
         </form>
 
         {{-- Tabel Komponen --}}
-        <x-accounts.table :users="$users" :laboratories="$laboratories" />
+        <x-accounts.table :users="$users" :laboratories="$laboratories" :faculties="$faculties" />
 
         {{-- Pagination --}}
         <div class="mt-4 flex flex-col items-center justify-between gap-4 border-t border-border py-4 sm:flex-row">

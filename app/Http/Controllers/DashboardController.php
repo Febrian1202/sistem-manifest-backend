@@ -22,6 +22,10 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        if ($user->hasRole('staff_lab')) {
+            return redirect()->route('lab.inventory.index');
+        }
+
         if ($user->hasRole('kepala_lab')) {
             return $this->labDashboard($user, $request);
         }

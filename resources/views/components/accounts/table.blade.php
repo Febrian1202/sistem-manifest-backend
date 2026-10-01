@@ -1,4 +1,4 @@
-@props(['users', 'laboratories' => []])
+@props(['users', 'laboratories' => [], 'faculties' => []])
 
 <div class="rounded-md border border-border bg-card shadow-sm">
     <x-ui.table.table>
@@ -8,7 +8,7 @@
                 <x-ui.table.table-head>Nama</x-ui.table.table-head>
                 <x-ui.table.table-head>Email</x-ui.table.table-head>
                 <x-ui.table.table-head>Role</x-ui.table.table-head>
-                <x-ui.table.table-head>Laboratorium</x-ui.table.table-head>
+                <x-ui.table.table-head>Penugasan</x-ui.table.table-head>
                 <x-ui.table.table-head>Tanggal Dibuat</x-ui.table.table-head>
                 <x-ui.table.table-head class="text-right">Aksi</x-ui.table.table-head>
             </x-ui.table.table-row>
@@ -21,12 +21,14 @@
                     $badgeClass = match ($roleName) {
                         'admin' => 'bg-blue-500/10 text-blue-600 border-blue-200',
                         'kepala_lab' => 'bg-purple-500/10 text-purple-600 border-purple-200',
+                        'staff_lab' => 'bg-teal-500/10 text-teal-600 border-teal-200',
                         'pimpinan' => 'bg-green-500/10 text-green-600 border-green-200',
                         default => 'bg-muted text-muted-foreground border-border',
                     };
                     $roleLabel = match ($roleName) {
                         'admin' => 'Admin',
                         'kepala_lab' => 'Kepala Lab',
+                        'staff_lab' => 'Staff Lab',
                         'pimpinan' => 'Pimpinan',
                         default => ucfirst($roleName ?? 'User'),
                     };
@@ -69,13 +71,27 @@
                         </span>
                     </x-ui.table.table-cell>
 
-                    {{-- 5. Laboratorium --}}
+                    {{-- 5. Penugasan / Laboratorium --}}
                     <x-ui.table.table-cell class="text-xs">
                         @if($user->hasRole('kepala_lab'))
                             <span class="inline-flex items-center gap-1.5 font-medium text-foreground">
                                 <i class="fa-solid fa-flask text-[10px] text-purple-600"></i>
                                 {{ $user->laboratory?->name ?? '-' }}
                             </span>
+                        @elseif($user->hasRole('staff_lab'))
+                            @if($user->laboratory)
+                                <span class="inline-flex items-center gap-1.5 font-medium text-foreground">
+                                    <i class="fa-solid fa-desktop text-[10px] text-teal-600"></i>
+                                    Lab: {{ $user->laboratory->name }}
+                                </span>
+                            @elseif($user->faculty)
+                                <span class="inline-flex items-center gap-1.5 font-medium text-foreground">
+                                    <i class="fa-solid fa-graduation-cap text-[10px] text-indigo-600"></i>
+                                    Fakultas: {{ $user->faculty->name }}
+                                </span>
+                            @else
+                                <span class="text-muted-foreground">-</span>
+                            @endif
                         @else
                             <span class="text-muted-foreground">-</span>
                         @endif
@@ -102,11 +118,11 @@
                                     <x-ui.sheet.header>
                                         <x-ui.sheet.title>Edit Akun</x-ui.sheet.title>
                                         <x-ui.sheet.description>
-                                            Perbarui informasi nama, email, role, dan laboratorium akun.
+                                            Perbarui informasi nama, email, role, dan penugasan akun.
                                         </x-ui.sheet.description>
                                     </x-ui.sheet.header>
 
-                                    <form action="{{ route('accounts.update', $user->id) }}" method="POST" class="mt-6 space-y-4" x-data="{ editRole: '{{ old('role', $roleName) }}' }">
+                                    <form action="{{ route('accounts.update', $user->id) }}" method="POST" class="mt-6 space-y-4" x-data="{ editRole: '{{ old('role', $roleName) }}', editStaffScope: '{{ old('faculty_id', $user->faculty_id) ? 'faculty' : 'laboratory' }}' }">
                                         @csrf
                                         @method('PUT')
 
@@ -130,6 +146,7 @@
                                                 <select id="role_{{ $user->id }}" name="role" x-model="editRole" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                                                     <option value="admin" {{ $roleName === 'admin' ? 'selected' : '' }}>Admin</option>
                                                     <option value="kepala_lab" {{ $roleName === 'kepala_lab' ? 'selected' : '' }}>Kepala Lab / PJ Lab</option>
+                                                    <option value="staff_lab" {{ $roleName === 'staff_lab' ? 'selected' : '' }}>Staff Lab</option>
                                                     <option value="pimpinan" {{ $roleName === 'pimpinan' ? 'selected' : '' }}>Pimpinan</option>
                                                 </select>
                                             @endif
@@ -138,7 +155,7 @@
                                         @if($user->id !== auth()->id() || $user->hasRole('kepala_lab'))
                                         <div class="space-y-1.5" x-show="editRole === 'kepala_lab'" x-cloak>
                                             <x-form.label for="laboratory_id_{{ $user->id }}">Laboratorium <span class="text-destructive">*</span></x-form.label>
-                                            <select id="laboratory_id_{{ $user->id }}" name="laboratory_id" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                            <select id="laboratory_id_{{ $user->id }}" name="laboratory_id" :disabled="editRole !== 'kepala_lab'" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                                                 <option value="">-- Pilih Laboratorium --</option>
                                                 @foreach($laboratories as $lab)
                                                     <option value="{{ $lab->id }}" {{ old('laboratory_id', $user->laboratory_id) == $lab->id ? 'selected' : '' }}>
@@ -147,6 +164,51 @@
                                                 @endforeach
                                             </select>
                                             <p class="text-[11px] text-muted-foreground">Pilih laboratorium yang diampu.</p>
+                                        </div>
+                                        @endif
+
+                                        {{-- Penugasan Staff Lab Edit --}}
+                                        @if($user->id !== auth()->id() || $user->hasRole('staff_lab'))
+                                        <div class="space-y-3 p-3 rounded-lg border border-border bg-muted/40" x-show="editRole === 'staff_lab'" x-cloak>
+                                            <div class="space-y-1">
+                                                <label class="text-xs font-semibold text-foreground">Cakupan Penugasan Staff Lab</label>
+                                                <div class="flex gap-4 pt-1">
+                                                    <label class="flex items-center gap-2 text-xs cursor-pointer">
+                                                        <input type="radio" value="laboratory" x-model="editStaffScope" class="text-primary focus:ring-primary">
+                                                        <span>Spesifik Laboratorium</span>
+                                                    </label>
+                                                    <label class="flex items-center gap-2 text-xs cursor-pointer">
+                                                        <input type="radio" value="faculty" x-model="editStaffScope" class="text-primary focus:ring-primary">
+                                                        <span>Seluruh Fakultas</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="space-y-1.5" x-show="editStaffScope === 'laboratory'">
+                                                <x-form.label for="edit_staff_laboratory_id_{{ $user->id }}">Laboratorium <span class="text-destructive">*</span></x-form.label>
+                                                <select id="edit_staff_laboratory_id_{{ $user->id }}" name="laboratory_id" :disabled="editRole !== 'staff_lab' || editStaffScope !== 'laboratory'" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                                    <option value="">-- Pilih Laboratorium --</option>
+                                                    @foreach($laboratories as $lab)
+                                                        <option value="{{ $lab->id }}" {{ old('laboratory_id', $user->laboratory_id) == $lab->id ? 'selected' : '' }}>
+                                                            {{ $lab->name }} ({{ $lab->code }})
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <p class="text-[11px] text-muted-foreground">Staff hanya dapat mengakses komputer dan scanner di lab ini.</p>
+                                            </div>
+
+                                            <div class="space-y-1.5" x-show="editStaffScope === 'faculty'">
+                                                <x-form.label for="edit_staff_faculty_id_{{ $user->id }}">Fakultas <span class="text-destructive">*</span></x-form.label>
+                                                <select id="edit_staff_faculty_id_{{ $user->id }}" name="faculty_id" :disabled="editRole !== 'staff_lab' || editStaffScope !== 'faculty'" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                                                    <option value="">-- Pilih Fakultas --</option>
+                                                    @foreach($faculties as $fac)
+                                                        <option value="{{ $fac->id }}" {{ old('faculty_id', $user->faculty_id) == $fac->id ? 'selected' : '' }}>
+                                                            {{ $fac->name }} ({{ $fac->code }})
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                <p class="text-[11px] text-muted-foreground">Staff dapat mengakses seluruh lab di bawah fakultas ini.</p>
+                                            </div>
                                         </div>
                                         @endif
 

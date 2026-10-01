@@ -27,6 +27,7 @@ class RoleAndPermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'manage laboratories', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'review reports', 'guard_name' => 'web']);
         Permission::firstOrCreate(['name' => 'view lab inventory', 'guard_name' => 'web']);
+        Permission::firstOrCreate(['name' => 'download agent scanner', 'guard_name' => 'web']);
 
         // 2. Create roles and assign permissions
 
@@ -41,6 +42,15 @@ class RoleAndPermissionSeeder extends Seeder
             'view reports',
             'review reports',
             'view lab inventory',
+            'download agent scanner',
+        ]);
+
+        // Staff Lab (Operator)
+        $staffLabRole = Role::firstOrCreate(['name' => 'staff_lab', 'guard_name' => 'web']);
+        $staffLabRole->givePermissionTo([
+            'access admin panel',
+            'view lab inventory',
+            'download agent scanner',
         ]);
 
         // Pimpinan: Read-only access

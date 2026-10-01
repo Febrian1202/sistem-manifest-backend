@@ -15,6 +15,7 @@
                     {{ $lab->building ?? 'Gedung -' }} Lt. {{ $lab->floor ?? '-' }} &bull; {{ $lab->description ?? 'Daftar inventaris komputer dan software terdeteksi.' }}
                 </p>
             </div>
+            @role('kepala_lab|admin')
             <div>
                 <a href="{{ route('lab.reports.index') }}">
                     <x-ui.button variant="outline">
@@ -22,6 +23,7 @@
                     </x-ui.button>
                 </a>
             </div>
+            @endrole
         </div>
 
         {{-- Stat Cards --}}

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 trait ScopedByLaboratory
 {
     /**
-     * Scope query to the laboratory of the given user or current authenticated kepala_lab.
+     * Scope query to the laboratory of the given user or current authenticated kepala_lab / staff_lab.
      */
     public function scopeForUserLab(Builder $query, ?User $user = null): Builder
     {
@@ -18,15 +18,39 @@ trait ScopedByLaboratory
             return $query;
         }
 
-        if ($user->hasRole('kepala_lab')) {
-            if (! $user->laboratory_id) {
+        if ($user->hasRole('admin') || $user->hasRole('pimpinan')) {
+            return $query;
+        }
+
+        if ($user->hasRole('kepala_lab') || $user->hasRole('staff_lab')) {
+            $labIds = $user->getAccessibleLaboratoryIds();
+
+            if (empty($labIds)) {
                 return $query->whereRaw('1 = 0');
             }
 
-            return $this->scopeForLaboratory($query, $user->laboratory_id);
+            return $this->scopeForLaboratories($query, $labIds);
         }
 
         return $query;
+    }
+
+    /**
+     * Scope query explicitly to multiple laboratory IDs.
+     *
+     * @param  array<int|string>  $laboratoryIds
+     */
+    public function scopeForLaboratories(Builder $query, array $laboratoryIds): Builder
+    {
+        $path = $this->resolveLaboratoryScopeRelation();
+
+        if ($path === null) {
+            return $query->whereIn($this->qualifyColumn('laboratory_id'), $laboratoryIds);
+        }
+
+        return $query->whereHas($path, function (Builder $q) use ($laboratoryIds) {
+            $q->whereIn('laboratory_id', $laboratoryIds);
+        });
     }
 
     /**
@@ -34,15 +58,7 @@ trait ScopedByLaboratory
      */
     public function scopeForLaboratory(Builder $query, int|string $laboratoryId): Builder
     {
-        $path = $this->resolveLaboratoryScopeRelation();
-
-        if ($path === null) {
-            return $query->where($this->qualifyColumn('laboratory_id'), $laboratoryId);
-        }
-
-        return $query->whereHas($path, function (Builder $q) use ($laboratoryId) {
-            $q->where('laboratory_id', $laboratoryId);
-        });
+        return $this->scopeForLaboratories($query, [$laboratoryId]);
     }
 
     /**

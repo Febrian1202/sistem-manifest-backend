@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/account/password', [AccountController::class, 'changePassword'])->name('account.change-password');
 });
 
-Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function () {
+Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab|staff_lab'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData'])->name('dashboard.chart-data');
 });
@@ -87,11 +87,14 @@ Route::middleware(['auth', 'role:admin|pimpinan|kepala_lab'])->group(function ()
     });
 });
 
+Route::middleware(['auth', 'role:admin|kepala_lab|staff_lab'])->group(function () {
+    Route::get('/agent/download', [AgentDownloadController::class, 'showDownloadPage'])->name('agent.download-page');
+    Route::post('/agent/download', [AgentDownloadController::class, 'download'])->name('agent.download');
+});
+
 Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     // Admin-only Mutations
     Route::middleware(['role:admin'])->group(function () {
-        Route::get('/agent/download', [AgentDownloadController::class, 'showDownloadPage'])->name('agent.download-page');
-        Route::post('/agent/download', [AgentDownloadController::class, 'download'])->name('agent.download');
         Route::post('/computers/request-scan-all', [ComputerDataController::class, 'requestScanAll'])->name('computers.request-scan-all');
         Route::put('/computers/{computer}', [ComputerDataController::class, 'update'])->name('computers.update');
         Route::delete('/computers/{computer}', [ComputerDataController::class, 'destroy'])->name('computers.destroy');
@@ -126,7 +129,7 @@ Route::middleware(['auth', 'role:admin|pimpinan'])->group(function () {
     });
 });
 
-Route::middleware(['auth', 'role:kepala_lab'])->group(function () {
+Route::middleware(['auth', 'role:kepala_lab|staff_lab'])->group(function () {
     // Inventaris Lab
     Route::get('/lab/inventory', [LabInventoryController::class, 'index'])->name('lab.inventory.index');
     Route::get('/lab/inventory/{computer}', [LabInventoryController::class, 'show'])->name('lab.inventory.show');

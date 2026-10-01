@@ -26,68 +26,70 @@
             $inactiveClass = 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground';
         @endphp
 
-        <a href="{{ route('dashboard') }}"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('dashboard') ? $activeClass : $inactiveClass }}">
-            <div class="w-6 flex justify-center">
-                <i class="fa-solid fa-house text-lg"></i>
-            </div>
-            <span class="font-medium whitespace-nowrap transition-opacity duration-200"
-                :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Dashboard</span>
+        @role('admin|pimpinan|kepala_lab')
+            <a href="{{ route('dashboard') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('dashboard') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-house text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Dashboard</span>
 
-            <div class="absolute left-16 bg-popover text-popover-foreground border border-border text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 md:hidden"
-                :class="!sidebarOpen ? 'md:block' : ''">
-                Dashboard
-            </div>
-        </a>
+                <div class="absolute left-16 bg-popover text-popover-foreground border border-border text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 md:hidden"
+                    :class="!sidebarOpen ? 'md:block' : ''">
+                    Dashboard
+                </div>
+            </a>
 
-        {{-- Monitoring Section --}}
-        <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
-            :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
-            Monitoring
-        </div>
-        <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
-
-        <a href="{{ route('monitoring.index') }}"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('monitoring') || (request()->is('monitoring/*') && !request()->is('monitoring/changes*') && !request()->is('monitoring/compliance*')) ? $activeClass : $inactiveClass }}">
-            <div class="w-6 flex justify-center">
-                <i class="fa-solid fa-satellite-dish text-lg"></i>
+            {{-- Monitoring Section --}}
+            <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
+                :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
+                Monitoring
             </div>
-            <span class="font-medium whitespace-nowrap transition-opacity duration-200"
-                :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Riwayat Scan</span>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
 
-            <div class="absolute left-16 bg-popover text-popover-foreground border border-border text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 md:hidden"
-                :class="!sidebarOpen ? 'md:block' : ''">
-                Riwayat Scan
-            </div>
-        </a>
+            <a href="{{ route('monitoring.index') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('monitoring') || (request()->is('monitoring/*') && !request()->is('monitoring/changes*') && !request()->is('monitoring/compliance*')) ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-satellite-dish text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Riwayat Scan</span>
 
-        <a href="{{ route('monitoring.changes') }}"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('monitoring/changes*') ? $activeClass : $inactiveClass }}">
-            <div class="w-6 flex justify-center">
-                <i class="fa-solid fa-code-compare text-lg"></i>
-            </div>
-            <span class="font-medium whitespace-nowrap transition-opacity duration-200"
-                :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Perubahan Software</span>
+                <div class="absolute left-16 bg-popover text-popover-foreground border border-border text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 md:hidden"
+                    :class="!sidebarOpen ? 'md:block' : ''">
+                    Riwayat Scan
+                </div>
+            </a>
 
-            <div class="absolute left-16 bg-popover text-popover-foreground border border-border text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 md:hidden"
-                :class="!sidebarOpen ? 'md:block' : ''">
-                Perubahan Software
-            </div>
-        </a>
+            <a href="{{ route('monitoring.changes') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('monitoring/changes*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-code-compare text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Perubahan Software</span>
 
-        <a href="{{ route('monitoring.compliance') }}"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('monitoring/compliance*') ? $activeClass : $inactiveClass }}">
-            <div class="w-6 flex justify-center">
-                <i class="fa-solid fa-shield-halved text-lg"></i>
-            </div>
-            <span class="font-medium whitespace-nowrap transition-opacity duration-200"
-                :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Histori Kepatuhan</span>
+                <div class="absolute left-16 bg-popover text-popover-foreground border border-border text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 md:hidden"
+                    :class="!sidebarOpen ? 'md:block' : ''">
+                    Perubahan Software
+                </div>
+            </a>
 
-            <div class="absolute left-16 bg-popover text-popover-foreground border border-border text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 md:hidden"
-                :class="!sidebarOpen ? 'md:block' : ''">
-                Histori Kepatuhan
-            </div>
-        </a>
+            <a href="{{ route('monitoring.compliance') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('monitoring/compliance*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-shield-halved text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Histori Kepatuhan</span>
+
+                <div class="absolute left-16 bg-popover text-popover-foreground border border-border text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 md:hidden"
+                    :class="!sidebarOpen ? 'md:block' : ''">
+                    Histori Kepatuhan
+                </div>
+            </a>
+        @endrole
 
         @role('kepala_lab')
             <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
@@ -112,6 +114,41 @@
                 </div>
                 <span class="font-medium whitespace-nowrap transition-opacity duration-200"
                     :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Review Laporan</span>
+            </a>
+
+            <a href="{{ route('agent.download-page') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('agent*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-download text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Download Scanner</span>
+            </a>
+        @endrole
+
+        @role('staff_lab')
+            <div class="mt-4 px-3 mb-2 text-xs font-semibold text-sidebar-foreground uppercase tracking-wider transition-opacity duration-200"
+                :class="sidebarOpen ? 'opacity-100' : 'opacity-0 hidden'">
+                Menu Staff Lab
+            </div>
+            <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
+
+            <a href="{{ route('lab.inventory.index') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('lab/inventory*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-desktop text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Komputer & Aset</span>
+            </a>
+
+            <a href="{{ route('agent.download-page') }}"
+                class="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-200 group {{ request()->is('agent*') ? $activeClass : $inactiveClass }}">
+                <div class="w-6 flex justify-center">
+                    <i class="fa-solid fa-download text-lg"></i>
+                </div>
+                <span class="font-medium whitespace-nowrap transition-opacity duration-200"
+                    :class="sidebarOpen ? 'opacity-100 block' : 'opacity-0 hidden'">Download Scanner</span>
             </a>
         @endrole
 

@@ -86,11 +86,39 @@ class User extends Authenticatable
         'email',
         'password',
         'laboratory_id',
+        'faculty_id',
     ];
 
     public function laboratory(): BelongsTo
     {
         return $this->belongsTo(Laboratory::class);
+    }
+
+    public function faculty(): BelongsTo
+    {
+        return $this->belongsTo(Faculty::class);
+    }
+
+    /**
+     * Mendapatkan daftar ID laboratorium yang berada di bawah kewenangan user ini.
+     *
+     * @return array<int>
+     */
+    public function getAccessibleLaboratoryIds(): array
+    {
+        if ($this->hasRole('admin') || $this->hasRole('pimpinan')) {
+            return Laboratory::pluck('id')->toArray();
+        }
+
+        if ($this->laboratory_id) {
+            return [$this->laboratory_id];
+        }
+
+        if ($this->faculty_id) {
+            return Laboratory::where('faculty_id', $this->faculty_id)->pluck('id')->toArray();
+        }
+
+        return [];
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\StoreAccountRequest;
 use App\Http\Requests\UpdateAccountRequest;
+use App\Models\Faculty;
 use App\Models\Laboratory;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class AccountController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::query()->with(['roles', 'laboratory']);
+        $query = User::query()->with(['roles', 'laboratory', 'faculty']);
 
         // Search by name or email
         if ($request->filled('search')) {
@@ -37,10 +38,11 @@ class AccountController extends Controller
         }
 
         $users = $query->latest()->paginate(10)->withQueryString();
-        $roles = Role::whereIn('name', ['admin', 'kepala_lab', 'pimpinan'])->pluck('name');
+        $roles = Role::whereIn('name', ['admin', 'kepala_lab', 'pimpinan', 'staff_lab'])->pluck('name');
         $laboratories = Laboratory::orderBy('name')->get();
+        $faculties = Faculty::orderBy('name')->get();
 
-        return view('pages.admin.accounts', compact('users', 'roles', 'laboratories'));
+        return view('pages.admin.accounts', compact('users', 'roles', 'laboratories', 'faculties'));
     }
 
     /**
@@ -49,11 +51,25 @@ class AccountController extends Controller
     public function store(StoreAccountRequest $request)
     {
         try {
+            $labId = null;
+            $facultyId = null;
+
+            if ($request->role === 'kepala_lab') {
+                $labId = $request->laboratory_id;
+            } elseif ($request->role === 'staff_lab') {
+                if ($request->filled('laboratory_id')) {
+                    $labId = $request->laboratory_id;
+                } elseif ($request->filled('faculty_id')) {
+                    $facultyId = $request->faculty_id;
+                }
+            }
+
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-                'laboratory_id' => $request->role === 'kepala_lab' ? $request->laboratory_id : null,
+                'laboratory_id' => $labId,
+                'faculty_id' => $facultyId,
             ]);
 
             $user->assignRole($request->role);
@@ -101,12 +117,24 @@ class AccountController extends Controller
                 }
             }
 
-            $labId = ($role === 'kepala_lab') ? $request->laboratory_id : null;
+            $labId = null;
+            $facultyId = null;
+
+            if ($role === 'kepala_lab') {
+                $labId = $request->laboratory_id;
+            } elseif ($role === 'staff_lab') {
+                if ($request->filled('laboratory_id')) {
+                    $labId = $request->laboratory_id;
+                } elseif ($request->filled('faculty_id')) {
+                    $facultyId = $request->faculty_id;
+                }
+            }
 
             $user->update([
                 'name' => $request->name,
                 'email' => $request->email,
                 'laboratory_id' => $labId,
+                'faculty_id' => $facultyId,
             ]);
 
             // Sync role (skip if it was forced to remain current due to self-edit check)

@@ -180,12 +180,12 @@ Sesuaikan tampilan sidebar untuk `staff_lab`:
 ---
 
 ## 4. Kriteria Keberhasilan (Acceptance Criteria)
-- [ ] Role `staff_lab` berhasil dibuat dalam sistem.
-- [ ] Admin dapat membuat akun `staff_lab` dengan penugasan ke Lab tertentu atau ke Fakultas tertentu.
-- [ ] Staff Lab yang ditugaskan ke Fakultas dapat melihat seluruh komputer di semua lab di bawah fakultas tersebut.
-- [ ] Staff Lab yang ditugaskan ke Lab tertentu hanya dapat melihat komputer di lab tersebut.
-- [ ] Staff Lab dapat mendownload bundle scanner agent yang sudah terkonfigurasi untuk lab yang ditugaskan.
-- [ ] Staff Lab TIDAK memiliki akses ke menu pengelolaan lisensi, alokasi lisensi, maupun manipulasi master data fakultas/lab.
+- [x] Role `staff_lab` berhasil dibuat dalam sistem.
+- [x] Admin dapat membuat akun `staff_lab` dengan penugasan ke Lab tertentu atau ke Fakultas tertentu.
+- [x] Staff Lab yang ditugaskan ke Fakultas dapat melihat seluruh komputer di semua lab di bawah fakultas tersebut.
+- [x] Staff Lab yang ditugaskan ke Lab tertentu hanya dapat melihat komputer di lab tersebut.
+- [x] Staff Lab dapat mendownload bundle scanner agent yang sudah terkonfigurasi untuk lab yang ditugaskan.
+- [x] Staff Lab TIDAK memiliki akses ke menu pengelolaan lisensi, alokasi lisensi, maupun manipulasi master data fakultas/lab.
 
 ---
 

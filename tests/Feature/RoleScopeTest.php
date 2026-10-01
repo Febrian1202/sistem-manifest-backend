@@ -41,10 +41,12 @@ test('kepala_lab tidak bisa mengakses halaman CRUD laboratorium admin', function
         ->assertStatus(403);
 });
 
-test('kepala_lab tidak bisa mengakses halaman unduh agent scanner', function () {
+test('kepala_lab dapat mengakses halaman unduh agent scanner untuk laboratoriumnya sendiri', function () {
     $this->actingAs($this->kepalaLabA)
         ->get(route('agent.download-page'))
-        ->assertStatus(403);
+        ->assertStatus(200)
+        ->assertSee($this->labA->name)
+        ->assertDontSee($this->labB->name);
 });
 
 test('pimpinan tidak bisa melakukan mutasi data lisensi', function () {

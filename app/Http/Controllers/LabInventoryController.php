@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Computer;
+use App\Models\Laboratory;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -11,13 +12,28 @@ class LabInventoryController extends Controller
     public function index(Request $request): View
     {
         $user = auth()->user();
-        $lab = $user->laboratory;
+        $accessibleLabIds = $user->getAccessibleLaboratoryIds();
 
-        if (! $lab) {
+        if (empty($accessibleLabIds)) {
             abort(403, 'Anda belum ditugaskan ke laboratorium manapun.');
         }
 
-        $query = $lab->computers()
+        $lab = $user->laboratory;
+        if (! $lab) {
+            if ($user->faculty) {
+                $lab = (object) [
+                    'name' => 'Fakultas '.$user->faculty->name,
+                    'code' => $user->faculty->code,
+                    'building' => 'Fakultas '.$user->faculty->name,
+                    'floor' => '-',
+                    'description' => 'Seluruh laboratorium di bawah '.$user->faculty->name,
+                ];
+            } else {
+                $lab = Laboratory::whereIn('id', $accessibleLabIds)->first();
+            }
+        }
+
+        $query = Computer::forUserLab($user)
             ->withCount('softwares')
             ->with('latestComplianceReport');
 
@@ -36,13 +52,14 @@ class LabInventoryController extends Controller
 
         $computers = $query->latest('last_seen_at')->paginate(15)->withQueryString();
 
-        $totalComputers = $lab->computers()->count();
-        $scannedThisMonth = $lab->computers()
+        $baseCountQuery = Computer::whereIn('laboratory_id', $accessibleLabIds);
+        $totalComputers = (clone $baseCountQuery)->count();
+        $scannedThisMonth = (clone $baseCountQuery)
             ->whereMonth('last_seen_at', now()->month)
             ->whereYear('last_seen_at', now()->year)
             ->count();
 
-        $licensedOS = $lab->computers()->where('os_license_status', 'Licensed')->count();
+        $licensedOS = (clone $baseCountQuery)->where('os_license_status', 'Licensed')->count();
         $complianceRate = $totalComputers > 0 ? round(($licensedOS / $totalComputers) * 100, 1) : 0;
 
         $stats = [
@@ -58,8 +75,9 @@ class LabInventoryController extends Controller
     public function show(Computer $computer): View
     {
         $user = auth()->user();
+        $accessibleLabIds = $user->getAccessibleLaboratoryIds();
 
-        if ($computer->laboratory_id !== $user->laboratory_id) {
+        if (! in_array($computer->laboratory_id, $accessibleLabIds)) {
             abort(403, 'Anda tidak memiliki akses ke komputer di laboratorium ini.');
         }
 

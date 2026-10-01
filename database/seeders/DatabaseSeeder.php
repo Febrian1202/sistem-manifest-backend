@@ -107,5 +107,33 @@ class DatabaseSeeder extends Seeder
             ],
         );
         $kepalaLab2->assignRole('kepala_lab');
+
+        // Buat Akun Staff Lab (Laboratorium Spesifik)
+        $staffLab1 = User::firstOrCreate(
+            [
+                'email' => 'staff.lab@usn.ac.id',
+            ],
+            [
+                'name' => 'Operator Lab Komputer 1',
+                'password' => env('DEFAULT_USER_PASSWORD', 'ManifestUSN_2026!'),
+                'laboratory_id' => $labKomputer1->id,
+                'faculty_id' => null,
+            ],
+        );
+        $staffLab1->assignRole('staff_lab');
+
+        // Buat Akun Staff Lab (Fakultas)
+        $staffFaculty = User::firstOrCreate(
+            [
+                'email' => 'staff.fti@usn.ac.id',
+            ],
+            [
+                'name' => 'Staff Teknisi FTI',
+                'password' => env('DEFAULT_USER_PASSWORD', 'ManifestUSN_2026!'),
+                'laboratory_id' => null,
+                'faculty_id' => $fti?->id,
+            ],
+        );
+        $staffFaculty->assignRole('staff_lab');
     }
 }
