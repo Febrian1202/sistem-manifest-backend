@@ -26,6 +26,7 @@ class UpdateLaboratoryRequest extends FormRequest
         $laboratoryId = is_object($laboratory) ? $laboratory->id : $laboratory;
 
         return [
+            'faculty_id' => ['required', 'exists:faculties,id'],
             'name' => ['required', 'string', 'max:255'],
             'code' => ['required', 'string', 'max:50', 'unique:laboratories,code,'.$laboratoryId],
             'building' => ['nullable', 'string', 'max:255'],
@@ -42,6 +43,8 @@ class UpdateLaboratoryRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'faculty_id.required' => 'Fakultas wajib dipilih.',
+            'faculty_id.exists' => 'Fakultas yang dipilih tidak valid.',
             'name.required' => 'Nama laboratorium wajib diisi.',
             'code.required' => 'Kode laboratorium wajib diisi.',
             'code.unique' => 'Kode laboratorium sudah digunakan.',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreLaboratoryRequest;
 use App\Http\Requests\UpdateLaboratoryRequest;
+use App\Models\Faculty;
 use App\Models\Laboratory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +16,14 @@ class LaboratoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Laboratory::query()->withCount('computers')->with('penanggungJawab');
+        $query = Laboratory::query()
+            ->with('faculty')
+            ->withCount('computers')
+            ->with('penanggungJawab');
+
+        if ($request->filled('faculty_id')) {
+            $query->where('faculty_id', $request->faculty_id);
+        }
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -27,8 +35,9 @@ class LaboratoryController extends Controller
         }
 
         $laboratories = $query->latest()->paginate(10)->withQueryString();
+        $faculties = Faculty::orderBy('name')->get();
 
-        return view('laboratories.index', compact('laboratories'));
+        return view('laboratories.index', compact('laboratories', 'faculties'));
     }
 
     /**
@@ -36,7 +45,9 @@ class LaboratoryController extends Controller
      */
     public function create()
     {
-        return view('laboratories.create');
+        $faculties = Faculty::orderBy('name')->get();
+
+        return view('laboratories.create', compact('faculties'));
     }
 
     /**
@@ -68,9 +79,10 @@ class LaboratoryController extends Controller
      */
     public function edit(Laboratory $laboratory)
     {
-        $laboratory->load(['computers', 'penanggungJawab']);
+        $laboratory->load(['faculty', 'computers', 'penanggungJawab']);
+        $faculties = Faculty::orderBy('name')->get();
 
-        return view('laboratories.edit', compact('laboratory'));
+        return view('laboratories.edit', compact('laboratory', 'faculties'));
     }
 
     /**

@@ -210,10 +210,10 @@ public function faculty()
 
 ### Acceptance criteria
 
-- [ ] Setiap laboratorium dapat memilih fakultas.
-- [ ] Data existing tetap aman setelah migration.
-- [ ] Sistem dapat menampilkan struktur Faculty → Laboratory.
-- [ ] Filter laboratorium dapat dikembangkan menjadi filter fakultas.
+- [x] Setiap laboratorium dapat memilih fakultas.
+- [x] Data existing tetap aman setelah migration.
+- [x] Sistem dapat menampilkan struktur Faculty → Laboratory.
+- [x] Filter laboratorium dapat dikembangkan menjadi filter fakultas.
 
 ---
 
@@ -235,8 +235,8 @@ Kemudian setiap laboratorium existing harus diberikan `faculty_id`.
 
 - [x] Tentukan daftar fakultas resmi.
 - [x] Tentukan kode tiap fakultas.
-- [ ] Mapping seluruh laboratorium existing ke fakultas.
-- [ ] Validasi bahwa tidak ada laboratorium tanpa fakultas kecuali memang sengaja dibuat sebagai fasilitas universitas/pusat.
+- [x] Mapping seluruh laboratorium existing ke fakultas.
+- [x] Validasi bahwa tidak ada laboratorium tanpa fakultas kecuali memang sengaja dibuat sebagai fasilitas universitas/pusat.
 
 ### Catatan desain
 
@@ -1137,9 +1137,9 @@ Tidak semua fitur harus dikerjakan sekaligus.
 ## Priority A — Wajib
 
 - [x] `faculties` table
-- [ ] `faculty_id` pada laboratories
+- [x] `faculty_id` pada laboratories
 - [x] model Faculty
-- [ ] relasi Faculty ↔ Laboratory
+- [x] relasi Faculty ↔ Laboratory
 - [ ] `license_allocations` table
 - [ ] model LicenseAllocation
 - [ ] LicenseInventory ↔ Allocation ↔ Faculty
@@ -1153,7 +1153,7 @@ Tidak semua fitur harus dikerjakan sekaligus.
 ## Priority B — Sangat disarankan
 
 - [ ] drill-down Faculty → Lab → Computer → Software
-- [ ] filter fakultas
+- [x] filter fakultas
 - [ ] filter laboratorium
 - [ ] detail alokasi per software
 - [ ] status Deficit / Surplus / Sufficient

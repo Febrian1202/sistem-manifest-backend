@@ -37,7 +37,7 @@
             </x-ui.alert.index>
         @endif
 
-        {{-- Pencarian --}}
+        {{-- Pencarian & Filter --}}
         <form method="GET" action="{{ route('laboratories.index') }}"
             class="bg-card border border-border p-4 rounded-lg shadow-sm flex flex-col sm:flex-row gap-4 items-center">
             
@@ -47,13 +47,25 @@
                     placeholder="Cari nama, kode, atau gedung..." class="pl-9 w-full" />
             </div>
 
+            <div class="w-full sm:w-64">
+                <select name="faculty_id" onchange="this.form.submit()"
+                    class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                    <option value="">Semua Fakultas</option>
+                    @foreach($faculties as $fac)
+                        <option value="{{ $fac->id }}" @selected(request('faculty_id') == $fac->id)>
+                            {{ $fac->code }} - {{ $fac->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
             <div class="flex justify-end gap-2 w-full sm:w-auto">
                 <x-ui.button type="submit">
                     <i class="fa-solid fa-search mr-2"></i> Cari
                 </x-ui.button>
-                @if(request('search'))
+                @if(request('search') || request('faculty_id'))
                     <a href="{{ route('laboratories.index') }}">
-                        <x-ui.button type="button" variant="outline" title="Reset">
+                        <x-ui.button type="button" variant="outline" title="Reset Filter">
                             <i class="fa-solid fa-xmark"></i>
                         </x-ui.button>
                     </a>
@@ -69,6 +81,7 @@
                         <x-ui.table.table-head class="w-[60px]">No</x-ui.table.table-head>
                         <x-ui.table.table-head>Nama Laboratorium</x-ui.table.table-head>
                         <x-ui.table.table-head>Kode</x-ui.table.table-head>
+                        <x-ui.table.table-head>Fakultas</x-ui.table.table-head>
                         <x-ui.table.table-head>Lokasi / Gedung</x-ui.table.table-head>
                         <x-ui.table.table-head class="text-center">Jumlah Komputer</x-ui.table.table-head>
                         <x-ui.table.table-head>Penanggung Jawab (PJ Lab)</x-ui.table.table-head>
@@ -101,7 +114,18 @@
                                 </span>
                             </x-ui.table.table-cell>
 
-                            {{-- 4. Gedung & Lantai --}}
+                            {{-- 4. Fakultas --}}
+                            <x-ui.table.table-cell>
+                                @if($lab->faculty)
+                                    <span class="inline-flex items-center rounded-md bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/50">
+                                        {{ $lab->faculty->name }}
+                                    </span>
+                                @else
+                                    <span class="text-xs text-muted-foreground italic">Belum Ditentukan</span>
+                                @endif
+                            </x-ui.table.table-cell>
+
+                            {{-- 5. Gedung & Lantai --}}
                             <x-ui.table.table-cell class="text-xs text-muted-foreground">
                                 @if($lab->building || $lab->floor)
                                     <span>{{ $lab->building ?? '-' }}</span>
@@ -113,14 +137,14 @@
                                 @endif
                             </x-ui.table.table-cell>
 
-                            {{-- 5. Jumlah Komputer --}}
+                            {{-- 6. Jumlah Komputer --}}
                             <x-ui.table.table-cell class="text-center">
                                 <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $lab->computers_count > 0 ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground border-border' }}">
                                     <i class="fa-solid fa-desktop mr-1.5 text-[10px]"></i> {{ $lab->computers_count }}
                                 </span>
                             </x-ui.table.table-cell>
 
-                            {{-- 6. PJ Lab --}}
+                            {{-- 7. PJ Lab --}}
                             <x-ui.table.table-cell class="text-xs">
                                 @if($lab->penanggungJawab->isNotEmpty())
                                     <div class="flex flex-col gap-1">
@@ -136,7 +160,7 @@
                                 @endif
                             </x-ui.table.table-cell>
 
-                            {{-- 7. Aksi --}}
+                            {{-- 8. Aksi --}}
                             <x-ui.table.table-cell class="text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <a href="{{ route('laboratories.edit', $lab->id) }}">
@@ -186,7 +210,7 @@
                         </x-ui.table.table-row>
                     @empty
                         <x-ui.table.table-row>
-                            <x-ui.table.table-cell colspan="7" class="text-center h-24 text-muted-foreground">
+                            <x-ui.table.table-cell colspan="8" class="text-center h-24 text-muted-foreground">
                                 Tidak ada data laboratorium.
                             </x-ui.table.table-cell>
                         </x-ui.table.table-row>

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Faculty;
 use App\Models\Laboratory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -13,6 +14,7 @@ class LaboratoryFactory extends Factory
     public function definition(): array
     {
         return [
+            'faculty_id' => Faculty::factory(),
             'name' => 'Lab '.fake()->word(),
             'code' => 'LAB-'.strtoupper(fake()->unique()->lexify('???')),
             'building' => fake()->optional()->word(),

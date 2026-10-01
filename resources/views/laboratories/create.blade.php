@@ -33,6 +33,25 @@
                 @csrf
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {{-- Fakultas --}}
+                    <div class="space-y-1.5 md:col-span-2">
+                        <x-form.label for="faculty_id">Fakultas <span class="text-destructive">*</span></x-form.label>
+                        <select id="faculty_id" name="faculty_id"
+                            class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            required>
+                            <option value="">-- Pilih Fakultas --</option>
+                            @foreach($faculties as $faculty)
+                                <option value="{{ $faculty->id }}" @selected(old('faculty_id') == $faculty->id)>
+                                    {{ $faculty->code }} - {{ $faculty->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <p class="text-[11px] text-muted-foreground">Fakultas yang menaungi laboratorium ini.</p>
+                        @error('faculty_id')
+                            <p class="text-xs text-destructive mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     {{-- Nama Laboratorium --}}
                     <div class="space-y-1.5 md:col-span-2">
                         <x-form.label for="name">Nama Laboratorium <span class="text-destructive">*</span></x-form.label>

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Faculty;
 use App\Models\Laboratory;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -21,10 +22,13 @@ class DatabaseSeeder extends Seeder
             FacultySeeder::class,
         ]);
 
+        $fti = Faculty::where('code', 'FTI')->first();
+
         // Buat Sample Laboratories
         $labKomputer1 = Laboratory::firstOrCreate(
             ['code' => 'LAB-KOM1'],
             [
+                'faculty_id' => $fti?->id,
                 'name' => 'Laboratorium Komputer 1',
                 'building' => 'Gedung A',
                 'floor' => '2',
@@ -35,6 +39,7 @@ class DatabaseSeeder extends Seeder
         $labKomputer2 = Laboratory::firstOrCreate(
             ['code' => 'LAB-KOM2'],
             [
+                'faculty_id' => $fti?->id,
                 'name' => 'Laboratorium Komputer 2',
                 'building' => 'Gedung A',
                 'floor' => '3',
@@ -45,6 +50,7 @@ class DatabaseSeeder extends Seeder
         $labJaringan = Laboratory::firstOrCreate(
             ['code' => 'LAB-JRG'],
             [
+                'faculty_id' => $fti?->id,
                 'name' => 'Laboratorium Jaringan',
                 'building' => 'Gedung B',
                 'floor' => '1',

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Computer;
+use App\Models\Faculty;
 use App\Models\Laboratory;
 use App\Models\User;
 use Database\Seeders\RoleAndPermissionSeeder;
@@ -39,7 +40,10 @@ test('admin can create a laboratory', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 
+    $faculty = Faculty::factory()->create();
+
     $data = [
+        'faculty_id' => $faculty->id,
         'name' => 'Lab Rekayasa Perangkat Lunak',
         'code' => 'LAB-RPL',
         'building' => 'Gedung C',
@@ -53,6 +57,7 @@ test('admin can create a laboratory', function () {
     $response->assertRedirect(route('laboratories.index'));
 
     $this->assertDatabaseHas('laboratories', [
+        'faculty_id' => $faculty->id,
         'name' => 'Lab Rekayasa Perangkat Lunak',
         'code' => 'LAB-RPL',
         'building' => 'Gedung C',
@@ -77,12 +82,15 @@ test('admin can update a laboratory', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 
+    $faculty = Faculty::factory()->create();
     $lab = Laboratory::factory()->create([
+        'faculty_id' => $faculty->id,
         'name' => 'Lab Lama',
         'code' => 'LAB-OLD',
     ]);
 
     $response = $this->actingAs($admin)->put(route('laboratories.update', $lab), [
+        'faculty_id' => $faculty->id,
         'name' => 'Lab Baru Diperbarui',
         'code' => 'LAB-OLD',
         'building' => 'Gedung Baru',
@@ -95,6 +103,7 @@ test('admin can update a laboratory', function () {
 
     $this->assertDatabaseHas('laboratories', [
         'id' => $lab->id,
+        'faculty_id' => $faculty->id,
         'name' => 'Lab Baru Diperbarui',
         'building' => 'Gedung Baru',
         'floor' => '3',
@@ -242,8 +251,11 @@ test('activity log is recorded for laboratory CRUD', function () {
     $admin = User::factory()->create();
     $admin->assignRole('admin');
 
+    $faculty = Faculty::factory()->create();
+
     // Create
     $this->actingAs($admin)->post(route('laboratories.store'), [
+        'faculty_id' => $faculty->id,
         'name' => 'Lab Robotika',
         'code' => 'LAB-ROBOT',
     ]);
@@ -259,6 +271,7 @@ test('activity log is recorded for laboratory CRUD', function () {
 
     // Update
     $this->actingAs($admin)->put(route('laboratories.update', $lab), [
+        'faculty_id' => $faculty->id,
         'name' => 'Lab Robotika & AI',
         'code' => 'LAB-ROBOT',
     ]);
