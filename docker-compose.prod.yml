@@ -26,9 +26,8 @@ services:
   web:
     image: nginx:alpine
     restart: unless-stopped
-    # Bound to 127.0.0.1 only: accessed securely through host reverse proxy
-    ports:
-      - "127.0.0.1:8080:80"
+    expose:
+      - "80"
     depends_on:
       - app
     volumes:
@@ -55,7 +54,17 @@ services:
       - db-data:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p${DB_ROOT_PASSWORD}",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -128,7 +137,10 @@ services:
       - DB_HOST=db
       - REDIS_HOST=redis
     command: >
-      sh -c "while true; do php artisan schedule:run --verbose --no-interaction & sleep 60; done"
+      sh -c "while true; do
+        php artisan schedule:run --verbose --no-interaction;
+        sleep 60;
+      done"
     volumes:
       - app-storage:/var/www/html/storage
       - app-bootstrap:/var/www/html/bootstrap/cache
