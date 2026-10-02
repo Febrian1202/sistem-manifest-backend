@@ -6,6 +6,15 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 
 ---
 
+## [1.0.2] - 2026-10-02
+
+### Added
+- **One-Click Batch Launcher untuk Windows Agent:**
+  - Menambahkan `1-Jalankan-Scan-Sekarang.bat` untuk menjalankan pemindaian hardware & software langsung dengan klik ganda tanpa terhalang PowerShell ExecutionPolicy.
+  - Menambahkan `2-Pasang-Jadwal-Otomatis.bat` dengan fitur auto-elevasi Administrator (UAC prompt) untuk mendaftarkan jadwal pemindaian harian & polling otomatis ke Windows Task Scheduler.
+  - Menambahkan `3-Hapus-Jadwal-Otomatis.bat` untuk mempermudah pelepasan/uninstall tugas Task Scheduler secara bersih.
+  - Memperbarui paket unduhan ZIP agent pada `AgentDownloadController` dan panduan `instruksi.txt` agar mudah digunakan oleh petugas laboratorium.
+
 ## [1.0.1] - 2026-10-02
 
 ### Fixed

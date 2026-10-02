@@ -61,6 +61,21 @@ class AgentDownloadController extends Controller
         }
         $zip->addFile($setupTasksPath, 'setup_tasks.ps1');
 
+        $launcherScanPath = base_path('script/agent/1-Jalankan-Scan-Sekarang.bat');
+        if (file_exists($launcherScanPath)) {
+            $zip->addFile($launcherScanPath, '1-Jalankan-Scan-Sekarang.bat');
+        }
+
+        $launcherSetupPath = base_path('script/agent/2-Pasang-Jadwal-Otomatis.bat');
+        if (file_exists($launcherSetupPath)) {
+            $zip->addFile($launcherSetupPath, '2-Pasang-Jadwal-Otomatis.bat');
+        }
+
+        $launcherUninstallPath = base_path('script/agent/3-Hapus-Jadwal-Otomatis.bat');
+        if (file_exists($launcherUninstallPath)) {
+            $zip->addFile($launcherUninstallPath, '3-Hapus-Jadwal-Otomatis.bat');
+        }
+
         $baseUrl = rtrim(config('app.url'), '/').'/api';
         $registrationKey = config('app.agent_registration_key') ?: env('AGENT_REGISTRATION_KEY', '');
 
@@ -83,36 +98,39 @@ class AgentDownloadController extends Controller
 1. Ekstrak seluruh isi file ZIP ini ke dalam sebuah folder permanen.
    SANGAT DISARANKAN meletakkannya di folder permanen seperti: 
    C:\USN-Manifest-Scanner\ atau direktori aplikasi lainnya.
-   (Hindari diletakkan di folder sementara seperti 'Downloads')
+   (Hindari meletakkannya di folder sementara seperti 'Downloads')
 
-   (Pastikan keempat file: scanner.ps1, setup_tasks.ps1, config.json, 
-   dan instruksi.txt berada di dalam satu folder ekstraksi yang sama).
-
-2. Buka folder ekstraksi tersebut.
-
-3. Klik kanan pada file "scanner.ps1", lalu pilih "Run with PowerShell".
-   (Jika muncul peringatan dari OS Windows, ketik 'Y' lalu Enter 
-   untuk mengizinkan eksekusi).
-
-4. Pemindai akan secara otomatis memindai aplikasi yang terinstall dan mengirimnya ke server.
-
-5. (Sangat Direkomendasikan) Klik kanan pada file "setup_tasks.ps1", 
-   lalu pilih "Run with PowerShell" (sebagai Administrator). Skrip ini akan 
-   mendaftarkan pemindai ke Task Scheduler agar berjalan otomatis secara berkala.
-
-PENTING: Jangan memisahkan scanner.ps1 dengan config.json, karena skrip membutuhkan 
-konfigurasi integrasi dari file tersebut!
+   Pastikan semua berkas berikut tetap berada di dalam satu folder yang sama:
+   - 1-Jalankan-Scan-Sekarang.bat & scanner.ps1 (skrip pemindai)
+   - 2-Pasang-Jadwal-Otomatis.bat & setup_tasks.ps1 (skrip penjadwalan)
+   - 3-Hapus-Jadwal-Otomatis.bat
+   - config.json & instruksi.txt
 
 =========================================================
-      CARA MENGHAPUS / UNINSTALL SCHEDULER PEMINDAI
+              CARA PENGGUNAAN (TINGGAL KLIK)
 =========================================================
 
-Jika Anda ingin menghentikan pemindai agar tidak berjalan otomatis lagi, Anda dapat menghapus tugas yang sudah didaftarkan di Task Scheduler.
-1. Buka aplikasi PowerShell sebagai Administrator.
-2. Salin dan jalankan kedua perintah berikut:
+A. PEMINDAIAN LANGSUNG (INSTANT SCAN):
+   - Klik 2x pada file: "1-Jalankan-Scan-Sekarang.bat"
+   - Pemindai akan langsung memindai seluruh spesifikasi hardware 
+     dan software terinstall lalu mengirimnya ke server.
+   - Setelah selesai, tekan Enter untuk menutup jendela.
 
-   Unregister-ScheduledTask -TaskName "USN-Manifest-DailyScan" -Confirm:$false
-   Unregister-ScheduledTask -TaskName "USN-Manifest-Polling" -Confirm:$false
+B. PASANG JADWAL PEMINDAIAN OTOMATIS (SANGAT DIREKOMENDASIKAN):
+   - Klik 2x pada file: "2-Pasang-Jadwal-Otomatis.bat"
+   - Jika muncul konfirmasi Administrator (UAC), pilih "Yes".
+   - Jadwal otomatis akan terpasang di Windows Task Scheduler:
+     * Pemindaian harian otomatis setiap jam 08:00 AM.
+     * Pengecekan permintaan scan berkala setiap 15 menit.
+
+C. MENGHAPUS JADWAL OTOMATIS (UNINSTALL):
+   - Klik 2x pada file: "3-Hapus-Jadwal-Otomatis.bat"
+   - Jika muncul konfirmasi Administrator (UAC), pilih "Yes".
+   - Semua jadwal pemindaian USN Manifest akan dihapus secara bersih.
+
+=========================================================
+PENTING: Jangan menghapus atau memindahkan config.json, karena 
+skrip membutuhkan konfigurasi token dan URL server dari file tersebut!
 TEXT;
 
         $zip->addFromString('instruksi.txt', $instructions);

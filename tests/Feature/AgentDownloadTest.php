@@ -130,6 +130,9 @@ class AgentDownloadTest extends TestCase
         // Verify all expected files are in the zip
         $this->assertNotFalse($zip->locateName('scanner.ps1'));
         $this->assertNotFalse($zip->locateName('setup_tasks.ps1'));
+        $this->assertNotFalse($zip->locateName('1-Jalankan-Scan-Sekarang.bat'));
+        $this->assertNotFalse($zip->locateName('2-Pasang-Jadwal-Otomatis.bat'));
+        $this->assertNotFalse($zip->locateName('3-Hapus-Jadwal-Otomatis.bat'));
         $this->assertNotFalse($zip->locateName('config.json'));
         $this->assertNotFalse($zip->locateName('instruksi.txt'));
 
