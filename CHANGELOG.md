@@ -6,6 +6,11 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 
 ---
 
+## [1.0.1] - 2026-10-02
+
+### Fixed
+- **Paket Scanner Agent:** Menghapus direktori `script` dari `.dockerignore` agar file script PowerShell pemindai client (`script/agent/scanner.ps1` dan `setup_tasks.ps1`) disertakan di dalam Docker image dan dapat diunduh tanpa error 404.
+
 ## [1.0.0] - 2026-10-01
 
 ### Added
