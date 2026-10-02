@@ -6,6 +6,15 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 
 ---
 
+## [1.0.3] - 2026-10-02
+
+### Changed
+- **Arsitektur Shared Database & Redis (Dokploy Optimization):**
+  - Menghapus container dedicated `db` (MySQL 8.0) dan `redis` (Redis 7) dari `docker-compose.prod.yml` guna menghemat alokasi RAM server VPS (~400MB+).
+  - Mengintegrasikan stack aplikasi ke jaringan eksternal `dokploy-network` untuk terhubung ke shared instance MySQL dan Redis di Dokploy.
+  - Menghapus hardcoded `DB_HOST=db` dan `REDIS_HOST=redis` pada service `app`, `worker`, dan `cron` agar sepenuhnya membaca konfigurasi dinamis dari berkas lingkungan `.env`.
+  - Memperbarui template konfigurasi `.env.production.example` dan `.env.example` dengan panduan shared host serta penambahan variabel `REDIS_DB` dan `REDIS_PREFIX` untuk isolasi data multi-aplikasi.
+
 ## [1.0.2] - 2026-10-02
 
 ### Added
