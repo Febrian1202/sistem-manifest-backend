@@ -19,7 +19,7 @@
 
     </div>
 
-    <nav class="flex-1 overflow-y-auto py-4 flex flex-col gap-1 px-3">
+    <nav class="flex-1 overflow-y-auto py-4 flex flex-col gap-1 px-3 sidebar-scrollbar">
 
         {{-- 1. UTAMA --}}
         <x-layout.nav-item href="{{ route('dashboard') }}" icon="fa-chart-pie" label="Dashboard" :active="request()->is('dashboard*')" />
@@ -73,7 +73,7 @@
             </div>
             <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
 
-            <x-layout.nav-item href="{{ route('reports') }}" icon="fa-file-lines" label="{{ auth()->user()->hasRole('admin') ? 'Pusat Laporan' : 'Laporan & Cetak' }}" :active="(request()->is('reports') || (request()->is('reports/*') && !request()->is('reports/kebutuhan-lisensi*'))) && !request()->is('report-submissions*')" />
+            <x-layout.nav-item href="{{ route('reports') }}" icon="fa-file-lines" :label="auth()->user()->hasRole('admin') ? 'Pusat Laporan' : 'Laporan & Cetak'" :active="(request()->is('reports') || (request()->is('reports/*') && !request()->is('reports/kebutuhan-lisensi*'))) && !request()->is('report-submissions*')" />
             <x-layout.nav-item href="{{ route('reports.kebutuhan-lisensi') }}" icon="fa-file-invoice" label="Analisis Kebutuhan Lisensi" :active="request()->is('reports/kebutuhan-lisensi*')" />
             @role('admin')
                 <x-layout.nav-item href="{{ route('report-submissions.index') }}" icon="fa-paper-plane" label="Kirim ke PJ Lab" :active="request()->is('report-submissions*')" />

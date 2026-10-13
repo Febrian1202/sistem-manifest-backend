@@ -1,0 +1,390 @@
+<mxfile host="app.diagrams.net" modified="2026-10-07T00:00:00.000Z" agent="Antigravity" version="24.0.0">
+  <diagram id="flowmap-p1" name="Flowmap 1.0 (Input)">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1400" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <mxCell id="p1_title" value="&lt;b&gt;BAGAN ALIR SISTEM (FLOWMAP) - PROSEDUR 1.0&lt;/b&gt;&lt;br&gt;Pengelolaan Data Master, Lisensi, dan Registrasi/Pemindaian Komputer (Input)&lt;br&gt;Sistem Informasi Manifest USN Kolaka" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="400" y="20" width="800" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane_admin" value="&lt;b&gt;Administrator&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="100" width="340" height="1100" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane_staff" value="&lt;b&gt;Staf Laboratorium&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="380" y="100" width="340" height="1100" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane_system" value="&lt;b&gt;Sistem Informasi Manifest USN&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="720" y="100" width="460" height="1100" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane_db" value="&lt;b&gt;Basis Data (Database)&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="1180" y="100" width="340" height="1100" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_start" value="Mulai" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;" vertex="1" parent="lane_admin">
+      <mxGeometry x="120" y="50" width="100" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_in_master" value="Input Master Pengguna,&#xa;Fakultas, &amp;amp; Laboratorium" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane_admin">
+      <mxGeometry x="90" y="120" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_doc_master" value="Formulir Data&#xa;Master Pengguna &amp;amp; Lab" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane_admin">
+      <mxGeometry x="105" y="200" width="130" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_in_lic" value="Input Lisensi, Kuota, &amp;amp;&#xa;Alokasi ke Fakultas" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane_admin">
+      <mxGeometry x="90" y="300" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_doc_lic" value="Dokumen Bukti &amp;amp;&#xa;Kunci Lisensi" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane_admin">
+      <mxGeometry x="105" y="380" width="130" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_sys_val_master" value="Validasi &amp;amp; Simpan Data&#xa;Pengguna &amp;amp; Organisasi" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane_system">
+      <mxGeometry x="130" y="195" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_db_master" value="D1 Data Pengguna&#xa;D2 Data Organisasi" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane_db">
+      <mxGeometry x="90" y="190" width="160" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_sys_val_lic" value="Enkripsi Kunci Lisensi &amp;amp;&#xa;Simpan Alokasi Kuota" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane_system">
+      <mxGeometry x="130" y="375" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_db_lic" value="D3 Data Lisensi &amp;amp;&#xa;Katalog Software" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane_db">
+      <mxGeometry x="90" y="370" width="160" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_sys_prep_pkg" value="Generate Paket Agent&#xa;Scanner Laboratorium" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane_system">
+      <mxGeometry x="130" y="490" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_doc_pkg_sys" value="Paket Agent Scanner&#xa;(ZIP + config.json)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane_system">
+      <mxGeometry x="155" y="570" width="130" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_stf_down_pkg" value="Unduh Paket Scanner&#xa;Khusus Laboratorium" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane_staff">
+      <mxGeometry x="90" y="565" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_stf_deploy" value="Deploy &amp;amp; Pasang Scanner&#xa;pada PC Klien Lab" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane_staff">
+      <mxGeometry x="90" y="650" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_stf_doc_reg" value="Data Registrasi PC&#xa;(MAC, Hostname, Serial)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane_staff">
+      <mxGeometry x="105" y="730" width="130" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_sys_reg_pc" value="Verifikasi &amp;amp; Registrasi PC,&#xa;Terbitkan Token Sanctum" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane_system">
+      <mxGeometry x="130" y="725" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_stf_scan_exec" value="Eksekusi Pemindaian&#xa;Hardware &amp;amp; Software" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane_staff">
+      <mxGeometry x="90" y="830" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_stf_doc_payload" value="Payload Hasil Pemindaian&#xa;(JSON Software &amp;amp; Spek)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane_staff">
+      <mxGeometry x="105" y="910" width="140" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_sys_proc_scan" value="Terima Payload Scan &amp;amp;&#xa;Dispatch ProcessScanJob" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane_system">
+      <mxGeometry x="130" y="905" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_db_pc" value="D4 Data Komputer &amp;amp;&#xa;Pemindaian Software" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane_db">
+      <mxGeometry x="90" y="900" width="160" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n1_end" value="Selesai (Fase Input)" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;" vertex="1" parent="lane_system">
+      <mxGeometry x="150" y="1000" width="140" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="e1_1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_start" target="n1_in_master" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_2" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_in_master" target="n1_doc_master" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_3" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_doc_master" target="n1_sys_val_master" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_4" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_sys_val_master" target="n1_db_master" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_5" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_doc_master" target="n1_in_lic" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_6" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_in_lic" target="n1_doc_lic" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_7" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_doc_lic" target="n1_sys_val_lic" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_8" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_sys_val_lic" target="n1_db_lic" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_9" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_sys_val_lic" target="n1_sys_prep_pkg" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_10" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_sys_prep_pkg" target="n1_doc_pkg_sys" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_11" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_doc_pkg_sys" target="n1_stf_down_pkg" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_12" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_stf_down_pkg" target="n1_stf_deploy" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_13" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_stf_deploy" target="n1_stf_doc_reg" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_14" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_stf_doc_reg" target="n1_sys_reg_pc" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_15" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_sys_reg_pc" target="n1_stf_scan_exec" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_16" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_stf_scan_exec" target="n1_stf_doc_payload" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_17" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_stf_doc_payload" target="n1_sys_proc_scan" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_18" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_sys_proc_scan" target="n1_db_pc" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e1_19" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n1_sys_proc_scan" target="n1_end" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  </root>
+</mxGraphModel>
+  </diagram>
+  <diagram id="flowmap-p2" name="Flowmap 2.0 (Proses)">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1400" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <mxCell id="p2_title" value="&lt;b&gt;BAGAN ALIR SISTEM (FLOWMAP) - PROSEDUR 2.0&lt;/b&gt;&lt;br&gt;Pemrosesan dan Evaluasi Kepatuhan Lisensi serta Persetujuan Laporan (Proses)&lt;br&gt;Sistem Informasi Manifest USN Kolaka" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="400" y="20" width="800" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane2_queue" value="&lt;b&gt;Sistem (Queue Worker / Horizon)&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="100" width="440" height="1160" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane2_db" value="&lt;b&gt;Basis Data (Database)&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="480" y="100" width="340" height="1160" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane2_admin" value="&lt;b&gt;Administrator&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="820" y="100" width="340" height="1160" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane2_kalab" value="&lt;b&gt;Kepala Laboratorium&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="1160" y="100" width="380" height="1160" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_start" value="Mulai (Trigger Job)" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;" vertex="1" parent="lane2_queue">
+      <mxGeometry x="150" y="50" width="140" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_filter" value="Filter Software Terinstal&#xa;(Clean / Junk / Flagged)" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_queue">
+      <mxGeometry x="140" y="120" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_db_d4" value="D4 Data Komputer &amp;amp;&#xa;Pemindaian Software" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane2_db">
+      <mxGeometry x="90" y="115" width="160" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_dec_piracy" value="Aplikasi Masuk&#xa;Daftar Blokir&#xa;(Piracy/Crack)?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_queue">
+      <mxGeometry x="145" y="210" width="150" height="80" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_set_unlic" value="Set Status:&#xa;Tidak Berlisensi (Blacklist)" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_queue">
+      <mxGeometry x="270" y="320" width="150" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_dec_free" value="Kategori Software&#xa;Non-Komersial&#xa;(Freeware)?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_queue">
+      <mxGeometry x="30" y="300" width="150" height="80" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_set_lic_free" value="Set Status: Berlisensi&#xa;(Open-Source/Freeware)" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_queue">
+      <mxGeometry x="30" y="420" width="150" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_eval_quota" value="Cek Lisensi Komersial,&#xa;Masa Berlaku &amp;amp; Alokasi Kuota" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_queue">
+      <mxGeometry x="220" y="415" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_db_d3" value="D3 Data Lisensi &amp;amp;&#xa;Katalog Software" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane2_db">
+      <mxGeometry x="90" y="410" width="160" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_save_comp" value="Simpan ComplianceReport&#xa;&amp;amp; Snapshot Historis" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_queue">
+      <mxGeometry x="135" y="510" width="170" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_db_d5" value="D5 Data Kepatuhan&#xa;Lisensi Perangkat Lunak" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane2_db">
+      <mxGeometry x="90" y="505" width="160" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_adm_review" value="Tinjau Rekap Kepatuhan&#xa;Laboratorium Berjalan" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_admin">
+      <mxGeometry x="90" y="570" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_adm_submit" value="Pengajuan Laporan Kepatuhan&#xa;Periode Tertentu" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_admin">
+      <mxGeometry x="90" y="660" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_doc_submit" value="Draf Laporan Kepatuhan&#xa;Laboratorium" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane2_admin">
+      <mxGeometry x="100" y="740" width="140" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_kalab_review" value="Pemeriksaan &amp;amp; Telaah&#xa;Data Kepatuhan Lab" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_kalab">
+      <mxGeometry x="110" y="745" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_dec_kalab" value="Keputusan:&#xa;Laporan Disetujui?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_kalab">
+      <mxGeometry x="115" y="830" width="150" height="80" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_kalab_reject" value="Catat Catatan Penolakan&#xa;&amp;amp; Minta Perbaikan" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_kalab">
+      <mxGeometry x="210" y="940" width="150" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_kalab_approve" value="Beri Persetujuan Digital&#xa;&amp;amp; Pengesahan Laporan" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane2_kalab">
+      <mxGeometry x="20" y="940" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_doc_approved" value="Laporan Kepatuhan&#xa;Telah Disahkan" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane2_kalab">
+      <mxGeometry x="35" y="1020" width="130" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_db_d6" value="D6 Data Persetujuan&#xa;Laporan Laboratorium" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane2_db">
+      <mxGeometry x="90" y="935" width="160" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n2_end" value="Selesai (Fase Proses)" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;" vertex="1" parent="lane2_kalab">
+      <mxGeometry x="215" y="1030" width="140" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="e2_1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_start" target="n2_filter" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_2" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_db_d4" target="n2_filter" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_3" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_filter" target="n2_dec_piracy" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_4" value="Ya" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;fontSize=9;" edge="1" source="n2_dec_piracy" target="n2_set_unlic" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_5" value="Tidak" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;fontSize=9;" edge="1" source="n2_dec_piracy" target="n2_dec_free" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_6" value="Ya" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;fontSize=9;" edge="1" source="n2_dec_free" target="n2_set_lic_free" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_7" value="Tidak (Komersial)" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;fontSize=9;" edge="1" source="n2_dec_free" target="n2_eval_quota" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_8" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_db_d3" target="n2_eval_quota" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_9" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_set_unlic" target="n2_save_comp" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_10" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_set_lic_free" target="n2_save_comp" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_11" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_eval_quota" target="n2_save_comp" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_12" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_save_comp" target="n2_db_d5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_13" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_db_d5" target="n2_adm_review" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_14" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_adm_review" target="n2_adm_submit" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_15" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_adm_submit" target="n2_doc_submit" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_16" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_doc_submit" target="n2_kalab_review" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_17" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_kalab_review" target="n2_dec_kalab" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_18" value="Ditolak" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;fontSize=9;" edge="1" source="n2_dec_kalab" target="n2_kalab_reject" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_19" value="Disetujui" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;fontSize=9;" edge="1" source="n2_dec_kalab" target="n2_kalab_approve" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_20" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_kalab_approve" target="n2_doc_approved" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_21" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_kalab_approve" target="n2_db_d6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_22" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_kalab_reject" target="n2_db_d6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e2_23" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n2_doc_approved" target="n2_end" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  </root>
+</mxGraphModel>
+  </diagram>
+  <diagram id="flowmap-p3" name="Flowmap 3.0 (Output)">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1400" math="0" shadow="0">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+
+    <mxCell id="p3_title" value="&lt;b&gt;BAGAN ALIR SISTEM (FLOWMAP) - PROSEDUR 3.0&lt;/b&gt;&lt;br&gt;Penyajian Informasi, Pembuatan Laporan Resmi, dan Monitoring Eksekutif (Output)&lt;br&gt;Sistem Informasi Manifest USN Kolaka" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontColor=#000000;" vertex="1" parent="1">
+      <mxGeometry x="500" y="20" width="800" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane3_pim" value="&lt;b&gt;Pimpinan&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="100" width="320" height="1100" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane3_admin" value="&lt;b&gt;Administrator&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="360" y="100" width="340" height="1100" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane3_lab" value="&lt;b&gt;Kepala &amp;amp; Staf Lab&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="700" y="100" width="340" height="1100" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane3_sys" value="&lt;b&gt;Sistem Informasi Manifest USN&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="1040" y="100" width="400" height="1100" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="lane3_db" value="&lt;b&gt;Basis Data (Database)&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
+      <mxGeometry x="1440" y="100" width="320" height="1100" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_start" value="Mulai (Akses Output)" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;" vertex="1" parent="lane3_pim">
+      <mxGeometry x="90" y="50" width="140" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_pim_req" value="Akses Dashboard &amp;amp;&#xa;Matriks Kepatuhan" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_pim">
+      <mxGeometry x="80" y="120" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_sys_exec_dash" value="Filter Lab Disetujui (D6) &amp;amp;&#xa;Kompilasi Matriks Kepatuhan" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_sys">
+      <mxGeometry x="100" y="120" width="200" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_db_all" value="D1-D6 Data Master,&#xa;Lisensi, Scan, Kepatuhan" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane3_db">
+      <mxGeometry x="80" y="115" width="160" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_doc_pim_dash" value="Tampilan Matriks&#xa;Kepatuhan Lintas Fakultas" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane3_pim">
+      <mxGeometry x="85" y="210" width="150" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_pim_export" value="Unduh Laporan Kebutuhan&#xa;Lisensi &amp;amp; Rekomendasi" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_pim">
+      <mxGeometry x="80" y="310" width="160" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_doc_pim_rep" value="Dokumen Analisis Kebutuhan&#xa;Lisensi (PDF/Excel)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane3_pim">
+      <mxGeometry x="85" y="400" width="150" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_adm_req_rep" value="Pilih Parameter &amp;amp; Ekspor&#xa;Laporan Operasional Institusi" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_admin">
+      <mxGeometry x="80" y="310" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_sys_gen_rep" value="Kompilasi Data &amp;amp; Generate&#xa;Dokumen PDF / Spreadsheet Excel" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_sys">
+      <mxGeometry x="100" y="310" width="200" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_doc_adm_rep" value="Dokumen Laporan Resmi:&#xa;- Laporan Kepatuhan Lisensi&#xa;- Laporan Inventaris PC &amp;amp; SW&#xa;- Laporan Perubahan SW&#xa;- Rekap Monitoring Pemindaian" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=left;" vertex="1" parent="lane3_admin">
+      <mxGeometry x="65" y="400" width="210" height="90" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_adm_req_key" value="Permintaan Pembukaan&#xa;Kunci Lisensi Terenkripsi" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_admin">
+      <mxGeometry x="80" y="530" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_sys_reveal_key" value="Dekripsi Kunci, Throttling (10/m),&#xa;&amp;amp; Catat Spatie ActivityLog" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_sys">
+      <mxGeometry x="100" y="530" width="200" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_db_d7" value="D7 Data Log Aktivitas&#xa;(Audit Trail)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane3_db">
+      <mxGeometry x="80" y="525" width="160" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_doc_key" value="Kunci Lisensi Terbuka&#xa;(Audited Key Reveal)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane3_admin">
+      <mxGeometry x="85" y="620" width="170" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_lab_access" value="Akses Dashboard Lab &amp;amp;&#xa;Inventaris PC Laboratorium" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_lab">
+      <mxGeometry x="80" y="700" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_sys_filter_lab" value="Otorisasi ScopedByLaboratory&#xa;(Isolasi Data Sesuai Lab Terkait)" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_sys">
+      <mxGeometry x="100" y="700" width="200" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_doc_lab_rep" value="Dokumen Kepatuhan Lab &amp;amp;&#xa;Inventaris PC Lab" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane3_lab">
+      <mxGeometry x="85" y="790" width="170" height="60" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_end" value="Selesai (Fase Output)" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;" vertex="1" parent="lane3_lab">
+      <mxGeometry x="100" y="900" width="140" height="40" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="e3_1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_start" target="n3_pim_req" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_2" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_pim_req" target="n3_sys_exec_dash" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_3" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_db_all" target="n3_sys_exec_dash" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_4" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_sys_exec_dash" target="n3_doc_pim_dash" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_5" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_doc_pim_dash" target="n3_pim_export" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_6" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_pim_export" target="n3_sys_gen_rep" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_7" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_sys_gen_rep" target="n3_doc_pim_rep" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_8" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_adm_req_rep" target="n3_sys_gen_rep" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_9" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_sys_gen_rep" target="n3_doc_adm_rep" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_10" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_doc_adm_rep" target="n3_adm_req_key" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_11" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_adm_req_key" target="n3_sys_reveal_key" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_12" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_sys_reveal_key" target="n3_db_d7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_13" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_sys_reveal_key" target="n3_doc_key" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_14" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_lab_access" target="n3_sys_filter_lab" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_15" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_sys_filter_lab" target="n3_doc_lab_rep" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_16" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_doc_lab_rep" target="n3_end" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  </root>
+</mxGraphModel>
+  </diagram>
+</mxfile>

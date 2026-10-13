@@ -26,20 +26,19 @@ class UserTestingSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command?->info('Menjalankan UserTestingSeeder (Deterministic Test Dataset)...');
+        $this->command?->info(
+            'Menjalankan UserTestingSeeder (Deterministic Test Dataset)...',
+        );
 
         // 1. Pastikan Role & Permission serta Fakultas dasar ada
-        $this->call([
-            RoleAndPermissionSeeder::class,
-            FacultySeeder::class,
-        ]);
+        $this->call([RoleAndPermissionSeeder::class, FacultySeeder::class]);
 
         $admin = User::firstOrCreate(
             ['email' => 'admin@usn.ac.id'],
             [
                 'name' => 'Administrator TI',
-                'password' => bcrypt(config('app.default_user_password', 'ManifestUSN_2026!')),
-            ]
+                'password' => env('DEFAULT_USER_PASSWORD', 'ManifestUSN_2026!'),
+            ],
         );
         $admin->syncRoles(['admin']);
 
@@ -47,8 +46,8 @@ class UserTestingSeeder extends Seeder
             ['email' => 'pimpinan@usn.ac.id'],
             [
                 'name' => 'Dekan FTI',
-                'password' => bcrypt(config('app.default_user_password', 'ManifestUSN_2026!')),
-            ]
+                'password' => env('DEFAULT_USER_PASSWORD', 'ManifestUSN_2026!'),
+            ],
         );
         $pimpinan->syncRoles(['pimpinan']);
 
@@ -71,7 +70,7 @@ class UserTestingSeeder extends Seeder
                 'building' => 'Gedung A',
                 'floor' => '2',
                 'description' => 'Lab Komputer Dasar FTI',
-            ]
+            ],
         );
 
         $lab2 = Laboratory::firstOrCreate(
@@ -82,7 +81,7 @@ class UserTestingSeeder extends Seeder
                 'building' => 'Gedung A',
                 'floor' => '3',
                 'description' => 'Lab Rekayasa Perangkat Lunak FTI',
-            ]
+            ],
         );
 
         // Setup Akun Kepala Lab dan Staf Lab
@@ -90,10 +89,10 @@ class UserTestingSeeder extends Seeder
             ['email' => 'kepalalab@usn.ac.id'],
             [
                 'name' => 'Kepala Lab Komputer',
-                'password' => bcrypt(config('app.default_user_password', 'ManifestUSN_2026!')),
+                'password' => env('DEFAULT_USER_PASSWORD', 'ManifestUSN_2026!'),
                 'faculty_id' => $fti->id,
                 'laboratory_id' => $lab1->id,
-            ]
+            ],
         );
         $kepalaLab->syncRoles(['kepala_lab']);
 
@@ -101,10 +100,10 @@ class UserTestingSeeder extends Seeder
             ['email' => 'stafflab@usn.ac.id'],
             [
                 'name' => 'Teknisi Lab Komputer',
-                'password' => bcrypt(config('app.default_user_password', 'ManifestUSN_2026!')),
+                'password' => env('DEFAULT_USER_PASSWORD', 'ManifestUSN_2026!'),
                 'faculty_id' => $fti->id,
                 'laboratory_id' => $lab1->id,
-            ]
+            ],
         );
         $staffLab->syncRoles(['staff_lab']);
 
@@ -115,7 +114,7 @@ class UserTestingSeeder extends Seeder
                 'category' => 'Commercial',
                 'status' => 'Whitelist',
                 'description' => 'Suite produktivitas kantor resmi Microsoft',
-            ]
+            ],
         );
 
         $catPhotoshop = SoftwareCatalog::firstOrCreate(
@@ -124,7 +123,7 @@ class UserTestingSeeder extends Seeder
                 'category' => 'Commercial',
                 'status' => 'Whitelist',
                 'description' => 'Software pengolah grafis dan desain',
-            ]
+            ],
         );
 
         $catAutoCAD = SoftwareCatalog::firstOrCreate(
@@ -133,7 +132,7 @@ class UserTestingSeeder extends Seeder
                 'category' => 'Commercial',
                 'status' => 'Whitelist',
                 'description' => 'Software desain teknik & CAD',
-            ]
+            ],
         );
 
         $catChrome = SoftwareCatalog::firstOrCreate(
@@ -142,7 +141,7 @@ class UserTestingSeeder extends Seeder
                 'category' => 'Freeware',
                 'status' => 'Whitelist',
                 'description' => 'Peramban web standar',
-            ]
+            ],
         );
 
         $catVSCode = SoftwareCatalog::firstOrCreate(
@@ -151,7 +150,7 @@ class UserTestingSeeder extends Seeder
                 'category' => 'OpenSource',
                 'status' => 'Whitelist',
                 'description' => 'Text editor pemrograman open-source',
-            ]
+            ],
         );
 
         $catKMSPico = SoftwareCatalog::firstOrCreate(
@@ -160,7 +159,7 @@ class UserTestingSeeder extends Seeder
                 'category' => 'Other',
                 'status' => 'Blacklist',
                 'description' => 'Software aktivator ilegal berbahaya (masuk daftar hitam)',
-            ]
+            ],
         );
 
         // 4. Setup Inventaris Lisensi & Alokasi Kuota
@@ -168,19 +167,24 @@ class UserTestingSeeder extends Seeder
         $licOffice = LicenseInventory::firstOrCreate(
             ['catalog_id' => $catOffice->id],
             [
-                'license_key' => Crypt::encryptString('OFFICE-2019-PRO-USN-KOLAKA-0001'),
+                'license_key' => Crypt::encryptString(
+                    'OFFICE-2019-PRO-USN-KOLAKA-0001',
+                ),
                 'purchase_order_number' => 'PO/USN/2026/01/001',
                 'quota_limit' => 20,
                 'purchase_date' => Carbon::now()->subMonths(6),
                 'expiry_date' => Carbon::now()->addMonths(18),
                 'price_per_unit' => 3500000,
                 'notes' => 'Lisensi volume resmi Microsoft untuk universitas',
-            ]
+            ],
         );
         $licOffice->update(['quota_limit' => 20]);
 
         LicenseAllocation::updateOrCreate(
-            ['license_inventory_id' => $licOffice->id, 'faculty_id' => $fti->id],
+            [
+                'license_inventory_id' => $licOffice->id,
+                'faculty_id' => $fti->id,
+            ],
             [
                 'allocated_quota' => 15,
                 'allocation_date' => Carbon::now()->subMonths(5),
@@ -189,26 +193,31 @@ class UserTestingSeeder extends Seeder
                 'status' => 'active',
                 'notes' => 'Alokasi kuota Office FTI untuk 15 kursi lab',
                 'created_by' => $admin->id,
-            ]
+            ],
         );
 
         // Photoshop: Owned = 10, Alokasi FTI = 8
         $licPhotoshop = LicenseInventory::firstOrCreate(
             ['catalog_id' => $catPhotoshop->id],
             [
-                'license_key' => Crypt::encryptString('ADOBE-PHOTO-2022-USN-KOLAKA-0002'),
+                'license_key' => Crypt::encryptString(
+                    'ADOBE-PHOTO-2022-USN-KOLAKA-0002',
+                ),
                 'purchase_order_number' => 'PO/USN/2026/01/002',
                 'quota_limit' => 10,
                 'purchase_date' => Carbon::now()->subMonths(4),
                 'expiry_date' => Carbon::now()->addMonths(8),
                 'price_per_unit' => 4200000,
                 'notes' => 'Lisensi Adobe Creative Cloud lab komputer',
-            ]
+            ],
         );
         $licPhotoshop->update(['quota_limit' => 10]);
 
         LicenseAllocation::updateOrCreate(
-            ['license_inventory_id' => $licPhotoshop->id, 'faculty_id' => $fti->id],
+            [
+                'license_inventory_id' => $licPhotoshop->id,
+                'faculty_id' => $fti->id,
+            ],
             [
                 'allocated_quota' => 8,
                 'allocation_date' => Carbon::now()->subMonths(4),
@@ -217,26 +226,31 @@ class UserTestingSeeder extends Seeder
                 'status' => 'active',
                 'notes' => 'Alokasi kuota Photoshop FTI untuk 8 kursi lab',
                 'created_by' => $admin->id,
-            ]
+            ],
         );
 
         // AutoCAD: Owned = 5, Alokasi FTI = 5
         $licAutoCAD = LicenseInventory::firstOrCreate(
             ['catalog_id' => $catAutoCAD->id],
             [
-                'license_key' => Crypt::encryptString('AUTOCAD-2024-USN-KOLAKA-0003'),
+                'license_key' => Crypt::encryptString(
+                    'AUTOCAD-2024-USN-KOLAKA-0003',
+                ),
                 'purchase_order_number' => 'PO/USN/2026/01/003',
                 'quota_limit' => 5,
                 'purchase_date' => Carbon::now()->subMonths(3),
                 'expiry_date' => Carbon::now()->addMonths(9),
                 'price_per_unit' => 7800000,
                 'notes' => 'Lisensi CAD Lab Desain',
-            ]
+            ],
         );
         $licAutoCAD->update(['quota_limit' => 5]);
 
         LicenseAllocation::updateOrCreate(
-            ['license_inventory_id' => $licAutoCAD->id, 'faculty_id' => $fti->id],
+            [
+                'license_inventory_id' => $licAutoCAD->id,
+                'faculty_id' => $fti->id,
+            ],
             [
                 'allocated_quota' => 5,
                 'allocation_date' => Carbon::now()->subMonths(3),
@@ -245,7 +259,7 @@ class UserTestingSeeder extends Seeder
                 'status' => 'active',
                 'notes' => 'Alokasi kuota AutoCAD FTI untuk 5 kursi lab',
                 'created_by' => $admin->id,
-            ]
+            ],
         );
 
         // 5. Setup Komputer Deterministik
@@ -259,7 +273,8 @@ class UserTestingSeeder extends Seeder
                 [
                     'laboratory_id' => $lab1->id,
                     'ip_address' => '192.168.10.'.(10 + $i),
-                    'mac_address' => '00:1B:44:11:3A:'.str_pad(dechex($i), 2, '0', STR_PAD_LEFT),
+                    'mac_address' => '00:1B:44:11:3A:'.
+                        str_pad(dechex($i), 2, '0', STR_PAD_LEFT),
                     'os_name' => 'Microsoft Windows 11 Pro',
                     'os_version' => '10.0.22631',
                     'os_architecture' => '64-bit',
@@ -271,7 +286,7 @@ class UserTestingSeeder extends Seeder
                     'disk_free_gb' => 320,
                     'status' => $i > 18 ? 'unscanned' : 'active',
                     'last_seen_at' => $i > 18 ? null : Carbon::now()->subDays(2),
-                ]
+                ],
             );
         }
 
@@ -283,7 +298,8 @@ class UserTestingSeeder extends Seeder
                 [
                     'laboratory_id' => $lab2->id,
                     'ip_address' => '192.168.20.'.(10 + $i),
-                    'mac_address' => '00:1B:44:22:5B:'.str_pad(dechex($i), 2, '0', STR_PAD_LEFT),
+                    'mac_address' => '00:1B:44:22:5B:'.
+                        str_pad(dechex($i), 2, '0', STR_PAD_LEFT),
                     'os_name' => 'Microsoft Windows 10 Pro',
                     'os_version' => '10.0.19045',
                     'os_architecture' => '64-bit',
@@ -295,7 +311,7 @@ class UserTestingSeeder extends Seeder
                     'disk_free_gb' => 280,
                     'status' => 'active',
                     'last_seen_at' => Carbon::now()->subDays(1),
-                ]
+                ],
             );
         }
 
@@ -322,40 +338,75 @@ class UserTestingSeeder extends Seeder
                     'trigger' => 'scheduled',
                     'software_count' => 5,
                     'status' => 'completed',
-                ]
+                ],
             );
 
             // Seluruh 18 PC aktif Lab1 punya Office & Chrome & VSCode
             ScanSoftwareResult::firstOrCreate(
-                ['scan_session_id' => $scan->id, 'raw_name' => 'Microsoft Office 2019 Professional Plus'],
-                ['version' => '16.0.10396', 'vendor' => 'Microsoft Corporation', 'catalog_id' => $catOffice->id]
+                [
+                    'scan_session_id' => $scan->id,
+                    'raw_name' => 'Microsoft Office 2019 Professional Plus',
+                ],
+                [
+                    'version' => '16.0.10396',
+                    'vendor' => 'Microsoft Corporation',
+                    'catalog_id' => $catOffice->id,
+                ],
             );
             ScanSoftwareResult::firstOrCreate(
                 ['scan_session_id' => $scan->id, 'raw_name' => 'Google Chrome'],
-                ['version' => '120.0.6099', 'vendor' => 'Google LLC', 'catalog_id' => $catChrome->id]
+                [
+                    'version' => '120.0.6099',
+                    'vendor' => 'Google LLC',
+                    'catalog_id' => $catChrome->id,
+                ],
             );
             ScanSoftwareResult::firstOrCreate(
-                ['scan_session_id' => $scan->id, 'raw_name' => 'Visual Studio Code'],
-                ['version' => '1.85.1', 'vendor' => 'Microsoft Corporation', 'catalog_id' => $catVSCode->id]
+                [
+                    'scan_session_id' => $scan->id,
+                    'raw_name' => 'Visual Studio Code',
+                ],
+                [
+                    'version' => '1.85.1',
+                    'vendor' => 'Microsoft Corporation',
+                    'catalog_id' => $catVSCode->id,
+                ],
             );
 
             // Photoshop di 10 PC pertama Lab1
             if ($idx <= 10) {
                 ScanSoftwareResult::firstOrCreate(
-                    ['scan_session_id' => $scan->id, 'raw_name' => 'Adobe Photoshop CC 2022'],
-                    ['version' => '23.0.0', 'vendor' => 'Adobe Inc.', 'catalog_id' => $catPhotoshop->id]
+                    [
+                        'scan_session_id' => $scan->id,
+                        'raw_name' => 'Adobe Photoshop CC 2022',
+                    ],
+                    [
+                        'version' => '23.0.0',
+                        'vendor' => 'Adobe Inc.',
+                        'catalog_id' => $catPhotoshop->id,
+                    ],
                 );
             }
 
             // KMSPico di PC 5 Lab1 (Violation)
             if ($idx === 5) {
                 ScanSoftwareResult::firstOrCreate(
-                    ['scan_session_id' => $scan->id, 'raw_name' => 'KMSPico Activator'],
-                    ['version' => '10.2.0', 'vendor' => 'Team Daz', 'catalog_id' => $catKMSPico->id]
+                    [
+                        'scan_session_id' => $scan->id,
+                        'raw_name' => 'KMSPico Activator',
+                    ],
+                    [
+                        'version' => '10.2.0',
+                        'vendor' => 'Team Daz',
+                        'catalog_id' => $catKMSPico->id,
+                    ],
                 );
 
                 ComplianceReport::updateOrCreate(
-                    ['computer_id' => $comp->id, 'software_catalog_id' => $catKMSPico->id],
+                    [
+                        'computer_id' => $comp->id,
+                        'software_catalog_id' => $catKMSPico->id,
+                    ],
                     [
                         'software_name' => 'KMSPico Activator',
                         'software_version' => '10.2.0',
@@ -363,7 +414,7 @@ class UserTestingSeeder extends Seeder
                         'keterangan' => 'Aktivator ilegal terdeteksi - masuk dalam daftar blokir sistem.',
                         'detected_at' => Carbon::now()->subDays(2),
                         'scanned_at' => Carbon::now()->subDays(2),
-                    ]
+                    ],
                 );
             }
         }
@@ -379,35 +430,60 @@ class UserTestingSeeder extends Seeder
                     'trigger' => 'scheduled',
                     'software_count' => 5,
                     'status' => 'completed',
-                ]
+                ],
             );
 
             ScanSoftwareResult::firstOrCreate(
                 ['scan_session_id' => $scan->id, 'raw_name' => 'Google Chrome'],
-                ['version' => '120.0.6099', 'vendor' => 'Google LLC', 'catalog_id' => $catChrome->id]
+                [
+                    'version' => '120.0.6099',
+                    'vendor' => 'Google LLC',
+                    'catalog_id' => $catChrome->id,
+                ],
             );
 
             // Office di 7 PC pertama Lab2 (Total Office FTI = 18 + 7 = 25 PC!)
             if ($idx <= 7) {
                 ScanSoftwareResult::firstOrCreate(
-                    ['scan_session_id' => $scan->id, 'raw_name' => 'Microsoft Office 2019 Professional Plus'],
-                    ['version' => '16.0.10396', 'vendor' => 'Microsoft Corporation', 'catalog_id' => $catOffice->id]
+                    [
+                        'scan_session_id' => $scan->id,
+                        'raw_name' => 'Microsoft Office 2019 Professional Plus',
+                    ],
+                    [
+                        'version' => '16.0.10396',
+                        'vendor' => 'Microsoft Corporation',
+                        'catalog_id' => $catOffice->id,
+                    ],
                 );
             }
 
             // Photoshop di 6 PC pertama Lab2 (Total Photoshop FTI = 10 + 6 = 16 PC!)
             if ($idx <= 6) {
                 ScanSoftwareResult::firstOrCreate(
-                    ['scan_session_id' => $scan->id, 'raw_name' => 'Adobe Photoshop CC 2022'],
-                    ['version' => '23.0.0', 'vendor' => 'Adobe Inc.', 'catalog_id' => $catPhotoshop->id]
+                    [
+                        'scan_session_id' => $scan->id,
+                        'raw_name' => 'Adobe Photoshop CC 2022',
+                    ],
+                    [
+                        'version' => '23.0.0',
+                        'vendor' => 'Adobe Inc.',
+                        'catalog_id' => $catPhotoshop->id,
+                    ],
                 );
             }
 
             // AutoCAD di 5 PC pertama Lab2 (Total AutoCAD FTI = 5 PC!)
             if ($idx <= 5) {
                 ScanSoftwareResult::firstOrCreate(
-                    ['scan_session_id' => $scan->id, 'raw_name' => 'Autodesk AutoCAD 2024'],
-                    ['version' => '24.3.0', 'vendor' => 'Autodesk Inc.', 'catalog_id' => $catAutoCAD->id]
+                    [
+                        'scan_session_id' => $scan->id,
+                        'raw_name' => 'Autodesk AutoCAD 2024',
+                    ],
+                    [
+                        'version' => '24.3.0',
+                        'vendor' => 'Autodesk Inc.',
+                        'catalog_id' => $catAutoCAD->id,
+                    ],
                 );
             }
         }
@@ -417,28 +493,38 @@ class UserTestingSeeder extends Seeder
 
         // LAB-KOM1: Status PENDING (Untuk diuji oleh Kepala Lab pada Skenario K-02)
         ReportApproval::updateOrCreate(
-            ['laboratory_id' => $lab1->id, 'period' => $currentPeriod, 'report_type' => 'kepatuhan'],
+            [
+                'laboratory_id' => $lab1->id,
+                'period' => $currentPeriod,
+                'report_type' => 'kepatuhan',
+            ],
             [
                 'status' => 'pending',
                 'reviewed_by' => null,
                 'reviewed_at' => null,
                 'notes' => null,
-            ]
+            ],
         );
 
         // LAB-KOM2: Status APPROVED (Agar data FTI langsung tampil resmi di Executive Dashboard Pimpinan)
         ReportApproval::updateOrCreate(
-            ['laboratory_id' => $lab2->id, 'period' => $currentPeriod, 'report_type' => 'kepatuhan'],
+            [
+                'laboratory_id' => $lab2->id,
+                'period' => $currentPeriod,
+                'report_type' => 'kepatuhan',
+            ],
             [
                 'status' => 'approved',
                 'reviewed_by' => $kepalaLab->id,
                 'reviewed_at' => Carbon::now()->subDay(),
                 'notes' => 'Laporan kepatuhan Lab Komputer 2 telah divalidasi dan disetujui.',
-            ]
+            ],
         );
 
         // 8. Bersihkan Cache Redis dan App
         Artisan::call('cache:clear');
-        $this->command?->info('UserTestingSeeder selesai. Cache telah dibersihkan.');
+        $this->command?->info(
+            'UserTestingSeeder selesai. Cache telah dibersihkan.',
+        );
     }
 }

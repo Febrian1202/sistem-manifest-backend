@@ -6,6 +6,29 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 
 ---
 
+## [1.0.4] - 2026-10-13
+
+### Added
+- **Perencanaan & Instrumen User Testing Komprehensif:**
+  - Menyusun dokumen rencana dan protokol pengujian pengguna (`docs/Testing/user-testing.md` dan format Word `perencanaan-user-testing.docx`) mengacu pada metodologi *Handbook of Usability Testing* (Rubin & Chisnell).
+  - Menyediakan 16 skenario tugas berbasis peran (`admin`, `pimpinan`, `kepala_lab`, `staff_lab`) dengan kriteria keberhasilan yang terukur.
+  - Lembar observasi evaluator (Completion Rate, Time-on-Task, Error Rate/Assistances).
+  - Instrumen evaluasi dukungan keputusan manajerial dengan 4 skenario kasus (*case vignettes*) dan metrik *Decision Accuracy Rate* (DAR).
+  - Kuesioner System Usability Scale (SUS 10 butir pertanyaan skala Likert) dan panduan analisis data statistik deskriptif untuk tesis.
+  - Formulir persetujuan partisipan (*Informed Consent Form*) dan skrip fasilitator pengujian.
+- **Diagram Arsitektur & Aliran Sistem:**
+  - Diagram Konteks sistem manifest lisensi (`docs/diagram-konteks.drawio` dan `docs/diagram-konteks.md`).
+  - Data Flow Diagram (DFD) Level 1 (`docs/dfd-level-1.drawio` dan `docs/dfd-level-1.md`).
+  - Data Flow Diagram (DFD) Level 2 per modul proses (`docs/dfd-level-2.drawio` dan `docs/dfd-level-2.md`).
+  - Flowmap proses bisnis sistem manifest lisensi software (`docs/flowmap.drawio` dan `docs/flowmap.md`).
+- **Dataset Pengujian Deterministik (User Testing Seeder):**
+  - Membuat `UserTestingSeeder` untuk menginisialisasi skenario pengujian langsung secara deterministik (2 lab, 30 komputer, riwayat scan, variasi lisensi Office/Photoshop/AutoCAD, temuan pelanggaran KMSPico, dan alur persetujuan laporan pending/approved).
+
+### Changed
+- **Penyempurnaan Tampilan Navigasi Sidebar:**
+  - Menambahkan custom scrollbar ramping `.sidebar-scrollbar` pada `resources/css/app.css` agar navigasi sidebar tampak lebih bersih dan modern.
+  - Memperbarui `resources/views/components/layout/side-bar.blade.php` untuk integrasi scrollbar kustom dan ekspresi dinamis label menu laporan.
+
 ## [1.0.3] - 2026-10-02
 
 ### Changed
