@@ -65,6 +65,7 @@ test('SoftwareFilterService correctly identifies newly identified system junk, u
         ->toContain('Application Verifier x64 External Package (DesktopEditions)')
         ->toContain('CorelDRAW Graphics Suite 2021 - Capture (x64)')
         ->toContain('Autodesk CER')
+        ->toContain('Microsoft .NET Toolset 9.0.203 (x64)')
         ->toContain('VS JIT Debugger')
         ->toContain('icecap_collection_neutral')
         ->toContain('WPTx64 (DesktopEditions)');

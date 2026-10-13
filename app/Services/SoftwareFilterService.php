@@ -58,6 +58,8 @@ class SoftwareFilterService
         '.NET Templates',
         '.NET Runtime',
         '.NET SDK',
+        '.NET Toolset',
+        'Toolset',
         'Targeting Pack',
         'Client Profile',
         'AppHost',
@@ -215,7 +217,7 @@ class SoftwareFilterService
         '/^Python \d+\.\d+\.\d+ (Core Interpreter|Development Libraries|Executables|Add to Path|Standard Library|Documentation|Utility Scripts|Tcl|Test|pip)/',
 
         // Microsoft .NET sub-entries
-        '/^Microsoft \.NET \d+\.\d+ (Templates|Host|Runtime|SDK)/',
+        '/^Microsoft \.NET (Toolset|\d+\.\d+ (Templates|Host|Runtime|SDK|Toolset))/',
 
         // KB updates (e.g. "KB1234567")
         '/^KB\d+/',
