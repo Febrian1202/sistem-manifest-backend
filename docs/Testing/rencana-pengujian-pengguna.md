@@ -520,3 +520,47 @@ Untuk menyusun narasi Bab 4 Skripsi secara sistematis, peneliti disarankan memba
   - **Bukti Empiris Lapangan**: (Contoh: 2 responden Kepala Lab sempat ragu selama 25 detik).
   - **Rekomendasi Perbaikan UI**: (Contoh: Menambahkan ikon kalender dan indikator aktif berwarna kontras).
 
+| No | Komponen UI / Alur | Isu Kebergunaan yang Teramati | Bukti Empiris (Think-Aloud / Error) | Rekomendasi Solusi Desain UI/UX | Prioritas |
+|---|---|---|---|---|:---:|
+| 1 | Filter Periode & Lab | Pengguna ragu apakah tabel otomatis ter-update saat filter diubah. | Responden berhenti sejenak mencari tombol "Terapkan". | Berikan indikator *loading state* halus atau tombol eksplisit "Filter". | Medium |
+| 2 | Notifikasi Approval | Kepala Lab ingin melihat pratinjau PDF sebelum menyetujui. | Responden mencari tombol pratinjau dokumen resmi. | Pastikan tombol "Pratinjau PDF" diletakkan berdampingan dengan tombol *Approve*. | High |
+| 3 | Ekspor Analisis Kebutuhan | Ikon ekspor Excel/PDF di pojok kanan atas sempat terlewatkan. | Pimpinan membutuhkan waktu >40 detik mencari tombol ekspor. | Berikan label teks kontras tinggi dengan ikon yang familiar. | Low |
+
+---
+
+## LAMPIRAN TAMBAHAN: FORMULIR PERSETUJUAN PARTISIPAN (INFORMED CONSENT)
+
+```text
+========================================================================================
+                 SURAT PERNYATAAN KESEDIAAN MENJADI RESPONDEN
+                      (INFORMED CONSENT USER TESTING)
+========================================================================================
+
+Saya yang bertanda tangan di bawah ini:
+Nama Lengkap      : ____________________________________________________________________
+Jabatan / Unit    : ____________________________________________________________________
+Instansi          : Universitas Sembilanbelas November Kolaka
+
+Menyatakan dengan sesungguhnya bahwa:
+1. Saya telah menerima penjelasan menyeluruh mengenai maksud dan tujuan pengujian sistem
+   UniLicense (Sistem Manifest & Kepatuhan Lisensi USN Kolaka) untuk keperluan skripsi.
+2. Saya memahami bahwa pengujian ini semata-mata menguji kebergunaan sistem aplikasi,
+   bukan menguji kemampuan atau kinerja pribadi saya.
+3. Saya bersedia berpartisipasi secara sukarela tanpa paksaan, bersedia menjalankan skenario
+   tugas yang diberikan, serta mengisi kuesioner evaluasi secara objektif dan jujur.
+4. Saya mengizinkan data interaksi, metrik performa, dan masukan kualitatif yang saya berikan
+   digunakan sebagai data penelitian skripsi dengan tetap menjaga kerahasiaan identitas pribadi.
+
+Demikian pernyataan ini saya buat dengan sadar dan sukarela untuk dipergunakan sebagaimana
+mestinya.
+
+                                             Kolaka, ______________________ 2026
+                                             Partisipan Pengujian,
+
+
+
+                                             ( ________________________________ )
+========================================================================================
+```
+
+
