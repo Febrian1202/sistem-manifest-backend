@@ -82,7 +82,9 @@ class SoftwareCatalogService
      */
     public function getAutoProcessedData(string $softwareName): array
     {
-        $whitelist = config('software_whitelist.freeware_keywords', []);
+        $commercial = config('software_whitelist.commercial_keywords', []);
+        $freeware = config('software_whitelist.freeware_keywords', []);
+        $whitelist = array_merge($commercial, $freeware);
         $lowerName = strtolower($softwareName);
 
         foreach ($whitelist as $keyword => $data) {

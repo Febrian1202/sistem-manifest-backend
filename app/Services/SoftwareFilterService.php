@@ -158,6 +158,39 @@ class SoftwareFilterService
         // ---- Epson / Printer components ----
         'USB Display',
         'Epson USB',
+        'Uninstall',
+        'Printer Uninstall',
+        'Scan OCR Component',
+
+        // ---- Developer SDKs / Testing / Profiling / Diagnostics ----
+        'Application Verifier',
+        'Windows App Certification Kit',
+        'WPTx64',
+        'WinAppDeploy',
+        'MSI Development Tools',
+        'icecap_',
+        'VS JIT Debugger',
+        'VS Script Debugging',
+        'Visual Studio Tools for Applications',
+        'Universal CRT',
+        'WinRT Intellisense',
+        'Windows Software Development Kit',
+        'Compatibility Fix Database',
+        'Web Deploy',
+        'CLR Types for SQL Server',
+        'Visual Basic for Applications',
+        'Handwriting.Main',
+
+        // ---- Vendor utilities / Background services ----
+        'EShare Audio Card',
+        'ESystemRemoteService',
+        'Autodesk Access',
+        'Autodesk App Manager',
+        'Autodesk CER',
+        'Autodesk Featured Apps',
+        'Autodesk Save to Web',
+        'AutoCAD Open in',
+        'BlueStacks Services',
 
         // ---- License server components ----
         'License Server',
@@ -168,6 +201,9 @@ class SoftwareFilterService
      * Checked separately from keyword matching.
      */
     public const JUNK_PATTERNS = [
+        // CorelDRAW sub-components / modules (keep main suite only)
+        '/^CorelDRAW Graphics Suite.* - (Capture|Common|Custom Data|Discovery|Draw|EN|Filters|Font Manager|IPM|IPM Content EN|Models|PHOTO-PAINT|VBA|Workspaces|Writing Tools)/i',
+
         // Windows Store App IDs (e.g. "Microsoft.Paint", "SpotifyAB.SpotifyMusic", "5319275A.WhatsAppDesktop")
         // Format: Publisher.AppName or HexID.AppName (no spaces, PascalCase)
         '/^[A-Za-z0-9]+\.[A-Za-z][A-Za-z0-9\.]+$/',

@@ -1,0 +1,1163 @@
+[
+    {
+        "id": 1,
+        "normalized_name": "Adobe Premiere Pro 2019",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 2,
+        "normalized_name": "Android Studio",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 3,
+        "normalized_name": "Antigravity (User)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 4,
+        "normalized_name": "Antigravity 2.19.1",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 5,
+        "normalized_name": "Application Verifier x64 External Package (DesktopEditions)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 6,
+        "normalized_name": "Application Verifier x64 External Package (OnecoreUAP)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 7,
+        "normalized_name": "Arduino IDE 2.3.8",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 8,
+        "normalized_name": "AutoCAD Open in Desktop",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 9,
+        "normalized_name": "Autodesk Access",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 10,
+        "normalized_name": "Autodesk App Manager",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 11,
+        "normalized_name": "Autodesk CER",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 12,
+        "normalized_name": "Autodesk Featured Apps",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 13,
+        "normalized_name": "Autodesk Save to Web and Mobile",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 14,
+        "normalized_name": "Bizagi Modeler",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 15,
+        "normalized_name": "BlueStacks",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 16,
+        "normalized_name": "BlueStacks Services",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 17,
+        "normalized_name": "Brave",
+        "category": "OpenSource",
+        "status": "Whitelist",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 18,
+        "normalized_name": "CapCut",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 19,
+        "normalized_name": "Copilot",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 20,
+        "normalized_name": "CorelDRAW Graphics Suite 2021",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 21,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - Capture (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 22,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - Common (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 23,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - Custom Data (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 24,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - Discovery (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 25,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - Draw (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 26,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - EN (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 27,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - Filters (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 28,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - Font Manager (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 29,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - IPM (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 30,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - IPM Content EN (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 31,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - Models (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 32,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - PHOTO-PAINT (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 33,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - VBA (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 34,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - Workspaces (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 35,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 - Writing Tools (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 36,
+        "normalized_name": "CorelDRAW Graphics Suite 2021 (64-Bit)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 37,
+        "normalized_name": "DB Browser for SQLite",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 38,
+        "normalized_name": "Dev-C++",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 39,
+        "normalized_name": "Discord",
+        "category": "Freeware",
+        "status": "Whitelist",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 40,
+        "normalized_name": "Epson Event Manager",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 41,
+        "normalized_name": "EPSON L120 Series Printer Uninstall",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 42,
+        "normalized_name": "EPSON L3210 Series Printer Uninstall",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 43,
+        "normalized_name": "Epson Photo+",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 44,
+        "normalized_name": "Epson Printer Connection Checker",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 45,
+        "normalized_name": "Epson Scan 2",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 46,
+        "normalized_name": "EPSON Scan OCR Component",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 47,
+        "normalized_name": "Epson ScanSmart",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 48,
+        "normalized_name": "EpsonNet Print",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 49,
+        "normalized_name": "EShare Audio Card 1.0.1",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 50,
+        "normalized_name": "ESystemRemoteService 1.1",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 51,
+        "normalized_name": "FileZilla 3.69.5",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 52,
+        "normalized_name": "Git",
+        "category": "OpenSource",
+        "status": "Whitelist",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 53,
+        "normalized_name": "Google Chrome",
+        "category": "Freeware",
+        "status": "Whitelist",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 54,
+        "normalized_name": "Google Drive",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 55,
+        "normalized_name": "Growtopia",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 56,
+        "normalized_name": "HeidiSQL 12.12.0.7122",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 57,
+        "normalized_name": "icecap_collection_neutral",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 58,
+        "normalized_name": "icecap_collection_x64",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 59,
+        "normalized_name": "icecap_collectionresources",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 60,
+        "normalized_name": "icecap_collectionresourcesx64",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 61,
+        "normalized_name": "Kasir Pintar POS",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 62,
+        "normalized_name": "Laragon 6.0.0",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 63,
+        "normalized_name": "Mendeley Desktop 1.19.5",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 64,
+        "normalized_name": "Microsoft .NET Toolset 9.0.203 (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 65,
+        "normalized_name": "Microsoft 365 - id-id",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 66,
+        "normalized_name": "Microsoft Edge",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 67,
+        "normalized_name": "Microsoft Flight Simulator X Demo",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 68,
+        "normalized_name": "Microsoft Office Professional Plus 2019 - en-us",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 69,
+        "normalized_name": "Microsoft OneDrive",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 70,
+        "normalized_name": "Microsoft OneNote - id-id",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 71,
+        "normalized_name": "Microsoft System CLR Types for SQL Server 2019",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 72,
+        "normalized_name": "Microsoft Visio - en-us",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 73,
+        "normalized_name": "Microsoft Visual Basic for Applications 7.1 (x64)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 74,
+        "normalized_name": "Microsoft Visual Basic for Applications 7.1 (x64) English",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 75,
+        "normalized_name": "Microsoft Visual Studio Code (User)",
+        "category": "Freeware",
+        "status": "Whitelist",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 76,
+        "normalized_name": "Microsoft Visual Studio Tools for Applications 2019",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 77,
+        "normalized_name": "Microsoft Visual Studio Tools for Applications 2019 x64 Hosting Support",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 78,
+        "normalized_name": "Microsoft Visual Studio Tools for Applications 2019 x86 Hosting Support",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 79,
+        "normalized_name": "Microsoft Web Deploy 4.0",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 80,
+        "normalized_name": "Microsoft Windows Application Compatibility Fix Database",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 81,
+        "normalized_name": "Microsoft.Ink.Handwriting.Main.en-US.1.0.1",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 82,
+        "normalized_name": "MicrosoftTeams",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 83,
+        "normalized_name": "MSI Development Tools",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 84,
+        "normalized_name": "MSTeams",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 85,
+        "normalized_name": "Notion 4.21.0",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 86,
+        "normalized_name": "OBS Studio",
+        "category": "OpenSource",
+        "status": "Whitelist",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 87,
+        "normalized_name": "OpenVPN Connect",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 88,
+        "normalized_name": "Oracle VirtualBox 7.1.12",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 89,
+        "normalized_name": "osu!",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 90,
+        "normalized_name": "PostgreSQL 17",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 91,
+        "normalized_name": "Postman x64 11.87.3",
+        "category": "Freeware",
+        "status": "Whitelist",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 92,
+        "normalized_name": "PowerISO",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 93,
+        "normalized_name": "Python 3.13.5 (64-bit)",
+        "category": "OpenSource",
+        "status": "Whitelist",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 94,
+        "normalized_name": "Python Launcher",
+        "category": "OpenSource",
+        "status": "Whitelist",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 95,
+        "normalized_name": "Rainmeter",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 96,
+        "normalized_name": "Redis on Windows",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 97,
+        "normalized_name": "ScreenShare 1.6.3.523",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 98,
+        "normalized_name": "SmartPLS 4 4.1.1.7",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 99,
+        "normalized_name": "Steam",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 100,
+        "normalized_name": "TablePlus 6.8.1",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 101,
+        "normalized_name": "Ubisoft Connect",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 102,
+        "normalized_name": "Universal CRT Headers Libraries and Sources",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 103,
+        "normalized_name": "Universal CRT Tools x64",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 104,
+        "normalized_name": "Universal CRT Tools x86",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 105,
+        "normalized_name": "Visual Studio Professional 2022",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 106,
+        "normalized_name": "Visual Studio Professional 2022 Preview",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 107,
+        "normalized_name": "VS JIT Debugger",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 108,
+        "normalized_name": "VS Script Debugging Common",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 109,
+        "normalized_name": "WebAdvisor by McAfee",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 110,
+        "normalized_name": "WinAppDeploy",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 111,
+        "normalized_name": "Windows App Certification Kit Native Components",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 112,
+        "normalized_name": "Windows App Certification Kit x64",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 113,
+        "normalized_name": "Windows App Certification Kit x64 (OnecoreUAP)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 114,
+        "normalized_name": "Windows Software Development Kit - Windows 10.0.26100.3916",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 115,
+        "normalized_name": "Windows Subsystem for Linux",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 116,
+        "normalized_name": "WinRAR 7.11 (64-bit)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 117,
+        "normalized_name": "WinRT Intellisense Desktop - en-us",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 118,
+        "normalized_name": "WinRT Intellisense Desktop - Other Languages",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 119,
+        "normalized_name": "WinRT Intellisense IoT - en-us",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 120,
+        "normalized_name": "WinRT Intellisense IoT - Other Languages",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 121,
+        "normalized_name": "WinRT Intellisense Mobile - en-us",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 122,
+        "normalized_name": "WinRT Intellisense PPI - en-us",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 123,
+        "normalized_name": "WinRT Intellisense PPI - Other Languages",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 124,
+        "normalized_name": "WinRT Intellisense UAP - en-us",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 125,
+        "normalized_name": "WinRT Intellisense UAP - Other Languages",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 126,
+        "normalized_name": "WPTx64 (DesktopEditions)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 127,
+        "normalized_name": "WPTx64 (OnecoreUAP)",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 128,
+        "normalized_name": "XAMPP",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    },
+    {
+        "id": 129,
+        "normalized_name": "Zoom Workplace",
+        "category": "Freeware",
+        "status": "Unreviewed",
+        "description": null,
+        "created_at": "2026-10-13T07:40:36.000000Z",
+        "updated_at": "2026-10-13T07:40:36.000000Z"
+    }
+]
