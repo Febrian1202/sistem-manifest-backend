@@ -27,3 +27,4 @@ Thumbs.db
 /script/agent/config.json
 /test-results
 /playwright-report
+/.superpowers
