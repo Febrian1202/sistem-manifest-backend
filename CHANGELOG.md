@@ -6,6 +6,17 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 
 ---
 
+## [1.0.5] - 2026-10-13
+
+### Fixed
+- **Validasi Integritas Paket ZIP Scanner Agent:**
+  - Memperbarui `AgentDownloadController` agar memvalidasi kelengkapan seluruh berkas skrip pemindai dan one-click batch launcher (`1-Jalankan-Scan-Sekarang.bat`, `2-Pasang-Jadwal-Otomatis.bat`, `3-Hapus-Jadwal-Otomatis.bat`) secara ketat sebelum membuat arsip ZIP, mencegah pengemasan berkas yang tidak lengkap secara diam-diam.
+  - Memperbarui konfigurasi `.gitattributes` dengan aturan `eol=crlf` khusus berkas batch (`*.bat` dan `*.cmd`) guna menjaga kompatibilitas eksekusi skrip command prompt di sistem operasi Windows.
+
+### Changed
+- **Penyempurnaan Panduan Halaman Unduhan Scanner:**
+  - Memperbarui antarmuka pengguna `agent-download.blade.php` agar menampilkan daftar berkas batch launcher siap pakai secara transparan serta petunjuk eksekusi klik ganda tanpa harus menjalankan skrip PowerShell manual.
+
 ## [1.0.4] - 2026-10-13
 
 ### Added

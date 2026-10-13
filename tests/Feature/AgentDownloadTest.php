@@ -71,6 +71,9 @@ class AgentDownloadTest extends TestCase
         $response->assertSee('Download Tools Pemindai');
         $response->assertSee('Laboratorium Multimedia');
         $response->assertSee('LAB-MM');
+        $response->assertSee('1-Jalankan-Scan-Sekarang.bat');
+        $response->assertSee('2-Pasang-Jadwal-Otomatis.bat');
+        $response->assertSee('3-Hapus-Jadwal-Otomatis.bat');
     }
 
     /** @test */
@@ -153,6 +156,9 @@ class AgentDownloadTest extends TestCase
         $this->assertStringContainsString('PANDUAN PEMASANGAN TOOLS PEMINDAI USN MANIFEST', $instructions);
         $this->assertStringContainsString('scanner.ps1', $instructions);
         $this->assertStringContainsString('setup_tasks.ps1', $instructions);
+        $this->assertStringContainsString('1-Jalankan-Scan-Sekarang.bat', $instructions);
+        $this->assertStringContainsString('2-Pasang-Jadwal-Otomatis.bat', $instructions);
+        $this->assertStringContainsString('3-Hapus-Jadwal-Otomatis.bat', $instructions);
 
         $zip->close();
         @unlink($filePath);

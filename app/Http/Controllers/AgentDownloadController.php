@@ -45,35 +45,21 @@ class AgentDownloadController extends Controller
             abort(500, 'Tidak dapat membuat file ZIP sementara.');
         }
 
-        $scannerPath = base_path('script/agent/scanner.ps1');
-        if (! file_exists($scannerPath)) {
-            $zip->close();
-            @unlink($zipPath);
-            abort(404, 'File scanner.ps1 tidak ditemukan.');
-        }
-        $zip->addFile($scannerPath, 'scanner.ps1');
+        $filesToInclude = [
+            'scanner.ps1' => base_path('script/agent/scanner.ps1'),
+            'setup_tasks.ps1' => base_path('script/agent/setup_tasks.ps1'),
+            '1-Jalankan-Scan-Sekarang.bat' => base_path('script/agent/1-Jalankan-Scan-Sekarang.bat'),
+            '2-Pasang-Jadwal-Otomatis.bat' => base_path('script/agent/2-Pasang-Jadwal-Otomatis.bat'),
+            '3-Hapus-Jadwal-Otomatis.bat' => base_path('script/agent/3-Hapus-Jadwal-Otomatis.bat'),
+        ];
 
-        $setupTasksPath = base_path('script/agent/setup_tasks.ps1');
-        if (! file_exists($setupTasksPath)) {
-            $zip->close();
-            @unlink($zipPath);
-            abort(404, 'File setup_tasks.ps1 tidak ditemukan.');
-        }
-        $zip->addFile($setupTasksPath, 'setup_tasks.ps1');
-
-        $launcherScanPath = base_path('script/agent/1-Jalankan-Scan-Sekarang.bat');
-        if (file_exists($launcherScanPath)) {
-            $zip->addFile($launcherScanPath, '1-Jalankan-Scan-Sekarang.bat');
-        }
-
-        $launcherSetupPath = base_path('script/agent/2-Pasang-Jadwal-Otomatis.bat');
-        if (file_exists($launcherSetupPath)) {
-            $zip->addFile($launcherSetupPath, '2-Pasang-Jadwal-Otomatis.bat');
-        }
-
-        $launcherUninstallPath = base_path('script/agent/3-Hapus-Jadwal-Otomatis.bat');
-        if (file_exists($launcherUninstallPath)) {
-            $zip->addFile($launcherUninstallPath, '3-Hapus-Jadwal-Otomatis.bat');
+        foreach ($filesToInclude as $zipEntryName => $filePath) {
+            if (! file_exists($filePath)) {
+                $zip->close();
+                @unlink($zipPath);
+                abort(404, "File {$zipEntryName} tidak ditemukan di server.");
+            }
+            $zip->addFile($filePath, $zipEntryName);
         }
 
         $baseUrl = rtrim(config('app.url'), '/').'/api';

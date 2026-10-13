@@ -71,20 +71,22 @@
             </h2>
             <div class="text-sm text-muted-foreground space-y-3">
                 <p>
-                    Paket installer yang diunduh berupa file ZIP (<code class="text-xs bg-muted px-1.5 py-0.5 rounded text-foreground">usn-manifest-agent.zip</code>) yang berisi:
+                    Paket installer yang diunduh berupa file ZIP (<code class="text-xs bg-muted px-1.5 py-0.5 rounded text-foreground">usn-manifest-agent.zip</code>) yang berisi berkas siap pakai:
                 </p>
                 <ul class="list-disc list-inside space-y-1 text-xs text-foreground/80 pl-2">
-                    <li><strong class="text-foreground">scanner.ps1</strong>: Skrip pemindai spesifikasi perangkat keras dan inventaris perangkat lunak.</li>
-                    <li><strong class="text-foreground">setup_tasks.ps1</strong>: Skrip otomatisasi pendaftaran ke Windows Task Scheduler.</li>
-                    <li><strong class="text-foreground">config.json</strong>: File konfigurasi integrasi server dan identitas laboratorium tujuan.</li>
-                    <li><strong class="text-foreground">instruksi.txt</strong>: Panduan pemasangan dan pencopotan penjadwalan pemindaian.</li>
+                    <li><strong class="text-foreground">1-Jalankan-Scan-Sekarang.bat</strong>: Batch launcher pemindaian instan (cukup klik ganda untuk memindai langsung).</li>
+                    <li><strong class="text-foreground">2-Pasang-Jadwal-Otomatis.bat</strong>: Batch launcher untuk mendaftarkan jadwal harian ke Windows Task Scheduler (auto-elevasi Administrator).</li>
+                    <li><strong class="text-foreground">3-Hapus-Jadwal-Otomatis.bat</strong>: Batch launcher untuk menghapus jadwal otomatis dari Task Scheduler secara bersih.</li>
+                    <li><strong class="text-foreground">scanner.ps1</strong> &amp; <strong class="text-foreground">setup_tasks.ps1</strong>: Skrip inti pemindai PowerShell.</li>
+                    <li><strong class="text-foreground">config.json</strong>: Berkas konfigurasi endpoint server dan identitas laboratorium yang dipilih.</li>
+                    <li><strong class="text-foreground">instruksi.txt</strong>: Panduan teks lengkap mengenai langkah pemasangan dan pemindaian.</li>
                 </ul>
                 <div class="rounded-md bg-muted/50 p-3 border border-border text-xs text-foreground/80 space-y-1">
                     <p class="font-semibold text-foreground">Langkah Pemasangan di Komputer Klien:</p>
                     <ol class="list-decimal list-inside space-y-1 pl-1">
-                        <li>Ekstrak seluruh file ZIP ke folder permanen (misalnya: <code class="bg-background px-1 py-0.5 rounded">C:\USN-Manifest-Scanner\</code>).</li>
-                        <li>Jalankan <code class="bg-background px-1 py-0.5 rounded">scanner.ps1</code> dengan PowerShell untuk pendaftaran dan pemindaian perdana.</li>
-                        <li>Jalankan <code class="bg-background px-1 py-0.5 rounded">setup_tasks.ps1</code> (Run as Administrator) agar pemindaian terjadwal otomatis.</li>
+                        <li>Ekstrak seluruh berkas ZIP ke folder permanen (misalnya: <code class="bg-background px-1 py-0.5 rounded">C:\USN-Manifest-Scanner\</code>).</li>
+                        <li>Klik ganda <code class="bg-background px-1 py-0.5 rounded">1-Jalankan-Scan-Sekarang.bat</code> untuk pendaftaran dan pemindaian perdana.</li>
+                        <li>Klik ganda <code class="bg-background px-1 py-0.5 rounded">2-Pasang-Jadwal-Otomatis.bat</code> (pilih Yes saat muncul UAC Administrator) agar pemindaian berjalan terjadwal secara otomatis.</li>
                     </ol>
                 </div>
             </div>
