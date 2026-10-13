@@ -1,6 +1,7 @@
 services:
   app:
     image: ghcr.io/febrian1202/sistem-manifest-backend:${IMAGE_TAG:-latest}
+    pull_policy: always
     restart: unless-stopped
     env_file: .env
     volumes:
@@ -36,6 +37,7 @@ services:
 
   worker:
     image: ghcr.io/febrian1202/sistem-manifest-backend:${IMAGE_TAG:-latest}
+    pull_policy: always
     restart: unless-stopped
     depends_on:
       app:
@@ -55,6 +57,7 @@ services:
 
   cron:
     image: ghcr.io/febrian1202/sistem-manifest-backend:${IMAGE_TAG:-latest}
+    pull_policy: always
     restart: unless-stopped
     depends_on:
       app:
