@@ -1,0 +1,174 @@
+flowchart TB
+    %% ==========================================
+    %% ER DIAGRAM NOTASI CHEN - AUDIT MANIFEST SOFTWARE
+    %% ==========================================
+
+    %% Styling Classes
+    classDef entity fill:#ffffff,stroke:#1d1d1f,stroke-width:2.5px,font-weight:bold,color:#1d1d1f;
+    classDef rel fill:#ffffff,stroke:#1d1d1f,stroke-width:2px,font-weight:bold,color:#1d1d1f;
+    classDef attrPk fill:#f0f7ff,stroke:#0071e3,stroke-width:2px,font-weight:bold,color:#0071e3;
+    classDef attrFk fill:#fafafa,stroke:#555555,stroke-width:1.5px,stroke-dasharray: 4 2,color:#333333;
+    classDef attr fill:#ffffff,stroke:#1d1d1f,stroke-width:1.5px,color:#1d1d1f;
+    classDef attrRel fill:#fef9e7,stroke:#d4ac0d,stroke-width:1.5px,color:#7d6608;
+
+    %% ------------------------------------------
+    %% 1. ENTITAS: FAKULTAS
+    %% ------------------------------------------
+    E_FAKULTAS["<b>fakultas</b>"]:::entity
+    A_FAK_ID(["id_fakultas *"]):::attrPk
+    A_FAK_NAMA(["nama_fakultas"]):::attr
+    A_FAK_KODE(["kode_fakultas"]):::attr
+
+    E_FAKULTAS --- A_FAK_ID
+    E_FAKULTAS --- A_FAK_NAMA
+    E_FAKULTAS --- A_FAK_KODE
+
+    %% Relasi: fakultas -- memiliki -- laboratorium (1:N)
+    R_MEMILIKI{"<b>memiliki</b>"}:::rel
+    E_FAKULTAS ---|1| R_MEMILIKI
+    R_MEMILIKI ---|N| E_LAB
+
+    %% ------------------------------------------
+    %% 2. ENTITAS: LABORATORIUM
+    %% ------------------------------------------
+    E_LAB["<b>laboratorium</b>"]:::entity
+    A_LAB_ID(["id_lab *"]):::attrPk
+    A_LAB_FAK(["id_fakultas **"]):::attrFk
+    A_LAB_NAMA(["nama_lab"]):::attr
+    A_LAB_LOK(["lokasi"]):::attr
+
+    E_LAB --- A_LAB_ID
+    E_LAB --- A_LAB_FAK
+    E_LAB --- A_LAB_NAMA
+    E_LAB --- A_LAB_LOK
+
+    %% Relasi: laboratorium -- menugaskan -- pengguna (1:N)
+    R_MENUGASKAN{"<b>menugaskan</b>"}:::rel
+    E_LAB ---|1| R_MENUGASKAN
+    R_MENUGASKAN ---|N| E_USER
+
+    %% Relasi: laboratorium -- menempatkan -- komputer (1:N)
+    R_MENEMPATKAN{"<b>menempatkan</b>"}:::rel
+    E_LAB ---|1| R_MENEMPATKAN
+    R_MENEMPATKAN ---|N| E_KOMPUTER
+
+    %% ------------------------------------------
+    %% 3. ENTITAS: PENGGUNA
+    %% ------------------------------------------
+    E_USER["<b>pengguna</b>"]:::entity
+    A_USER_ID(["id_user *"]):::attrPk
+    A_USER_LAB(["id_lab **"]):::attrFk
+    A_USER_NAMA(["nama"]):::attr
+    A_USER_EMAIL(["email"]):::attr
+    A_USER_ROLE(["role"]):::attr
+
+    E_USER --- A_USER_ID
+    E_USER --- A_USER_LAB
+    E_USER --- A_USER_NAMA
+    E_USER --- A_USER_EMAIL
+    E_USER --- A_USER_ROLE
+
+    %% Relasi: pengguna -- menyetujui -- laporan_audit (1:N)
+    R_MENYETUJUI{"<b>menyetujui</b>"}:::rel
+    E_USER ---|1| R_MENYETUJUI
+    R_MENYETUJUI ---|N| E_LAPORAN
+
+    %% ------------------------------------------
+    %% 4. ENTITAS: KOMPUTER
+    %% ------------------------------------------
+    E_KOMPUTER["<b>komputer</b>"]:::entity
+    A_KOMP_ID(["id_komputer *"]):::attrPk
+    A_KOMP_LAB(["id_lab **"]):::attrFk
+    A_KOMP_HOST(["hostname"]):::attr
+    A_KOMP_MAC(["mac_address"]):::attr
+    A_KOMP_IP(["ip_address"]):::attr
+    A_KOMP_OS(["os_name"]):::attr
+    A_KOMP_STAT(["status"]):::attr
+
+    E_KOMPUTER --- A_KOMP_ID
+    E_KOMPUTER --- A_KOMP_LAB
+    E_KOMPUTER --- A_KOMP_HOST
+    E_KOMPUTER --- A_KOMP_MAC
+    E_KOMPUTER --- A_KOMP_IP
+    E_KOMPUTER --- A_KOMP_OS
+    E_KOMPUTER --- A_KOMP_STAT
+
+    %% Relasi: komputer -- menginstal -- katalog_software (M:N)
+    R_MENGINSTAL{"<b>menginstal</b>"}:::rel
+    A_INST_VER(["versi_terpasang"]):::attrRel
+    A_INST_STAT(["status_kepatuhan"]):::attrRel
+
+    E_KOMPUTER ---|M| R_MENGINSTAL
+    R_MENGINSTAL ---|N| E_SOFTWARE
+    R_MENGINSTAL --- A_INST_VER
+    R_MENGINSTAL --- A_INST_STAT
+
+    %% ------------------------------------------
+    %% 5. ENTITAS: KATALOG_SOFTWARE
+    %% ------------------------------------------
+    E_SOFTWARE["<b>katalog_software</b>"]:::entity
+    A_SOFT_ID(["id_software *"]):::attrPk
+    A_SOFT_NAMA(["nama_software"]):::attr
+    A_SOFT_KAT(["kategori"]):::attr
+    A_SOFT_VEND(["vendor"]):::attr
+
+    E_SOFTWARE --- A_SOFT_ID
+    E_SOFTWARE --- A_SOFT_NAMA
+    E_SOFTWARE --- A_SOFT_KAT
+    E_SOFTWARE --- A_SOFT_VEND
+
+    %% Relasi: katalog_software -- mencakup -- lisensi (1:N)
+    R_MENCAKUP{"<b>mencakup</b>"}:::rel
+    E_SOFTWARE ---|1| R_MENCAKUP
+    R_MENCAKUP ---|N| E_LISENSI
+
+    %% ------------------------------------------
+    %% 6. ENTITAS: LISENSI
+    %% ------------------------------------------
+    E_LISENSI["<b>lisensi</b>"]:::entity
+    A_LIS_ID(["id_lisensi *"]):::attrPk
+    A_LIS_SOFT(["id_software **"]):::attrFk
+    A_LIS_NO(["nomor_lisensi"]):::attr
+    A_LIS_TIPE(["tipe_lisensi"]):::attr
+    A_LIS_KUOTA(["jumlah_kuota"]):::attr
+    A_LIS_EXP(["tgl_kadaluarsa"]):::attr
+
+    E_LISENSI --- A_LIS_ID
+    E_LISENSI --- A_LIS_SOFT
+    E_LISENSI --- A_LIS_NO
+    E_LISENSI --- A_LIS_TIPE
+    E_LISENSI --- A_LIS_KUOTA
+    E_LISENSI --- A_LIS_EXP
+
+    %% Relasi: fakultas -- dialokasikan -- lisensi (M:N)
+    R_DIALOKASIKAN{"<b>dialokasikan</b>"}:::rel
+    A_ALOK_KUOTA(["kuota_alokasi"]):::attrRel
+    A_ALOK_TGL(["tgl_alokasi"]):::attrRel
+
+    E_FAKULTAS ---|M| R_DIALOKASIKAN
+    R_DIALOKASIKAN ---|N| E_LISENSI
+    R_DIALOKASIKAN --- A_ALOK_KUOTA
+    R_DIALOKASIKAN --- A_ALOK_TGL
+
+    %% ------------------------------------------
+    %% 7. ENTITAS: LAPORAN_AUDIT
+    %% ------------------------------------------
+    E_LAPORAN["<b>laporan_audit</b>"]:::entity
+    A_LAP_ID(["id_laporan *"]):::attrPk
+    A_LAP_LAB(["id_lab **"]):::attrFk
+    A_LAP_USER(["id_user **"]):::attrFk
+    A_LAP_PER(["periode"]):::attr
+    A_LAP_STAT(["status_kepatuhan"]):::attr
+    A_LAP_TGL(["tgl_audit"]):::attr
+
+    E_LAPORAN --- A_LAP_ID
+    E_LAPORAN --- A_LAP_LAB
+    E_LAPORAN --- A_LAP_USER
+    E_LAPORAN --- A_LAP_PER
+    E_LAPORAN --- A_LAP_STAT
+    E_LAPORAN --- A_LAP_TGL
+
+    %% Relasi: laboratorium -- diaudit -- laporan_audit (1:N)
+    R_DIAUDIT{"<b>diaudit</b>"}:::rel
+    E_LAB ---|1| R_DIAUDIT
+    R_DIAUDIT ---|N| E_LAPORAN
