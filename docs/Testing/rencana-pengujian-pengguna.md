@@ -227,3 +227,70 @@ Tabel ini menjadi panduan rahasia bagi evaluator untuk memverifikasi alur yang d
 | **K-03** | Kepala Lab | Menu PJ Lab -> Download Scanner -> Unduh ZIP | `/agent/download` |
 | **S-01** | Staf Lab | Menu Staff Lab -> Komputer & Aset -> Detail Komputer | `/lab/inventory`, `/lab/inventory/{id}` |
 | **S-02** | Staf Lab | Menu Staff Lab -> Download Scanner -> Unduh | `/agent/download` |
+
+---
+
+## BAGIAN IV: LEMBAR OBSERVASI EVALUATOR & METRIK PERFORMA
+
+Lembar observasi ini berfungsi sebagai instrumen pencatatan data primer (*field notes*) bagi evaluator saat mendampingi partisipan selama sesi pengujian berlangsung.
+
+### 4.1 Definisi Operasional Metrik Performa
+Untuk memastikan objektivitas data pada Bab 4 Skripsi, setiap metrik didefinisikan secara operasional:
+1. **Status Keberhasilan Tugas (*Task Success Rate*)**:
+   - **Berhasil Mandiri (Skor 100%)**: Partisipan menyelesaikan misi dari awal hingga tuntas tanpa petunjuk/bimbingan evaluator.
+   - **Berhasil dengan Bantuan (Skor 50%)**: Partisipan menyelesaikan misi setelah menerima arahan konseptual akibat *deadlock* > 3 menit.
+   - **Gagal / Menyerah (Skor 0%)**: Partisipan menyatakan menyerah atau keluar dari alur tugas tanpa mencapai target misi.
+2. **Waktu Pengerjaan (*Time on Task*)**:
+   - Durasi (dihitung dalam satuan detik) yang dihabiskan sejak partisipan selesai membaca instruksi tugas hingga mencapai status akhir misi.
+3. **Jumlah Kesalahan (*Error Count*)**:
+   - Frekuensi tindakan keliru yang dilakukan pengguna, meliputi: salah klik menu yang tidak relevan, salah memilih filter lab, memicu eror validasi form, atau tersesat (*backtracking*) lebih dari dua kali.
+4. **Catatan Kualitatif & *Think-Aloud* (Verbal Protocol)**:
+   - Catatan verbatim mengenai kebingungan istilah antarmuka (*cognitive friction*), keragu-raguan memilih aksi, keluhan, maupun ungkapan kepuasan partisipan saat menemukan informasi.
+
+---
+
+### 4.2 Format Lembar Observasi Antarmuka Individu (Siap Cetak)
+
+```text
+========================================================================================
+                    LEMBAR OBSERVASI EVALUATOR (USER TESTING)
+                  SISTEM MANIFEST & KEPATUHAN LISENSI (UNILICENSE)
+========================================================================================
+Kode Partisipan   : [ P-01 / K-01 / S-01 ]       Tanggal Uji     : _____________________
+Nama Partisipan   : ___________________________   Waktu Mulai     : _____ : _____ WITA
+Unit / Fakultas   : ___________________________   Waktu Selesai   : _____ : _____ WITA
+Kelompok Peran    : [ ] Pimpinan   [ ] Kepala Lab   [ ] Staf/Teknisi Lab
+Nama Evaluator    : ___________________________
+========================================================================================
+```
+
+#### Tabel Pencatatan Sesi Observasi
+
+| No. Tugas | Ringkasan Misi | Status Keberhasilan (*Task Success*) | Waktu (*Time on Task*) | Jumlah Galat (*Error Count*) | Catatan Perilaku, Titik Friksi, & *Think-Aloud* |
+|---|---|---|---|---|---|
+| **Tugas 1** | *(Misal: Identifikasi defisit lisensi / Riwayat perubahan)* | - [ ] Berhasil Mandiri (100%)<br>- [ ] Berhasil dg Bantuan (50%)<br>- [ ] Gagal/Menyerah (0%) | ___ Menit<br>___ Detik<br>*(Total: ___ dt)* | ___ kali salah klik / navigasi | *Kutipan/Perilaku:*<br><br> |
+| **Tugas 2** | *(Misal: Analisis kebutuhan lisensi & cetak / Review laporan)* | - [ ] Berhasil Mandiri (100%)<br>- [ ] Berhasil dg Bantuan (50%)<br>- [ ] Gagal/Menyerah (0%) | ___ Menit<br>___ Detik<br>*(Total: ___ dt)* | ___ kali salah klik / navigasi | *Kutipan/Perilaku:*<br><br> |
+| **Tugas 3** | *(Misal: Deteksi software ilegal / Download scanner)* | - [ ] Berhasil Mandiri (100%)<br>- [ ] Berhasil dg Bantuan (50%)<br>- [ ] Gagal/Menyerah (0%) | ___ Menit<br>___ Detik<br>*(Total: ___ dt)* | ___ kali salah klik / navigasi | *Kutipan/Perilaku:*<br><br> |
+
+**Catatan Umum Evaluator terhadap Gestur & Respon Responden:**  
+________________________________________________________________________________________  
+________________________________________________________________________________________  
+
+---
+
+### 4.3 Format Tabel Master Rekapitulasi Data Lapangan (Untuk Bab 4 Skripsi)
+
+Tabel berikut digunakan peneliti untuk mentabulasi hasil observasi seluruh responden:
+
+| Kode Resp. | Peran Pengguna | Tugas | Status Keberhasilan | Nilai Sukses (%) | Waktu (Detik) | Jumlah Galat | Titik Friksi Utama yang Ditemui |
+|---|---|---|---|---|---|---|---|
+| **R-01** | Pimpinan | P-01 | Mandiri | 100% | 45 | 0 | Tidak ada kendala; langsung melihat kartu defisit. |
+| **R-01** | Pimpinan | P-02 | Mandiri | 100% | 72 | 1 | Sempat mencari tombol ekspor di dashboard sebelum ke laporan. |
+| **R-01** | Pimpinan | P-03 | Mandiri | 100% | 55 | 0 | Cepat mengenali indikator merah pelanggaran. |
+| **R-02** | Kepala Lab | K-01 | Mandiri | 100% | 60 | 0 | Membaca tab filter *added* dengan lancar. |
+| **R-02** | Kepala Lab | K-02 | Mandiri | 100% | 85 | 1 | Memeriksa rincian tabel sebelum menekan tombol *Approve*. |
+| **R-02** | Kepala Lab | K-03 | Mandiri | 100% | 35 | 0 | Langsung menemukan tombol download scanner. |
+| **R-03** | Staf Lab | S-01 | Mandiri | 100% | 50 | 0 | Memanfaatkan pencarian nama PC. |
+| **R-03** | Staf Lab | S-02 | Mandiri | 100% | 30 | 0 | Alur unduh sangat intuitif. |
+| ... | ... | ... | ... | ... | ... | ... | ... |
+| **Rata-rata** | | | | **___ %** | **___ dt** | **___ kali** | *(Diringkas untuk analisis Bab 4)* |
