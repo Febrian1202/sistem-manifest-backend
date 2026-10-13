@@ -40,6 +40,7 @@ test('all 7 entities and attributes match consistently across drawio, mermaid, a
         'tgl_audit',
         'versi_terpasang',
         'kuota_alokasi',
+        'tgl_alokasi',
     ];
 
     foreach ($attributesToCheck as $attr) {
