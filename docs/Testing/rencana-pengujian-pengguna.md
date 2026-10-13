@@ -70,7 +70,7 @@ Subjek uji formal penelitian ini murni difokuskan pada pengguna akhir (*end-user
 ### 2.1 Fase Persiapan Teknis (H-1)
 1. **Kesiapan Lingkungan Sistem**:
    - Sistem dijalankan pada server lokal (*local test environment*) atau server staging kampus dengan konfigurasi basis data terisolasi.
-   - Database diisi data awal (*initial state*) melalui seeder sistem resmi (`php artisan migrate:fresh --seed`) yang mencakup data fakultas, laboratorium nyata di USN Kolaka, data komputer terdistribusi, katalog software legal & komersial, serta riwayat pemindaian.
+   - Database diisi dataset deterministik menggunakan seeder khusus uji (`php artisan migrate:fresh --seed && php artisan db:seed --class=UserTestingSeeder`) yang mencakup fakultas, laboratorium komputer aktif, komputer terdistribusi, katalog software legal & komersial, riwayat pemindaian, serta alokasi lisensi tetap.
 2. **Kesiapan Berkas Fisik / Cetak**:
    - Lembar Informasi Partisipan & *Informed Consent* (Formulir Persetujuan).
    - Kartu Misi Skenario Tugas (dicetak terpisah per tugas agar partisipan fokus satu per satu).
@@ -79,14 +79,20 @@ Subjek uji formal penelitian ini murni difokuskan pada pengguna akhir (*end-user
    - Stopwatch digital / aplikasi perekam layar (*screen & audio recorder* dengan persetujuan responden).
 
 ### 2.2 Prosedur Reset Lingkungan Uji Antar-Sesi (*State Isolation*)
-Untuk memastikan setiap responden menerima kondisi stimulus awal yang setara dan adil (terutama setelah tugas mutasi seperti persetujuan laporan), fasilitator wajib menerapkan jeda *buffer* 5–10 menit antar-partisipan:
+Untuk memastikan setiap responden menerima kondisi stimulus awal yang setara dan adil (terutama setelah tugas mutasi seperti persetujuan laporan), fasilitator wajib menerapkan jeda *buffer* 5–10 menit antar-partisipan dengan mengeksekusi perintah reset operasional berikut:
 ```bash
-# Perintah Reset Deterministik Database Pengujian
+# 1. Reset Database & Jalankan Seeder Deterministik
 php artisan migrate:fresh --seed
+php artisan db:seed --class=UserTestingSeeder
+
+# 2. Bersihkan Seluruh Cache Aplikasi & Redis (Wajib untuk Dashboard)
+php artisan cache:clear
 ```
-Setelah seeding dijalankan:
-- Jika sesi berikutnya adalah **Kepala Lab**, fasilitator (sebagai Admin) mengeksekusi pengiriman draf laporan kepatuhan ke lab tersebut melalui menu `/reports/submit-to-lab` agar status draf *Pending* tersedia untuk diuji.
-- Jika sesi berikutnya adalah **Pimpinan**, fasilitator memastikan minimal 1 laporan lab sudah berstatus *Approved* sehingga metrik *Executive Dashboard* menampilkan data terverifikasi.
+
+> **Catatan Otomasi Prakondisi Seeder (`UserTestingSeeder`)**:
+> - Seeder telah secara otomatis menyiapkan 1 draf laporan berstatus **Pending** untuk `LAB-KOM1` (siap diuji oleh Kepala Lab pada Skenario K-02).
+> - Seeder telah secara otomatis menyiapkan 1 laporan berstatus **Approved** untuk `LAB-KOM2` (sehingga data kepatuhan FTI langsung tampil resmi pada Executive Dashboard Pimpinan pada Skenario P-01 dan P-02).
+> - Fasilitator tidak perlu lagi melakukan klik manual di web untuk menyiapkan draf laporan.
 
 ### 2.3 Naskah Pengantar Evaluator (*Briefing Script*)
 Sebelum pengujian dimulai, evaluator membacakan naskah standar kepada partisipan:
@@ -320,7 +326,9 @@ Analisis Kebutuhan Lisensi, jawablah 3 pertanyaan analisis berikut:
 #### Soal Kasus 1 (Identifikasi Prioritas Pengadaan)
 > *"Berdasarkan data sistem, sebutkan **2 (dua) software komersial** yang mengalami defisit lisensi paling tinggi di tingkat universitas dan paling mendesak untuk dianggarkan lisensi resminya?"*
 - **Jawaban Partisipan**: 1) __________________________________   2) __________________________________
-- **Kunci Jawaban Sistem (*Ground Truth*)**: Sesuai katalog komersial aktif pada seeder (misal: *Microsoft Office Professional Plus* dan *Adobe Creative Cloud* / *AutoCAD*).
+- **Kunci Jawaban Sistem (*Ground Truth*)**: 
+  1. **Microsoft Office 2019 Professional Plus** (Defisit: **10 Unit**)
+  2. **Adobe Photoshop CC 2022** (Defisit: **8 Unit**)
 - **Rubrik Penilaian Evaluator**:
   - [ ] **Skor 100%**: Menyebutkan kedua software dengan tepat.
   - [ ] **Skor 50%**: Menyebutkan tepat satu software.
@@ -329,20 +337,21 @@ Analisis Kebutuhan Lisensi, jawablah 3 pertanyaan analisis berikut:
 #### Soal Kasus 2 (Estimasi Besaran Kebutuhan Unit Lisensi)
 > *"Berapa **total kekurangan unit (*total deficit seats*)** yang harus diajukan universitas dalam usulan pengadaan lisensi baru untuk software-software yang mengalami defisit tersebut?"*
 - **Jawaban Partisipan**: ____________ unit / kursi lisensi.
-- **Kunci Jawaban Sistem (*Ground Truth*)**: Angka eksak akumulasi kolom defisit pada tabel Bagian I/II Laporan Kebutuhan Lisensi.
+- **Kunci Jawaban Sistem (*Ground Truth*)**: **18 Unit / Kursi Lisensi**  
+  *(Rujukan sistem: Kartu KPI "Defisit Bersih USN" pada Bagian I Ringkasan Kapasitas atau kolom "Defisit USN" pada tabel Bagian III Procurement Insights di halaman `/reports/kebutuhan-lisensi`)*.
 - **Rubrik Penilaian Evaluator**:
-  - [ ] **Skor 100%**: Angka persis sesuai tabel laporan.
-  - [ ] **Skor 50%**: Angka mendekati (selisih $\le 2$ unit karena pembulatan atau membaca tabel per-fakultas).
+  - [ ] **Skor 100%**: Menjawab tepat **18 unit**.
+  - [ ] **Skor 50%**: Menjawab mendekati (selisih $\le 2$ unit, misal 16 s.d. 20 unit karena membaca tabel per-fakultas).
   - [ ] **Skor 0%**: Angka jauh meleset atau tidak dapat menemukan angka.
 
 #### Soal Kasus 3 (Penentuan Sumber Masalah / Alokasi Anggaran)
-> *"Fakultas dan laboratorium mana yang menyumbang instalasi tanpa lisensi (*defisit*) paling banyak untuk software komersial tersebut?"*
-- **Jawaban Partisipan**: Fakultas: ________________________  Laboratorium: ________________________
-- **Kunci Jawaban Sistem (*Ground Truth*)**: Entitas fakultas & lab dengan angka instalasi melebihi alokasi tertinggi di matriks kepatuhan.
+> *"Fakultas mana yang menyumbang instalasi tanpa lisensi (*defisit*) paling banyak untuk software komersial tersebut di lingkungan universitas?"*
+- **Jawaban Partisipan**: Fakultas: __________________________________________________
+- **Kunci Jawaban Sistem (*Ground Truth*)**: **Fakultas Teknologi Informasi (FTI)**  
+  *(Rujukan sistem: Tabel Bagian II Distribusi & Kepatuhan per Fakultas pada Laporan Kebutuhan Lisensi, di mana FTI menyumbang defisit 10 unit Office dan 8 unit Photoshop)*.
 - **Rubrik Penilaian Evaluator**:
-  - [ ] **Skor 100%**: Fakultas dan Lab terjawab tepat.
-  - [ ] **Skor 50%**: Fakultas tepat, namun lab keliru.
-  - [ ] **Skor 0%**: Salah total.
+  - [ ] **Skor 100%**: Menjawab **Fakultas Teknologi Informasi (FTI)** dengan tepat.
+  - [ ] **Skor 0%**: Menjawab fakultas lain atau menyatakan tidak tahu.
 
 ---
 
@@ -410,7 +419,7 @@ Peran Pengguna  : [ ] Pimpinan   [ ] Kepala Lab   [ ] Staf/Teknisi Lab
 | **6** | Saya merasa terlalu banyak hal yang tidak konsisten pada sistem ini. | [ ] | [ ] | [ ] | [ ] | [ ] |
 | **7** | Saya merasa orang lain akan memahami cara menggunakan sistem ini dengan sangat cepat. | [ ] | [ ] | [ ] | [ ] | [ ] |
 | **8** | Saya merasa sistem ini sangat membingungkan saat digunakan. | [ ] | [ ] | [ ] | [ ] | [ ] |
-| **9** | Saya merasa tidak ada hambatan saat menggunakan sistem ini. | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **9** | Saya merasa sangat percaya diri menggunakan sistem ini. | [ ] | [ ] | [ ] | [ ] | [ ] |
 | **10** | Saya perlu mempelajari banyak hal terlebih dahulu sebelum dapat menggunakan sistem ini dengan lancar. | [ ] | [ ] | [ ] | [ ] | [ ] |
 
 ---

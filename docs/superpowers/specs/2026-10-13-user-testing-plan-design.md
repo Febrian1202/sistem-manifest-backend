@@ -158,7 +158,7 @@ Responden mengisi skala Likert 1 (Sangat Tidak Setuju) hingga 5 (Sangat Setuju):
 6. Saya merasa terlalu banyak hal yang tidak konsisten pada sistem ini.
 7. Saya merasa orang lain akan memahami cara menggunakan sistem ini dengan sangat cepat.
 8. Saya merasa sistem ini sangat membingungkan saat digunakan.
-9. Saya merasa tidak ada hambatan saat menggunakan sistem ini.
+9. Saya merasa sangat percaya diri menggunakan sistem ini.
 10. Saya perlu mempelajari banyak hal terlebih dahulu sebelum dapat menggunakan sistem ini dengan lancar.
 
 ### Metodologi Perhitungan Skor SUS (John Brooke, 1996)
