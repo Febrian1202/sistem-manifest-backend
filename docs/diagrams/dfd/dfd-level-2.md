@@ -10,7 +10,7 @@ Dokumen ini menyajikan penjelasan teknis dan metodologis mengenai **Data Flow Di
 2. **Proses 2.0 (Proses):** Pemrosesan dan Evaluasi Kepatuhan
 3. **Proses 3.0 (Output):** Penyajian Informasi dan Laporan
 
-Diagram DFD Level 2 disajikan dalam satu berkas terpadu berekstensi `.drawio` (`docs/dfd-level-2.drawio`) yang terdiri dari tiga halaman (*pages/tabs*):
+Diagram DFD Level 2 disajikan dalam satu berkas terpadu berekstensi `.drawio` (`docs/diagrams/dfd/dfd-level-2.drawio`) yang terdiri dari tiga halaman (*pages/tabs*):
 - **Halaman 1:** DFD Level 2 – Proses 1.0 (Pengelolaan Data Masukan)
 - **Halaman 2:** DFD Level 2 – Proses 2.0 (Pemrosesan dan Evaluasi Kepatuhan)
 - **Halaman 3:** DFD Level 2 – Proses 3.0 (Penyajian Informasi dan Laporan)

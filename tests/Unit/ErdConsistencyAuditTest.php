@@ -1,8 +1,8 @@
 <?php
 
 test('all 7 entities and attributes match consistently across drawio, mermaid, and thesis documentation', function () {
-    $drawio = file_get_contents(dirname(__DIR__, 2).'/docs/diagrams/erd-chen-audit-manifest.drawio');
-    $mermaid = file_get_contents(dirname(__DIR__, 2).'/docs/diagrams/erd-chen-audit-manifest.mermaid');
+    $drawio = file_get_contents(dirname(__DIR__, 2).'/docs/diagrams/erd/erd-chen-audit-manifest.drawio');
+    $mermaid = file_get_contents(dirname(__DIR__, 2).'/docs/diagrams/erd/erd-chen-audit-manifest.mermaid');
     $skripsi = file_get_contents(dirname(__DIR__, 2).'/docs/skripsi/perancangan-basis-data-erd.md');
 
     $attributesToCheck = [

@@ -15,7 +15,7 @@ Dalam konteks penulisan skripsi akademik bidang Sistem Informasi dan Informatika
 5. **Sistem Informasi Manifest USN:** Aplikasi berbasis Laravel 12 beserta Queue Worker (Laravel Horizon) yang mengeksekusi komputasi latar belakang.
 6. **Basis Data (*Database*):** Repositori data persisten (MySQL/SQLite) yang menyimpan data transaksional dan rekam audit.
 
-Untuk menjaga keterbacaan diagram sesuai standar buku skripsi, *Flowmap* dirancang ke dalam **tiga (3) prosedur utama** yang selaras dengan siklus IPO (*Input – Proses – Output*), tersimpan dalam berkas Draw.io terpadu multi-halaman (`docs/flowmap.drawio`):
+Untuk menjaga keterbacaan diagram sesuai standar buku skripsi, *Flowmap* dirancang ke dalam **tiga (3) prosedur utama** yang selaras dengan siklus IPO (*Input – Proses – Output*), tersimpan dalam berkas Draw.io terpadu multi-halaman (`docs/diagrams/flowmap/flowmap.drawio`):
 - **Halaman 1:** Prosedur 1.0 – Pengelolaan Master Data, Lisensi, dan Registrasi/Pemindaian Komputer (*Input*)
 - **Halaman 2:** Prosedur 2.0 – Pemrosesan dan Evaluasi Kepatuhan Lisensi serta Persetujuan Laporan (*Proses*)
 - **Halaman 3:** Prosedur 3.0 – Penyajian Informasi, Pembuatan Laporan Resmi, dan Monitoring Eksekutif (*Output*)

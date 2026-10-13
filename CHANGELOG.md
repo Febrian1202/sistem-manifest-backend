@@ -28,10 +28,10 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
   - Kuesioner System Usability Scale (SUS 10 butir pertanyaan skala Likert) dan panduan analisis data statistik deskriptif untuk tesis.
   - Formulir persetujuan partisipan (*Informed Consent Form*) dan skrip fasilitator pengujian.
 - **Diagram Arsitektur & Aliran Sistem:**
-  - Diagram Konteks sistem manifest lisensi (`docs/diagram-konteks.drawio` dan `docs/diagram-konteks.md`).
-  - Data Flow Diagram (DFD) Level 1 (`docs/dfd-level-1.drawio` dan `docs/dfd-level-1.md`).
-  - Data Flow Diagram (DFD) Level 2 per modul proses (`docs/dfd-level-2.drawio` dan `docs/dfd-level-2.md`).
-  - Flowmap proses bisnis sistem manifest lisensi software (`docs/flowmap.drawio` dan `docs/flowmap.md`).
+  - Diagram Konteks sistem manifest lisensi (`docs/diagrams/dfd/diagram-konteks.drawio` dan `docs/diagrams/dfd/diagram-konteks.md`).
+  - Data Flow Diagram (DFD) Level 1 (`docs/diagrams/dfd/dfd-level-1.drawio` dan `docs/diagrams/dfd/dfd-level-1.md`).
+  - Data Flow Diagram (DFD) Level 2 per modul proses (`docs/diagrams/dfd/dfd-level-2.drawio` dan `docs/diagrams/dfd/dfd-level-2.md`).
+  - Flowmap proses bisnis sistem manifest lisensi software (`docs/diagrams/flowmap/flowmap.drawio` dan `docs/diagrams/flowmap/flowmap.md`).
 - **Dataset Pengujian Deterministik (User Testing Seeder):**
   - Membuat `UserTestingSeeder` untuk menginisialisasi skenario pengujian langsung secara deterministik (2 lab, 30 komputer, riwayat scan, variasi lisensi Office/Photoshop/AutoCAD, temuan pelanggaran KMSPico, dan alur persetujuan laporan pending/approved).
 

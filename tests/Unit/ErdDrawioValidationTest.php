@@ -1,7 +1,7 @@
 <?php
 
 test('drawio file exists and is valid mxgraph xml with all 7 chen entities', function () {
-    $filePath = dirname(__DIR__, 2).'/docs/diagrams/erd-chen-audit-manifest.drawio';
+    $filePath = dirname(__DIR__, 2).'/docs/diagrams/erd/erd-chen-audit-manifest.drawio';
     expect(file_exists($filePath))->toBeTrue();
 
     $content = file_get_contents($filePath);

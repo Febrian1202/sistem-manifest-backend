@@ -1,7 +1,7 @@
 <?php
 
 test('drawio diagram has zero vertex bounding box collisions', function () {
-    $filePath = dirname(__DIR__, 2).'/docs/diagrams/erd-chen-audit-manifest.drawio';
+    $filePath = dirname(__DIR__, 2).'/docs/diagrams/erd/erd-chen-audit-manifest.drawio';
     expect(file_exists($filePath))->toBeTrue();
 
     $xml = simplexml_load_file($filePath);

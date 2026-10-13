@@ -1,7 +1,7 @@
 <?php
 
 test('mermaid diagram exists and contains all chen notation entities, attributes, and relations', function () {
-    $filePath = dirname(__DIR__, 2).'/docs/diagrams/erd-chen-audit-manifest.mermaid';
+    $filePath = dirname(__DIR__, 2).'/docs/diagrams/erd/erd-chen-audit-manifest.mermaid';
     expect(file_exists($filePath))->toBeTrue();
 
     $content = file_get_contents($filePath);

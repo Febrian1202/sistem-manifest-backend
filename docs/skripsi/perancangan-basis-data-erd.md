@@ -18,7 +18,7 @@ Perancangan basis data konseptual pada sistem audit manifest software laboratori
 
 ## 2. Diagram ERD Notasi Chen
 
-Berikut adalah visualisasi Notasi Chen lengkap untuk sistem audit manifest software. File sumber grafis berekstensi Draw.io tersedia pada direktori repositori: `docs/diagrams/erd-chen-audit-manifest.drawio` (siap diekspor ke format PNG resolusi tinggi atau PDF vektor untuk dicetak pada naskah skripsi).
+Berikut adalah visualisasi Notasi Chen lengkap untuk sistem audit manifest software. File sumber grafis berekstensi Draw.io tersedia pada direktori repositori: `docs/diagrams/erd/erd-chen-audit-manifest.drawio` (siap diekspor ke format PNG resolusi tinggi atau PDF vektor untuk dicetak pada naskah skripsi).
 
 ```mermaid
 flowchart TB
