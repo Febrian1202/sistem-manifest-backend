@@ -370,3 +370,153 @@ Responden kelompok Pimpinan dan Kepala Lab memberikan penilaian persepsi kogniti
 | **D-02** | Informasi rincian defisit lisensi disajikan secara transparan dan akurat sehingga memberikan keyakinan kuat dalam menetapkan prioritas anggaran pengadaan tahunan. | [ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] |
 | **D-03** | Pembedaan status kepatuhan (*Compliant* vs *Non-Compliant*) serta deteksi software terlarang membantu saya mengidentifikasi risiko hukum dan keamanan siber di kampus secara dini. | [ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] |
 | **D-04** | Format ekspor laporan (PDF/Excel) yang disediakan sistem sudah memenuhi standar kelayakan dokumen pendukung rapat pimpinan universitas. | [ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] |
+
+---
+
+## BAGIAN VI: INSTRUMEN KUESIONER SYSTEM USABILITY SCALE (SUS)
+
+Setelah seluruh rangkaian skenario tugas selesai dikerjakan, setiap partisipan (Pimpinan, Kepala Lab, dan Staf Lab) diminta mengisi instrumen evaluasi subjektif standar **System Usability Scale (SUS)** (John Brooke, 1996).
+
+### 6.1 Petunjuk Pengisian Kuesioner
+1. Kuesioner ini terdiri atas 10 butir pernyataan mengenai persepsi Anda saat menggunakan sistem UniLicense.
+2. Berikan tanda centang ($\checkmark$) atau tanda silang ($\times$) pada salah satu angka skala 1 sampai 5:
+   - **1** = Sangat Tidak Setuju (STS)
+   - **2** = Tidak Setuju (TS)
+   - **3** = Ragu-ragu / Netral (N)
+   - **4** = Setuju (S)
+   - **5** = Sangat Setuju (SS)
+3. Isilah berdasarkan reaksi spontan pertama Anda tanpa berpikir terlalu lama. Semua butir wajib diisi.
+
+---
+
+### 6.2 Lembar Kuesioner SUS 10 Butir (Bahasa Indonesia Baku)
+
+```text
+========================================================================================
+                     KUESIONER SYSTEM USABILITY SCALE (SUS)
+========================================================================================
+Kode Partisipan : [ __________ ]                Tanggal : ______________________________
+Peran Pengguna  : [ ] Pimpinan   [ ] Kepala Lab   [ ] Staf/Teknisi Lab
+========================================================================================
+```
+
+| No | Pernyataan Kuesioner Usability | STS (1) | TS (2) | N (3) | S (4) | SS (5) |
+|---|---|:---:|:---:|:---:|:---:|:---:|
+| **1** | Saya berpikir bahwa saya ingin sering menggunakan sistem ini. | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **2** | Saya merasa sistem ini terlalu rumit untuk digunakan. | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **3** | Saya merasa sistem ini mudah untuk digunakan. | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **4** | Saya merasa membutuhkan bantuan teknisi atau orang lain untuk dapat menggunakan sistem ini. | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **5** | Saya merasa fungsi-fungsi dalam sistem ini terintegrasi dengan baik. | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **6** | Saya merasa terlalu banyak hal yang tidak konsisten pada sistem ini. | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **7** | Saya merasa orang lain akan memahami cara menggunakan sistem ini dengan sangat cepat. | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **8** | Saya merasa sistem ini sangat membingungkan saat digunakan. | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **9** | Saya merasa tidak ada hambatan saat menggunakan sistem ini. | [ ] | [ ] | [ ] | [ ] | [ ] |
+| **10** | Saya perlu mempelajari banyak hal terlebih dahulu sebelum dapat menggunakan sistem ini dengan lancar. | [ ] | [ ] | [ ] | [ ] | [ ] |
+
+---
+
+## BAGIAN VII: METODOLOGI PENGOLAHAN DATA & PEDOMAN ANALISIS SKRIPSI (BAB 4)
+
+Bagian ini dirancang sebagai panduan kalkulasi kuantitatif dan interpretasi ilmiah bagi peneliti dalam menyusun Bab 4 Skripsi.
+
+---
+
+### 7.1 Formula Matematis Perhitungan Skor SUS (John Brooke, 1996)
+Skor SUS tidak dihitung sebagai rata-rata mentah (skala 1–5), melainkan melalui proses normalisasi kontribusi skor ganjil dan genap untuk menghasilkan nilai skala standar **0 – 100**:
+
+1. **Normalisasi Butir Ganjil (Pernyataan Positif: 1, 3, 5, 7, 9)**:  
+   Setiap butir ganjil dikurangi dengan angka 1:
+   $$R_i = X_i - 1 \quad (\text{untuk } i \in \{1, 3, 5, 7, 9\})$$
+   *(Rentang nilai kontribusi: 0 sampai 4)*
+
+2. **Normalisasi Butir Genap (Pernyataan Negatif: 2, 4, 6, 8, 10)**:  
+   Angka 5 dikurangi dengan nilai skala respon:
+   $$R_i = 5 - X_i \quad (\text{untuk } i \in \{2, 4, 6, 8, 10\})$$
+   *(Rentang nilai kontribusi: 0 sampai 4)*
+
+3. **Perhitungan Total Skor SUS Individu**:  
+   Jumlahkan seluruh nilai kontribusi $R_i$, kemudian kalikan dengan faktor koreksi $2.5$:
+   $$\text{Skor SUS}_k = \left( \sum_{i=1}^{10} R_i \right) \times 2.5$$
+
+4. **Perhitungan Rata-rata Skor SUS Keseluruhan (*Mean SUS Score*)**:
+   $$\overline{\text{SUS}} = \frac{1}{N} \sum_{k=1}^{N} \text{Skor SUS}_k$$
+   *di mana $N$ adalah jumlah total responden penelitian ($N = 8 - 13$).*
+
+---
+
+### 7.2 Contoh Komputasi Langkah demi Langkah (Simulasi Numerik)
+Jika Responden $R_1$ memberikan respon mentah:  
+`Q1: 4, Q2: 2, Q3: 5, Q4: 1, Q5: 4, Q6: 2, Q7: 4, Q8: 1, Q9: 5, Q10: 2`
+
+- Kontribusi Ganjil:  
+  - $R_1 = 4 - 1 = 3$  
+  - $R_3 = 5 - 1 = 4$  
+  - $R_5 = 4 - 1 = 3$  
+  - $R_7 = 4 - 1 = 3$  
+  - $R_9 = 5 - 1 = 4$  
+  *Subtotal Ganjil = 17*
+- Kontribusi Genap:  
+  - $R_2 = 5 - 2 = 3$  
+  - $R_4 = 5 - 1 = 4$  
+  - $R_6 = 5 - 2 = 3$  
+  - $R_8 = 5 - 1 = 4$  
+  - $R_{10} = 5 - 2 = 3$  
+  *Subtotal Genap = 17*
+- Total Kontribusi = $17 + 17 = 34$  
+- **Skor Akhir SUS** = $34 \times 2.5 = \mathbf{85.0}$ (*Kategori: Grade A, Excellent*).
+
+---
+
+### 7.3 Kerangka Interpretasi Standar Skor SUS untuk Bab 4 Skripsi
+Untuk membahas temuan skor SUS pada sidang skripsi, peneliti mengacu pada klasifikasi standar yang dirumuskan oleh **Bangor, Kortum, & Miller (2008)** serta **Sauro (2011)**:
+
+```
+ Skor SUS:  0 -------- 50 -------- 68 -------- 74 -------- 80.3 -------- 100
+             |          |           |           |           |              |
+ Grade:      |    F     |     D     |     C     |     B     |      A       |
+ Rating:     |   Poor   |    OK     |   Good    | Excellent | Best Imagin. |
+ Accept.:    | Not Acceptable |  Marginal  |            Acceptable         |
+ Benchmark:  |                | Rata-rata  |                               |
+             |                | Industri   |                               |
+```
+
+| Rentang Skor SUS | Tingkat Kelayakan (*Acceptability*) | Skala Huruf (*Grade Scale*) | Predikat (*Adjective Rating*) | Estimasi Promosi (*NPS*) |
+|:---:|:---:|:---:|:---:|:---:|
+| **$\ge 80.3$** | **Acceptable (Sangat Layak)** | **Grade A** | **Excellent / Best Imaginable** | Promoter |
+| **$74.0 - 80.2$** | **Acceptable (Layak)** | **Grade B** | **Good** | Passive / Promoter |
+| **$68.0 - 73.9$** | **Acceptable (Rata-rata)** | **Grade C** | **Good (Average)** | Passive |
+| **$51.0 - 67.9$** | **Marginal (Perlu Perbaikan)** | **Grade D** | **OK** | Detractor |
+| **$< 51.0$** | **Not Acceptable (Tidak Layak)** | **Grade F** | **Poor / Worst Imaginable** | Detractor |
+
+*Tolok Ukur Kelulusan Usability Skripsi*:  
+Sistem dinyatakan berhasil memenuhi standar kebergunaan yang baik apabila menghasilkan rata-rata skor SUS gabungan $\mathbf{> 68.0}$ (melebihi rata-rata industri global) dan masuk ke dalam kategori **Acceptable**.
+
+---
+
+### 7.4 Struktur Pembahasan Hasil Pengujian di Bab 4 Skripsi
+
+Untuk menyusun narasi Bab 4 Skripsi secara sistematis, peneliti disarankan membagi pembahasan ke dalam 4 sub-bab berikut:
+
+#### 1. Analisis Metrik Efektivitas & Efisiensi Tugas (*Task Performance*)
+- Sajikan tabel rekapitulasi *Task Success Rate (%)*, *Mean Time on Task (detik)*, dan *Error Count*.
+- Buat grafik batang perbandingan tingkat keberhasilan tugas antar-peran.
+- Bahas tugas mana yang membutuhkan waktu paling lama dan identifikasi penyebabnya berdasarkan catatan evaluator.
+
+#### 2. Analisis Efektivitas Dukungan Keputusan (*Decision Support Validation*)
+- Laporkan persentase rata-rata *Decision Accuracy Rate (DAR %)* kelompok Pimpinan.
+- Bahas ketepatan Pimpinan dalam mengidentifikasi defisit lisensi dan estimasi kebutuhan unit lisensi baru berdasarkan studi kasus.
+- Sajikan tabulasi skor rata-rata persepsi kognitif (Pernyataan D-01 s.d D-04) untuk membuktikan peningkatan transparansi audit aset kampus.
+
+#### 3. Analisis Skor Kebergunaan Sistem (*System Usability Scale Analysis*)
+- Tampilkan tabel tabulasi skor individual seluruh responden ($N = 8 - 13$) dan hitung nilai $\overline{\text{SUS}}$ agregat serta standar deviasinya.
+- Tampilkan analisis komparasi deskriptif rata-rata skor SUS antarkelompok peran:
+  - $\overline{\text{SUS}}_{\text{Pimpinan}}$ vs $\overline{\text{SUS}}_{\text{Kepala Lab}}$ vs $\overline{\text{SUS}}_{\text{Staf Lab}}$.
+- Tempatkan nilai akhir pada grafik interpretasi Bangor et al. (menentukan *Grade*, *Adjective*, dan *Acceptability*).
+
+#### 4. Triangulasi Kualitatif & Rekomendasi Perbaikan Antarmuka (*Actionable Recommendations*)
+- Silangkan temuan butir SUS yang mendapat nilai koreksi terendah (misal butir bernada "membingungkan" atau "membutuhkan bantuan") dengan data *Think-Aloud* dan titik *Error Count*.
+- Susun tabel tindak lanjut rekomendasi perbaikan desain antarmuka (*design recommendation table*):
+  - **Masalah Usability yang Ditemukan**: (Contoh: Label filter periode kurang mencolok).
+  - **Bukti Empiris Lapangan**: (Contoh: 2 responden Kepala Lab sempat ragu selama 25 detik).
+  - **Rekomendasi Perbaikan UI**: (Contoh: Menambahkan ikon kalender dan indikator aktif berwarna kontras).
+
