@@ -294,3 +294,79 @@ Tabel berikut digunakan peneliti untuk mentabulasi hasil observasi seluruh respo
 | **R-03** | Staf Lab | S-02 | Mandiri | 100% | 30 | 0 | Alur unduh sangat intuitif. |
 | ... | ... | ... | ... | ... | ... | ... | ... |
 | **Rata-rata** | | | | **___ %** | **___ dt** | **___ kali** | *(Diringkas untuk analisis Bab 4)* |
+
+---
+
+## BAGIAN V: INSTRUMEN EVALUASI PENGAMBILAN KEPUTUSAN (DECISION SUPPORT)
+
+Fokus utama penelitian skripsi ini adalah membuktikan bahwa sistem tidak hanya mudah digunakan, melainkan secara fungsional **mendukung pengambilan keputusan strategis (*Decision Support*)** bagi pimpinan universitas. Oleh karena itu, evaluasi ini menggabungkan pengujian akurasi keputusan objektif berbasis studi kasus dengan kuesioner persepsi subjektif.
+
+---
+
+### 5.1 Uji Akurasi Keputusan Objektif (*Objective Decision Task & Case Vignette*)
+Setelah menyelesaikan Skenario P-01 dan P-02, partisipan kelompok **Pimpinan** diberikan lembar pertanyaan studi kasus berbasis data aktual yang baru saja mereka lihat pada sistem.
+
+```text
+========================================================================================
+             LEMBAR STUDI KASUS KEPUTUSAN STRATEGIS (KELOMPOK PIMPINAN)
+========================================================================================
+Kode Partisipan : [ P-___ ]                          Waktu Pengerjaan : ___ Menit
+========================================================================================
+Petunjuk:
+Berdasarkan data audit lisensi yang Anda lihat pada Dashboard Eksekutif dan Laporan 
+Analisis Kebutuhan Lisensi, jawablah 3 pertanyaan analisis berikut:
+```
+
+#### Soal Kasus 1 (Identifikasi Prioritas Pengadaan)
+> *"Berdasarkan data sistem, sebutkan **2 (dua) software komersial** yang mengalami defisit lisensi paling tinggi di tingkat universitas dan paling mendesak untuk dianggarkan lisensi resminya?"*
+- **Jawaban Partisipan**: 1) __________________________________   2) __________________________________
+- **Kunci Jawaban Sistem (*Ground Truth*)**: Sesuai katalog komersial aktif pada seeder (misal: *Microsoft Office Professional Plus* dan *Adobe Creative Cloud* / *AutoCAD*).
+- **Rubrik Penilaian Evaluator**:
+  - [ ] **Skor 100%**: Menyebutkan kedua software dengan tepat.
+  - [ ] **Skor 50%**: Menyebutkan tepat satu software.
+  - [ ] **Skor 0%**: Salah menyebutkan atau menyatakan tidak menemukan.
+
+#### Soal Kasus 2 (Estimasi Besaran Kebutuhan Unit Lisensi)
+> *"Berapa **total kekurangan unit (*total deficit seats*)** yang harus diajukan universitas dalam usulan pengadaan lisensi baru untuk software-software yang mengalami defisit tersebut?"*
+- **Jawaban Partisipan**: ____________ unit / kursi lisensi.
+- **Kunci Jawaban Sistem (*Ground Truth*)**: Angka eksak akumulasi kolom defisit pada tabel Bagian I/II Laporan Kebutuhan Lisensi.
+- **Rubrik Penilaian Evaluator**:
+  - [ ] **Skor 100%**: Angka persis sesuai tabel laporan.
+  - [ ] **Skor 50%**: Angka mendekati (selisih $\le 2$ unit karena pembulatan atau membaca tabel per-fakultas).
+  - [ ] **Skor 0%**: Angka jauh meleset atau tidak dapat menemukan angka.
+
+#### Soal Kasus 3 (Penentuan Sumber Masalah / Alokasi Anggaran)
+> *"Fakultas dan laboratorium mana yang menyumbang instalasi tanpa lisensi (*defisit*) paling banyak untuk software komersial tersebut?"*
+- **Jawaban Partisipan**: Fakultas: ________________________  Laboratorium: ________________________
+- **Kunci Jawaban Sistem (*Ground Truth*)**: Entitas fakultas & lab dengan angka instalasi melebihi alokasi tertinggi di matriks kepatuhan.
+- **Rubrik Penilaian Evaluator**:
+  - [ ] **Skor 100%**: Fakultas dan Lab terjawab tepat.
+  - [ ] **Skor 50%**: Fakultas tepat, namun lab keliru.
+  - [ ] **Skor 0%**: Salah total.
+
+---
+
+### 5.2 Formula Komputasi Metrik Akurasi Keputusan (*Decision Accuracy Rate*)
+Metrik akurasi keputusan dihitung secara kuantitatif untuk dilaporkan pada Bab 4:
+
+$$\text{Decision Accuracy Rate (DAR)}_j = \frac{\text{Skor Kasus 1} + \text{Skor Kasus 2} + \text{Skor Kasus 3}}{3} \times 100\%$$
+
+$$\overline{\text{DAR}} = \frac{1}{M} \sum_{j=1}^{M} \text{DAR}_j$$
+
+*Keterangan*:  
+- $\text{DAR}_j$ = Tingkat akurasi keputusan partisipan pimpinan ke-$j$.  
+- $M$ = Jumlah total responden pimpinan ($N = 2 - 3$).  
+- **Tolok Ukur Keberhasilan Skripsi**: Nilai $\overline{\text{DAR}} \ge 80\%$ membuktikan secara empiris bahwa antarmuka sistem efektif dalam mengomunikasikan data kepatuhan untuk pengambilan keputusan pimpinan.
+
+---
+
+### 5.3 Kuesioner Persepsi Subjektif Dukungan Keputusan
+Responden kelompok Pimpinan dan Kepala Lab memberikan penilaian persepsi kognitif menggunakan skala Likert 1–5:  
+*(1: Sangat Tidak Setuju, 2: Tidak Setuju, 3: Netral/Ragu-ragu, 4: Setuju, 5: Sangat Setuju)*
+
+| No | Pernyataan Evaluasi Keputusan (*Decision Perception Statements*) | Skor (1 - 5) |
+|---|---|---|
+| **D-01** | Visualisasi grafik status lisensi dan tabel matriks antarfakultas mempermudah saya memahami kondisi legalitas software kampus secara cepat tanpa harus membuka rekapan fisik. | [ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] |
+| **D-02** | Informasi rincian defisit lisensi disajikan secara transparan dan akurat sehingga memberikan keyakinan kuat dalam menetapkan prioritas anggaran pengadaan tahunan. | [ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] |
+| **D-03** | Pembedaan status kepatuhan (*Compliant* vs *Non-Compliant*) serta deteksi software terlarang membantu saya mengidentifikasi risiko hukum dan keamanan siber di kampus secara dini. | [ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] |
+| **D-04** | Format ekspor laporan (PDF/Excel) yang disediakan sistem sudah memenuhi standar kelayakan dokumen pendukung rapat pimpinan universitas. | [ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] |
