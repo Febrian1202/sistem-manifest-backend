@@ -144,3 +144,35 @@ test('user cannot retrieve license key belonging to another faculty', function (
 
     $response->assertForbidden();
 });
+
+test('lab licenses view renders search and allocations properly', function () {
+    $faculty = Faculty::factory()->create(['name' => 'Fakultas Teknik']);
+    $lab = Laboratory::factory()->create(['faculty_id' => $faculty->id]);
+    $catalog = SoftwareCatalog::factory()->create(['normalized_name' => 'Microsoft Windows 11 Pro', 'category' => 'OS']);
+    $license = LicenseInventory::factory()->create([
+        'catalog_id' => $catalog->id,
+        'license_key' => 'VK7JG-NPHTM-C97JM-9MPGT',
+        'expiry_date' => now()->addYear(),
+    ]);
+
+    LicenseAllocation::factory()->create([
+        'license_inventory_id' => $license->id,
+        'faculty_id' => $faculty->id,
+        'allocated_quota' => 50,
+        'status' => 'active',
+        'notes' => 'Gunakan key untuk PC Lab Jaringan',
+    ]);
+
+    $staff = User::factory()->create(['laboratory_id' => $lab->id]);
+    $staff->assignRole('staff_lab');
+
+    $response = $this->actingAs($staff)->get(route('lab.licenses.index'));
+
+    $response->assertOk()
+        ->assertSee('Fakultas Teknik')
+        ->assertSee('Microsoft Windows 11 Pro')
+        ->assertSee('50')
+        ->assertSee('Gunakan key untuk PC Lab Jaringan')
+        ->assertSee($license->masked_license_key)
+        ->assertDontSee('VK7JG-NPHTM-C97JM-9MPGT'); // Plain key must not exist in HTML
+});
