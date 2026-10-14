@@ -10,7 +10,15 @@ if %errorLevel% == 0 (
     goto :run_script
 ) else (
     echo Meminta izin Administrator (UAC)...
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd -ArgumentList '/c \"\"%~f0\"\"' -Verb RunAs"
+    set "SCRIPT_PATH=%~f0"
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath $env:SCRIPT_PATH -Verb RunAs"
+    if %errorLevel% neq 0 (
+        echo.
+        echo [!] GAGAL MEMINTA IZIN ADMINISTRATOR OTOMATIS.
+        echo Silakan KLIK KANAN file ini lalu pilih "Run as administrator".
+        echo.
+        pause
+    )
     exit /b
 )
 

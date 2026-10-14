@@ -6,6 +6,23 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 
 ---
 
+## [1.1.1] - 2026-10-14
+
+### Fixed
+- **Validasi dan Penanganan Payload Scan Agen (`ScanController`):**
+  - Menambahkan sanitasi otomatis (`normalizeScanPayload`) untuk mengonversi nilai numerik `version`, `vendor`, dan `install_date` (DWORD dari Windows Registry) menjadi string yang valid sebelum validasi.
+  - Menangani objek `System.Version` dari Windows Store Apps (`Get-AppxPackage`) dan mengonversinya menjadi representasi string versi.
+  - Memfilter secara aman entri software dengan nama kosong tanpa menggagalkan pemindaian unit komputer secara keseluruhan.
+  - Menangani nilai prosesor bertipe array dari workstation dengan multi-socket CPU.
+  - Menambahkan logging warning terperinci saat validasi payload scan gagal untuk kemudahan audit.
+- **Ketahanan Skrip Scanner Agen (`script/agent/`):**
+  - Mengonversi seluruh properti software secara eksplisit ke string (`[string]`) pada `scanner.ps1`.
+  - Menambahkan pembacaan response stream error server pada blok `catch` agar detail pesan error validasi langsung tampil di konsol operator lab.
+  - Menambahkan proteksi pengecekan file ekstraksi (`scanner.ps1`, `setup_tasks.ps1`) dan perbaikan elevasi hak akses Administrator (UAC) pada berkas batch launcher (`1-Jalankan-Scan-Sekarang.bat`, `2-Pasang-Jadwal-Otomatis.bat`, `3-Hapus-Jadwal-Otomatis.bat`).
+- **Image Docker & Scheduled Command:**
+  - Menambahkan paket `mariadb-client` pada `Dockerfile` untuk menyediakan binary `mysqldump` yang dibutuhkan oleh `spatie/laravel-backup`.
+  - Menambahkan flag `--force` pada perintah `activitylog:clean` di `routes/console.php` agar berjalan otomatis di lingkungan production tanpa prompt konfirmasi interaktif.
+
 ## [1.1.0] - 2026-10-14
 
 ### Added

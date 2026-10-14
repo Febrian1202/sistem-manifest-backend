@@ -345,3 +345,47 @@ test('GenerateComplianceReportJob invalidates dashboard and compliance cache key
     expect(Cache::has('dashboard.charts'))->toBeFalse()
         ->and(Cache::has('compliance.global_stats'))->toBeFalse();
 });
+
+test('POST /api/scan-result accepts numeric versions, registry dword install_dates, and filters out blank names', function () {
+    Queue::fake();
+
+    $computer = Computer::factory()->create();
+
+    $payload = [
+        'hostname' => 'LAB-PC-01',
+        'processor' => ['Intel Core i5', 'Intel Core i5'], // multi-socket / array processor
+        'installed_software' => [
+            [
+                'name' => '7-Zip',
+                'version' => 2201, // integer version
+                'install_date' => 20240115, // integer DWORD from registry
+                'vendor' => 1234, // numeric vendor
+            ],
+            [
+                'name' => 'Windows App',
+                'version' => ['Major' => 1, 'Minor' => 2, 'Build' => 3, 'Revision' => 0], // System.Version object
+                'install_date' => null,
+            ],
+            [
+                'name' => '', // blank/whitespace name from corrupt registry entry
+                'version' => '1.0',
+            ],
+        ],
+    ];
+
+    Sanctum::actingAs($computer, ['scan:submit']);
+    $response = $this->postJson('/api/scan-result', $payload);
+
+    $response->assertStatus(202);
+
+    Queue::assertPushed(ProcessScanResultJob::class, function ($job) {
+        // Ensure blank entry is pruned and valid entries have strings
+        expect($job->softwareList)->toHaveCount(2)
+            ->and($job->softwareList[0]['name'])->toBe('7-Zip')
+            ->and($job->softwareList[0]['version'])->toBe('2201')
+            ->and($job->softwareList[0]['install_date'])->toBe('20240115')
+            ->and($job->softwareList[1]['version'])->toBe('1.2.3.0');
+
+        return true;
+    });
+});

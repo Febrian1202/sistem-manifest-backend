@@ -10,12 +10,28 @@ if %errorLevel% == 0 (
     goto :run_script
 ) else (
     echo Meminta izin Administrator (UAC)...
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd -ArgumentList '/c \"\"%~f0\"\"' -Verb RunAs"
+    set "SCRIPT_PATH=%~f0"
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath $env:SCRIPT_PATH -Verb RunAs"
+    if %errorLevel% neq 0 (
+        echo.
+        echo [!] GAGAL MEMINTA IZIN ADMINISTRATOR OTOMATIS.
+        echo Silakan KLIK KANAN file ini lalu pilih "Run as administrator".
+        echo.
+        pause
+    )
     exit /b
 )
 
 :run_script
 cd /d "%~dp0"
+if not exist "%~dp0setup_tasks.ps1" (
+    echo [!] ERROR: File setup_tasks.ps1 tidak ditemukan!
+    echo     Pastikan Anda sudah mengekstrak (Extract All) seluruh isi ZIP
+    echo     ke dalam satu folder sebelum menjalankan file ini.
+    echo.
+    pause
+    exit /b
+)
 echo Menjalankan instalasi jadwal pemindaian berkala...
 echo.
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0setup_tasks.ps1"

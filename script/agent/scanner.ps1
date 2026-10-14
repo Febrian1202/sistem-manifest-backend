@@ -3,7 +3,7 @@ param(
     [string]$ScanMode = ""
 )
 
-$AgentVersion = "1.1.0"
+$AgentVersion = "1.1.1"
 
 # ---------------------------------------------------------
 # Konfigurasi API via config.json
@@ -142,15 +142,15 @@ $ramGB      = 0; $diskTotal = 0; $diskFree = 0
 $osStatus   = "Unknown"; $partialKey = "N/A"
 
 try {
-    $cpu         = Get-CimInstance Win32_Processor
+    $cpu         = Get-CimInstance Win32_Processor | Select-Object -First 1
     $disk        = Get-CimInstance Win32_LogicalDisk | Where-Object { $_.DeviceID -eq "C:" }
     $os          = Get-CimInstance Win32_OperatingSystem
     $licenseInfo = Get-CimInstance SoftwareLicensingProduct -Filter "PartialProductKey IS NOT NULL" |
                    Where-Object { $_.Name -like "*Windows*" } | Select-Object -First 1
 
     $ramGB     = [math]::Round($sys.TotalPhysicalMemory / 1GB, 0)
-    $diskTotal = [math]::Round($disk.Size / 1GB, 0)
-    $diskFree  = [math]::Round($disk.FreeSpace / 1GB, 0)
+    $diskTotal = if ($disk -and $disk.Size) { [math]::Round($disk.Size / 1GB, 0) } else { 0 }
+    $diskFree  = if ($disk -and $disk.FreeSpace) { [math]::Round($disk.FreeSpace / 1GB, 0) } else { 0 }
 
     if ($licenseInfo) {
         switch ($licenseInfo.LicenseStatus) {
@@ -184,12 +184,13 @@ foreach ($path in $registryPaths) {
     if (Test-Path $path) {
         $keys = Get-ItemProperty $path -ErrorAction SilentlyContinue
         foreach ($key in $keys) {
-            if ($key.DisplayName) {
+            $displayName = if ($key.DisplayName) { [string]$key.DisplayName.Trim() } else { $null }
+            if ($displayName) {
                 $allSoftware += [PSCustomObject]@{
-                    name         = $key.DisplayName
-                    version      = if ($key.DisplayVersion) { $key.DisplayVersion } else { $null }
-                    vendor       = if ($key.Publisher) { $key.Publisher } else { $null }
-                    install_date = if ($key.InstallDate) { $key.InstallDate } else { $null }
+                    name         = $displayName
+                    version      = if ($key.DisplayVersion) { [string]$key.DisplayVersion.Trim() } else { $null }
+                    vendor       = if ($key.Publisher) { [string]$key.Publisher.Trim() } else { $null }
+                    install_date = if ($key.InstallDate) { [string]$key.InstallDate.Trim() } else { $null }
                 }
             }
         }
@@ -203,11 +204,14 @@ try {
         $_.Name -notmatch "^Microsoft\.(NET|VCLibs|UI|Windows|Xbox|Bing|Zune|549981C3F5F10)"
     }
     foreach ($app in $storeApps) {
-        $allSoftware += [PSCustomObject]@{
-            name         = $app.Name
-            version      = $app.Version
-            vendor       = $app.Publisher
-            install_date = $null
+        $appName = if ($app.Name) { [string]$app.Name.Trim() } else { $null }
+        if ($appName) {
+            $allSoftware += [PSCustomObject]@{
+                name         = $appName
+                version      = if ($app.Version) { [string]$app.Version } else { $null }
+                vendor       = if ($app.Publisher) { [string]$app.Publisher.Trim() } else { $null }
+                install_date = $null
+            }
         }
     }
 } catch {
@@ -269,8 +273,18 @@ try {
         if (Test-Path $tokenFile) { Remove-Item $tokenFile }
         Write-Host " Token dihapus. Jalankan ulang script untuk registrasi ulang." -ForegroundColor Yellow
     } else {
-        Write-Host "`n [GAGAL] Tidak dapat menghubungi server." -ForegroundColor Red
+        Write-Host "`n [GAGAL] Pengiriman data ke server gagal ($statusCode)." -ForegroundColor Red
         Write-Host " Error: $($_.Exception.Message)"
+        if ($_.Exception.Response) {
+            try {
+                $stream = $_.Exception.Response.GetResponseStream()
+                if ($stream) {
+                    $reader = New-Object System.IO.StreamReader($stream)
+                    $errorBody = $reader.ReadToEnd()
+                    Write-Host " Detail Error Server:`n$errorBody" -ForegroundColor Yellow
+                }
+            } catch {}
+        }
         Write-Warning " Pengunggahan hasil scan gagal, berkas retry tersimpan dengan UUID: $scanUuid"
     }
 }

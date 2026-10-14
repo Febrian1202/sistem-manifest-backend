@@ -47,6 +47,7 @@ RUN apk add --no-cache \
     unzip \
     git \
     curl \
+    mariadb-client \
     oniguruma-dev \
     icu-dev \
     linux-headers \

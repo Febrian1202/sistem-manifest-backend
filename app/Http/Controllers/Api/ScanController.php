@@ -8,6 +8,8 @@ use App\Models\Computer;
 use App\Models\ScanSession;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class ScanController extends Controller
@@ -31,8 +33,11 @@ class ScanController extends Controller
             ], 403);
         }
 
-        // 2. Validate Input
-        $request->validate([
+        // 3. Pre-normalize input payload (robust against Windows registry quirks)
+        $this->normalizeScanPayload($request);
+
+        // 4. Validate Input
+        $validator = Validator::make($request->all(), [
             'scan_uuid' => 'nullable|uuid',
             'client_started_at' => 'nullable|date',
             'client_completed_at' => 'nullable|date',
@@ -59,6 +64,20 @@ class ScanController extends Controller
             'installed_software.*.vendor' => 'nullable|string',
             'installed_software.*.install_date' => 'nullable|string',
         ]);
+
+        if ($validator->fails()) {
+            Log::warning('Scan submission validation failed for computer ['.$request->user()->hostname.']: ', [
+                'computer_id' => $request->user()->id,
+                'ip' => $request->ip(),
+                'errors' => $validator->errors()->toArray(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data scan tidak valid.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         // 3. Check Idempotency via scan_uuid
         $scanUuid = $request->input('scan_uuid') ?: (string) Str::uuid();
@@ -127,5 +146,87 @@ class ScanController extends Controller
             'computer' => $computer->hostname,
             'scan_session_id' => $scanSession->id,
         ], 202);
+    }
+
+    /**
+     * Pre-normalize scan payload to handle Windows registry and WMI quirks safely.
+     */
+    protected function normalizeScanPayload(Request $request): void
+    {
+        $updates = [];
+
+        // 1. Processor (if CIM returned array from multi-socket CPU)
+        if (is_array($request->input('processor'))) {
+            $processors = array_filter(array_map('strval', $request->input('processor')));
+            $updates['processor'] = ! empty($processors) ? substr(reset($processors), 0, 255) : null;
+        }
+
+        // 2. IP address (if array)
+        if (is_array($request->input('ip_address'))) {
+            $ips = array_filter(array_map('strval', $request->input('ip_address')));
+            $updates['ip_address'] = ! empty($ips) ? substr(reset($ips), 0, 45) : null;
+        }
+
+        // 3. Installed Software sanitization
+        $rawSoftware = $request->input('installed_software');
+        if (is_array($rawSoftware)) {
+            $sanitized = [];
+            foreach ($rawSoftware as $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+
+                $name = isset($item['name']) ? trim((string) $item['name']) : '';
+                if ($name === '') {
+                    continue; // Prune blank/empty entries safely
+                }
+
+                $version = $item['version'] ?? null;
+                if (is_array($version)) {
+                    // System.Version object serialization: {"Major": 1, "Minor": 2, ...}
+                    $versionParts = array_filter([
+                        $version['Major'] ?? null,
+                        $version['Minor'] ?? null,
+                        $version['Build'] ?? null,
+                        $version['Revision'] ?? null,
+                    ], fn ($v) => $v !== null && (int) $v >= 0);
+                    $version = ! empty($versionParts) ? implode('.', $versionParts) : null;
+                } elseif ($version !== null) {
+                    $version = trim((string) $version);
+                }
+
+                $vendor = isset($item['vendor']) && $item['vendor'] !== null ? trim((string) $item['vendor']) : null;
+                $installDate = isset($item['install_date']) && $item['install_date'] !== null ? trim((string) $item['install_date']) : null;
+
+                $entry = [
+                    'name' => $name,
+                ];
+
+                if ($version !== null && $version !== '') {
+                    $entry['version'] = $version;
+                } elseif (array_key_exists('version', $item)) {
+                    $entry['version'] = null;
+                }
+
+                if ($vendor !== null && $vendor !== '') {
+                    $entry['vendor'] = $vendor;
+                } elseif (array_key_exists('vendor', $item)) {
+                    $entry['vendor'] = null;
+                }
+
+                if ($installDate !== null && $installDate !== '') {
+                    $entry['install_date'] = $installDate;
+                } elseif (array_key_exists('install_date', $item)) {
+                    $entry['install_date'] = null;
+                }
+
+                $sanitized[] = $entry;
+            }
+            $updates['installed_software'] = $sanitized;
+        }
+
+        if (! empty($updates)) {
+            $request->merge($updates);
+        }
     }
 }
