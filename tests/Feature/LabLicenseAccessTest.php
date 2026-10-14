@@ -204,3 +204,26 @@ test('sidebar shows Lisensi Fakultas link for kepala_lab and staff_lab but not f
         ->get(route('dashboard'))
         ->assertDontSee(route('lab.licenses.index'));
 });
+
+test('retrieving license key is throttled to 10 requests per minute', function () {
+    $faculty = Faculty::factory()->create();
+    $lab = Laboratory::factory()->create(['faculty_id' => $faculty->id]);
+    $catalog = SoftwareCatalog::factory()->create();
+    $license = LicenseInventory::factory()->create(['catalog_id' => $catalog->id]);
+
+    LicenseAllocation::factory()->create([
+        'license_inventory_id' => $license->id,
+        'faculty_id' => $faculty->id,
+        'status' => 'active',
+    ]);
+
+    $staff = User::factory()->create(['laboratory_id' => $lab->id]);
+    $staff->assignRole('staff_lab');
+
+    for ($i = 0; $i < 10; $i++) {
+        $this->actingAs($staff)->postJson(route('lab.licenses.key', $license->id))->assertOk();
+    }
+
+    $this->actingAs($staff)->postJson(route('lab.licenses.key', $license->id))
+        ->assertStatus(429);
+});
