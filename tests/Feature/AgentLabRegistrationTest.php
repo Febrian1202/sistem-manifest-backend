@@ -155,3 +155,26 @@ test('re-registration revokes old tokens', function () {
     expect($token1)->not->toBe($token2);
     expect($computer->fresh()->tokens()->count())->toBe(1);
 });
+
+test('registers a computer with diverse MAC address formats (cisco dot, dashed, 12-hex, lowercase)', function (string $rawMac, string $expectedMac) {
+    $lab = Laboratory::factory()->create();
+
+    $response = $this->withHeader('X-Agent-Key', 'TEST_AGENT_KEY_123')
+        ->postJson('/api/agent/register', [
+            'hostname' => 'PC-FORMAT-TEST',
+            'mac_address' => $rawMac,
+            'laboratory_id' => $lab->id,
+        ]);
+
+    $response->assertStatus(201);
+
+    $this->assertDatabaseHas('computers', [
+        'hostname' => 'PC-FORMAT-TEST',
+        'mac_address' => $expectedMac,
+    ]);
+})->with([
+    ['0011.2233.4455', '00:11:22:33:44:55'],
+    ['00-11-22-33-44-55', '00:11:22:33:44:55'],
+    ['001122334455', '00:11:22:33:44:55'],
+    ['aa:bb:cc:dd:ee:ff', 'AA:BB:CC:DD:EE:FF'],
+]);

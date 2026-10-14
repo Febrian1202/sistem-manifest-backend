@@ -389,3 +389,57 @@ test('POST /api/scan-result accepts numeric versions, registry dword install_dat
         return true;
     });
 });
+
+test('POST /api/scan-result is resilient against device quirks: missing hostname, cisco MAC, single-object software, oversized fields, and invalid UUID', function () {
+    Queue::fake();
+
+    $computer = Computer::factory()->create([
+        'hostname' => 'FALLBACK-PC-NAME',
+        'mac_address' => 'AA:BB:CC:DD:EE:FF',
+    ]);
+
+    $payload = [
+        'hostname' => '', // missing/empty hostname -> should fall back to $computer->hostname
+        'mac_address' => '0011.2233.4455', // cisco dot notation
+        'scan_uuid' => 'corrupted-non-uuid-string', // corrupted scan_uuid
+        'scan_mode' => 'Scheduled', // uppercase scan mode
+        'client_started_at' => 'invalid-date-string', // corrupted timestamp
+        'processor' => str_repeat('A', 350), // oversized processor string (>255)
+        'manufacturer' => str_repeat('B', 300), // oversized manufacturer (>255)
+        'model' => str_repeat('C', 300), // oversized model (>255)
+        'ram_gb' => 16.0, // float
+        'disk_total_gb' => '500', // string integer
+        'disk_free_gb' => -5, // negative number
+        'installed_software' => [
+            'name' => str_repeat('X', 300), // single object (PowerShell 1-item array) + oversized
+            'version' => ['1', '2', '3'], // array version
+            'vendor' => ['Vendor', 'Corp'], // array vendor
+            'install_date' => 20230501, // numeric install date
+        ],
+    ];
+
+    Sanctum::actingAs($computer, ['scan:submit']);
+    $response = $this->postJson('/api/scan-result', $payload);
+
+    $response->assertStatus(202);
+
+    $computer->refresh();
+    expect($computer->hostname)->toBe('FALLBACK-PC-NAME')
+        ->and($computer->mac_address)->toBe('00:11:22:33:44:55')
+        ->and(strlen($computer->processor))->toBe(255)
+        ->and(strlen($computer->manufacturer))->toBe(255)
+        ->and(strlen($computer->model))->toBe(255)
+        ->and($computer->ram_gb)->toBe(16)
+        ->and($computer->disk_total_gb)->toBe(500)
+        ->and($computer->disk_free_gb)->toBe(0);
+
+    Queue::assertPushed(ProcessScanResultJob::class, function ($job) {
+        expect($job->softwareList)->toHaveCount(1)
+            ->and(strlen($job->softwareList[0]['name']))->toBe(255)
+            ->and($job->softwareList[0]['version'])->toBe('1')
+            ->and($job->softwareList[0]['vendor'])->toBe('Vendor')
+            ->and($job->softwareList[0]['install_date'])->toBe('20230501');
+
+        return true;
+    });
+});

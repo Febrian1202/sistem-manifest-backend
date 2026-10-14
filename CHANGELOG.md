@@ -6,6 +6,28 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 
 ---
 
+## [1.1.3] - 2026-10-14
+
+### Fixed
+- **Peluncur Skrip Batch Agen Windows (`script/agent/*.bat`):**
+  - Memperbaiki elevasi hak akses Administrator (UAC) pada `2-Pasang-Jadwal-Otomatis.bat` dan `3-Hapus-Jadwal-Otomatis.bat` dengan memanggil `cmd.exe` secara elevated menggunakan `[char]34`, memperbaiki kegagalan fatal PowerShell saat mencoba menjalankan berkas `.bat` secara langsung dengan `Start-Process -FilePath`.
+  - Memperbaiki `1-Jalankan-Scan-Sekarang.bat` agar berjalan dalam mode `-Mode manual -ScanMode manual` dan menambahkan validasi keberadaan file `config.json` sebelum eksekusi.
+  - Menghapus perintah `Clear-Host` pada `scanner.ps1` agar konsol Windows tidak terhapus tiba-tiba dan riwayat pesan error/status tetap terbaca jelas oleh operator.
+- **Ketahanan Agen Pemindai PowerShell (`script/agent/scanner.ps1`):**
+  - Mencegah error terminasi PowerShell `Method invocation failed because [System.Int32] does not contain a method named 'Trim'` saat membaca data DWORD / integer dari Windows Registry dengan melakukan casting `[string]` terlebih dahulu sebelum memanggil `.Trim()`.
+  - Mencegah crash `You cannot call a method on a null-valued expression` saat properti WMI/CIM bernilai null (`Manufacturer`, `Model`, `SerialNumber`, `DNSHostName`).
+  - Menambahkan fallback adapter jaringan dan pengambilan MAC address yang aman jika `IPEnabled = True` belum aktif.
+  - Menstandarkan format tanggal UTC ISO 8601 menggunakan `InvariantCulture` agar kebal terhadap pengaturan regional / bahasa Windows.
+- **Normalisasi Validasi Payload Scan & Registrasi (`ScanController` & `AgentRegisterController`):**
+  - Menangani error 422 akibat format MAC address yang beragam (Cisco dot notation `0011.2233.4455`, dash separated `00-11-...`, bare 12 hex `001122334455`, atau lowercase) dan mengonversinya ke format standar colon uppercase.
+  - Menangani hostname yang kosong dengan fallback aman ke hostname komputer yang telah terotentikasi.
+  - Menangani anomali PowerShell 5.1 yang melakukan serialisasi array software 1 item menjadi JSON object tunggal, dengan membungkusnya kembali menjadi array sequential.
+  - Memotong string hardware/software yang melebihi batas 255 karakter secara aman tanpa menggagalkan pemindaian unit.
+  - Menormalkan nilai `scan_mode` secara case-insensitive.
+  - Menangani nilai floating point atau string pada field numerik `ram_gb`, `disk_total_gb`, dan `disk_free_gb`.
+- **Pengujian:**
+  - Menambahkan feature test komprehensif pada `ScanPipelineTest` dan `AgentLabRegistrationTest` untuk memverifikasi ketahanan terhadap seluruh anomali format perangkat Windows.
+
 ## [1.1.2] - 2026-10-14
 
 ### Fixed

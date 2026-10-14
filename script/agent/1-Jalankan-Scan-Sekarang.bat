@@ -12,10 +12,17 @@ if not exist "%~dp0scanner.ps1" (
     pause
     exit /b
 )
+if not exist "%~dp0config.json" (
+    echo [!] ERROR: File config.json tidak ditemukan!
+    echo     Pastikan file config.json berada di folder yang sama dengan skrip ini.
+    echo.
+    pause
+    exit /b
+)
 echo Memulai pemindaian perangkat keras dan perangkat lunak...
 echo.
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scanner.ps1" -Mode scheduled
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scanner.ps1" -Mode manual -ScanMode manual
 
 echo.
 echo ========================================================

@@ -23,7 +23,10 @@ class AgentRegisterController extends Controller
             ], 401);
         }
 
-        // 2. Validation
+        // 2. Pre-normalize input payload
+        $this->normalizeRegistrationPayload($request);
+
+        // 3. Validation
         // Using a standard MAC address regex: 6 pairs of hex digits separated by : or -
         $validator = Validator::make($request->all(), [
             'mac_address' => ['required', 'string', 'regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/'],
@@ -76,5 +79,52 @@ class AgentRegisterController extends Controller
             'laboratory_id' => $computer->laboratory_id,
             'token' => $token,
         ], 201);
+    }
+
+    /**
+     * Pre-normalize registration payload to handle diverse MAC formats and string quirks safely.
+     */
+    protected function normalizeRegistrationPayload(Request $request): void
+    {
+        $updates = [];
+
+        $rawMac = $request->input('mac_address');
+        if ($rawMac !== null) {
+            if (is_array($rawMac)) {
+                $rawMac = reset($rawMac);
+            }
+            $cleanMac = strtoupper(trim((string) $rawMac));
+
+            // Format: 001122334455 (12 hex chars) -> 00:11:22:33:44:55
+            if (preg_match('/^[0-9A-F]{12}$/', $cleanMac)) {
+                $cleanMac = implode(':', str_split($cleanMac, 2));
+            }
+            // Format: 0011.2233.4455 (Cisco format) -> 00:11:22:33:44:55
+            elseif (preg_match('/^([0-9A-F]{4})\.([0-9A-F]{4})\.([0-9A-F]{4})$/', $cleanMac, $m)) {
+                $hex = $m[1].$m[2].$m[3];
+                $cleanMac = implode(':', str_split($hex, 2));
+            }
+            // Normalize dashes to colons
+            $cleanMac = str_replace('-', ':', $cleanMac);
+
+            $updates['mac_address'] = $cleanMac;
+        }
+
+        $rawHostname = $request->input('hostname');
+        if ($rawHostname !== null) {
+            $hostname = trim((string) $rawHostname);
+            if ($hostname !== '') {
+                $updates['hostname'] = substr($hostname, 0, 255);
+            }
+        }
+
+        $rawSerial = $request->input('serial_number');
+        if ($rawSerial !== null) {
+            $updates['serial_number'] = substr(trim((string) $rawSerial), 0, 255);
+        }
+
+        if (! empty($updates)) {
+            $request->merge($updates);
+        }
     }
 }

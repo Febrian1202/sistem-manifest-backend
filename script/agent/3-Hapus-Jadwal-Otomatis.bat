@@ -11,7 +11,7 @@ if %errorLevel% == 0 (
 ) else (
     echo Meminta izin Administrator (UAC)...
     set "SCRIPT_PATH=%~f0"
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath $env:SCRIPT_PATH -Verb RunAs"
+    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList ('/c ' + [char]34 + $env:SCRIPT_PATH + [char]34) -Verb RunAs"
     if %errorLevel% neq 0 (
         echo.
         echo [!] GAGAL MEMINTA IZIN ADMINISTRATOR OTOMATIS.

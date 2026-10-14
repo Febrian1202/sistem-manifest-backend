@@ -149,80 +149,199 @@ class ScanController extends Controller
     }
 
     /**
-     * Pre-normalize scan payload to handle Windows registry and WMI quirks safely.
+     * Pre-normalize scan payload to handle Windows registry, WMI, and driver quirks safely.
      */
     protected function normalizeScanPayload(Request $request): void
     {
         $updates = [];
 
-        // 1. Processor (if CIM returned array from multi-socket CPU)
-        if (is_array($request->input('processor'))) {
-            $processors = array_filter(array_map('strval', $request->input('processor')));
-            $updates['processor'] = ! empty($processors) ? substr(reset($processors), 0, 255) : null;
+        // 1. Hostname fallback & max length
+        $rawHostname = $request->input('hostname');
+        if (empty($rawHostname) || ! is_string($rawHostname)) {
+            $updates['hostname'] = substr((string) ($request->user()?->hostname ?: 'UNKNOWN-PC'), 0, 255);
+        } else {
+            $updates['hostname'] = substr(trim($rawHostname), 0, 255);
         }
 
-        // 2. IP address (if array)
-        if (is_array($request->input('ip_address'))) {
-            $ips = array_filter(array_map('strval', $request->input('ip_address')));
-            $updates['ip_address'] = ! empty($ips) ? substr(reset($ips), 0, 45) : null;
-        }
-
-        // 3. Installed Software sanitization
-        $rawSoftware = $request->input('installed_software');
-        if (is_array($rawSoftware)) {
-            $sanitized = [];
-            foreach ($rawSoftware as $item) {
-                if (! is_array($item)) {
-                    continue;
-                }
-
-                $name = isset($item['name']) ? trim((string) $item['name']) : '';
-                if ($name === '') {
-                    continue; // Prune blank/empty entries safely
-                }
-
-                $version = $item['version'] ?? null;
-                if (is_array($version)) {
-                    // System.Version object serialization: {"Major": 1, "Minor": 2, ...}
-                    $versionParts = array_filter([
-                        $version['Major'] ?? null,
-                        $version['Minor'] ?? null,
-                        $version['Build'] ?? null,
-                        $version['Revision'] ?? null,
-                    ], fn ($v) => $v !== null && (int) $v >= 0);
-                    $version = ! empty($versionParts) ? implode('.', $versionParts) : null;
-                } elseif ($version !== null) {
-                    $version = trim((string) $version);
-                }
-
-                $vendor = isset($item['vendor']) && $item['vendor'] !== null ? trim((string) $item['vendor']) : null;
-                $installDate = isset($item['install_date']) && $item['install_date'] !== null ? trim((string) $item['install_date']) : null;
-
-                $entry = [
-                    'name' => $name,
-                ];
-
-                if ($version !== null && $version !== '') {
-                    $entry['version'] = $version;
-                } elseif (array_key_exists('version', $item)) {
-                    $entry['version'] = null;
-                }
-
-                if ($vendor !== null && $vendor !== '') {
-                    $entry['vendor'] = $vendor;
-                } elseif (array_key_exists('vendor', $item)) {
-                    $entry['vendor'] = null;
-                }
-
-                if ($installDate !== null && $installDate !== '') {
-                    $entry['install_date'] = $installDate;
-                } elseif (array_key_exists('install_date', $item)) {
-                    $entry['install_date'] = null;
-                }
-
-                $sanitized[] = $entry;
+        // 2. MAC Address normalization & sanitization
+        $rawMac = $request->input('mac_address');
+        if ($rawMac !== null) {
+            if (is_array($rawMac)) {
+                $rawMac = reset($rawMac);
             }
-            $updates['installed_software'] = $sanitized;
+            $cleanMac = strtoupper(trim((string) $rawMac));
+
+            // Format: 001122334455 (12 hex chars) -> 00:11:22:33:44:55
+            if (preg_match('/^[0-9A-F]{12}$/', $cleanMac)) {
+                $cleanMac = implode(':', str_split($cleanMac, 2));
+            }
+            // Format: 0011.2233.4455 (Cisco format) -> 00:11:22:33:44:55
+            elseif (preg_match('/^([0-9A-F]{4})\.([0-9A-F]{4})\.([0-9A-F]{4})$/', $cleanMac, $m)) {
+                $hex = $m[1].$m[2].$m[3];
+                $cleanMac = implode(':', str_split($hex, 2));
+            }
+            // Format: replace dashes with colons
+            $cleanMac = str_replace('-', ':', $cleanMac);
+
+            // If it still doesn't match standard 6-octet MAC, fall back safely to user's mac_address or null
+            if (! preg_match('/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/', $cleanMac)) {
+                $cleanMac = $request->user()?->mac_address ?: null;
+            }
+
+            $updates['mac_address'] = $cleanMac;
+        }
+
+        // 3. Scan UUID validation & fallback
+        $rawUuid = $request->input('scan_uuid');
+        if (! empty($rawUuid) && ! Str::isUuid($rawUuid)) {
+            $updates['scan_uuid'] = (string) Str::uuid();
+        }
+
+        // 4. Scan Mode normalization
+        $rawScanMode = $request->input('scan_mode');
+        if ($rawScanMode !== null) {
+            $normalizedMode = strtolower(trim((string) $rawScanMode));
+            $allowedModes = ['scheduled', 'manual', 'on_demand'];
+            $updates['scan_mode'] = in_array($normalizedMode, $allowedModes, true) ? $normalizedMode : 'scheduled';
+        }
+
+        // 5. Timestamps (client_started_at, client_completed_at)
+        foreach (['client_started_at', 'client_completed_at'] as $dateField) {
+            $rawDate = $request->input($dateField);
+            if (! empty($rawDate)) {
+                try {
+                    $updates[$dateField] = Carbon::parse($rawDate)->toIso8601String();
+                } catch (\Throwable) {
+                    $updates[$dateField] = now()->toIso8601String();
+                }
+            }
+        }
+
+        // 6. Processor (if CIM returned array from multi-socket CPU or long string)
+        $rawProcessor = $request->input('processor');
+        if (is_array($rawProcessor)) {
+            $processors = array_filter(array_map('strval', $rawProcessor));
+            $updates['processor'] = ! empty($processors) ? substr(trim(reset($processors)), 0, 255) : null;
+        } elseif ($rawProcessor !== null) {
+            $updates['processor'] = substr(trim((string) $rawProcessor), 0, 255);
+        }
+
+        // 7. IP address (if array or long string)
+        $rawIp = $request->input('ip_address');
+        if (is_array($rawIp)) {
+            $ips = array_filter(array_map('strval', $rawIp));
+            $updates['ip_address'] = ! empty($ips) ? substr(trim(reset($ips)), 0, 45) : null;
+        } elseif ($rawIp !== null) {
+            $updates['ip_address'] = substr(trim((string) $rawIp), 0, 45);
+        }
+
+        // 8. String fields max length truncations
+        $stringLimits = [
+            'manufacturer' => 255,
+            'model' => 255,
+            'serial_number' => 255,
+            'os_name' => 255,
+            'os_version' => 255,
+            'os_architecture' => 50,
+            'os_license_status' => 50,
+            'os_partial_key' => 255,
+            'agent_version' => 50,
+        ];
+        foreach ($stringLimits as $field => $limit) {
+            $val = $request->input($field);
+            if ($val !== null && is_string($val)) {
+                $updates[$field] = substr(trim($val), 0, $limit);
+            }
+        }
+
+        // 9. Numeric integers (ram_gb, disk_total_gb, disk_free_gb)
+        foreach (['ram_gb', 'disk_total_gb', 'disk_free_gb'] as $numField) {
+            $val = $request->input($numField);
+            if ($val !== null) {
+                $updates[$numField] = is_numeric($val) ? max(0, (int) round((float) $val)) : 0;
+            }
+        }
+
+        // 10. Installed Software sanitization
+        $rawSoftware = $request->input('installed_software');
+        if ($rawSoftware !== null) {
+            // If sent as a single dictionary/object instead of a list (e.g. from single-element PowerShell array)
+            if (is_array($rawSoftware) && isset($rawSoftware['name'])) {
+                $rawSoftware = [$rawSoftware];
+            }
+
+            if (is_array($rawSoftware)) {
+                $sanitized = [];
+                foreach ($rawSoftware as $item) {
+                    if (! is_array($item)) {
+                        continue;
+                    }
+
+                    // Extract name safely
+                    $rawItemName = $item['name'] ?? null;
+                    if (is_array($rawItemName)) {
+                        $rawItemName = reset($rawItemName);
+                    }
+                    $name = $rawItemName !== null ? trim((string) $rawItemName) : '';
+                    if ($name === '') {
+                        continue; // Prune blank/empty entries safely
+                    }
+
+                    // Extract version safely
+                    $version = $item['version'] ?? null;
+                    if (is_array($version)) {
+                        // System.Version object serialization: {"Major": 1, "Minor": 2, ...}
+                        $versionParts = array_filter([
+                            $version['Major'] ?? null,
+                            $version['Minor'] ?? null,
+                            $version['Build'] ?? null,
+                            $version['Revision'] ?? null,
+                        ], fn ($v) => $v !== null && (int) $v >= 0);
+                        $version = ! empty($versionParts) ? implode('.', $versionParts) : (reset($version) ? (string) reset($version) : null);
+                    } elseif ($version !== null) {
+                        $version = trim((string) $version);
+                    }
+
+                    // Extract vendor safely
+                    $vendor = $item['vendor'] ?? null;
+                    if (is_array($vendor)) {
+                        $vendor = reset($vendor);
+                    }
+                    $vendor = $vendor !== null ? trim((string) $vendor) : null;
+
+                    // Extract install_date safely
+                    $installDate = $item['install_date'] ?? null;
+                    if (is_array($installDate)) {
+                        $installDate = reset($installDate);
+                    }
+                    $installDate = $installDate !== null ? trim((string) $installDate) : null;
+
+                    $entry = [
+                        'name' => substr($name, 0, 255),
+                    ];
+
+                    if ($version !== null && $version !== '') {
+                        $entry['version'] = substr($version, 0, 255);
+                    } elseif (array_key_exists('version', $item)) {
+                        $entry['version'] = null;
+                    }
+
+                    if ($vendor !== null && $vendor !== '') {
+                        $entry['vendor'] = substr($vendor, 0, 255);
+                    } elseif (array_key_exists('vendor', $item)) {
+                        $entry['vendor'] = null;
+                    }
+
+                    if ($installDate !== null && $installDate !== '') {
+                        $entry['install_date'] = substr($installDate, 0, 255);
+                    } elseif (array_key_exists('install_date', $item)) {
+                        $entry['install_date'] = null;
+                    }
+
+                    $sanitized[] = $entry;
+                }
+                $updates['installed_software'] = array_values($sanitized);
+            }
         }
 
         if (! empty($updates)) {
