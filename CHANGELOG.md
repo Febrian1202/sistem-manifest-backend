@@ -6,6 +6,47 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 
 ---
 
+## [1.1.0] - 2026-10-14
+
+### Added
+- **Tampilan Lisensi Fakultas & Pengambilan Product Key untuk Lab:**
+  - Menambahkan menu dan halaman navigasi baru **"Lisensi Fakultas"** (`/lab/licenses`) khusus untuk role `kepala_lab` dan `staff_lab` via `LabLicenseController`.
+  - Fitur penyingkapan Product Key (*reveal*) on-demand secara aman melalui endpoint terenkripsi `POST /lab/licenses/{license}/key` dengan pembatasan request (*rate limiting* 10 req/menit).
+  - Komponen interaktif Alpine.js dengan penyamaran default (`masked_license_key`), timer auto-hide otomatis setelah 30 detik, serta tombol salin ke clipboard.
+  - Audit trail komprehensif: setiap tindakan penyingkapan kunci lisensi dicatat ke `activity_log` beserta informasi pengguna dan fakultas terkait tanpa menyimpan teks mentah key.
+
+### Fixed
+- **Penanganan Enkripsi Ganda & Masking License Key:**
+  - Memperbaiki `UserTestingSeeder` agar tidak memanggil `Crypt::encryptString()` secara manual pada `LicenseInventory` yang telah memiliki Eloquent cast `'license_key' => 'encrypted'`.
+  - Menambahkan auto-unwrap pada accessor model `LicenseInventory` untuk kompatibilitas data warisan dan memastikan kunci tanpa format tanda hubung (`-`) tetap tersensor dengan aman.
+- **Isolasi Service Docker Testing:**
+  - Mengubah penamaan service backend testing menjadi `testing-app` dan `testing-web` dengan konfigurasi upstream Nginx khusus untuk mencegah tabrakan routing pada Traefik host.
+
+## [1.0.8] - 2026-10-14
+
+### Added
+- **Dokumentasi ERD Akademik & Chen Notation:**
+  - Penyusunan dokumen bab metodologi dan spesifikasi ERD tesis secara menyeluruh di `docs/diagrams/erd/`.
+  - Diagram ERD Chen notation format Draw.io dan Mermaid, serta suite audit konsistensi otomatis.
+
+### Fixed
+- **Isolasi Jaringan Docker Testing:**
+  - Menambahkan berkas `docker-compose.testing.yml` dengan isolasi jaringan internal untuk mencegah tabrakan resolusi DNS pada container testing multi-instance.
+  - Memperbarui filter noise software agar mengklasifikasikan .NET Toolset sebagai system junk.
+
+## [1.0.7] - 2026-10-13
+
+### Fixed
+- **Kebijakan Penarikan Image Docker Production:**
+  - Menambahkan `pull_policy: always` pada konfigurasi service di `docker-compose.prod.yml` untuk menjamin server deploy selalu menggunakan image kontainer terbaru dari GHCR.
+
+## [1.0.6] - 2026-10-13
+
+### Added
+- **Klasifikasi Otomatis Katalog Software & Pembersihan Junk:**
+  - Layanan `SoftwareCatalogService` dan perintah Artisan `software:reclassify` untuk kategorisasi otomatis (*Commercial*, *Freeware*, *Open Source*, *System Component*).
+  - Filter noise pemindai OS untuk menyingkirkan paket pembaruan internal dan komponen sistem dari perhitungan kepatuhan lisensi.
+
 ## [1.0.5] - 2026-10-13
 
 ### Fixed
