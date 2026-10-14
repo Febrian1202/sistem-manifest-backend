@@ -9,12 +9,7 @@ services:
       - app-storage:/var/www/html/storage
       - app-bootstrap:/var/www/html/bootstrap/cache
     networks:
-      internal:
-        aliases:
-          - app
-      dokploy-network:
-        aliases:
-          - prod-app
+      - dokploy-network
     logging:
       driver: "json-file"
       options:
@@ -33,7 +28,6 @@ services:
       - app-public:/var/www/html/public:ro
       - app-storage:/var/www/html/storage:ro
     networks:
-      - internal
       - dokploy-network
     logging:
       driver: "json-file"
@@ -91,6 +85,5 @@ volumes:
   app-bootstrap:
 
 networks:
-  internal:
   dokploy-network:
     external: true
