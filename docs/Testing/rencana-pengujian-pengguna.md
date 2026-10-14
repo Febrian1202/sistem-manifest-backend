@@ -58,7 +58,7 @@ Subjek uji formal penelitian ini murni difokuskan pada pengguna akhir (*end-user
 |---|---|---|---|---|
 | **Pimpinan (Eksekutif)** | Wakil Rektor, Dekan, Wakil Dekan, atau Kabag Umum & Perencanaan | $2 - 3$ Orang | Memiliki wewenang perencanaan anggaran atau kebijakan legalitas aset kampus; terbiasa membaca laporan rekapitulasi. | Kemudahan membaca dashboard eksekutif, akurasi menangkap defisit lisensi, dan keputusan pengadaan software. |
 | **Kepala Laboratorium (PJ Lab)** | Dosen Kepala Lab Komputer / Koordinator Lab Fakultas | $3 - 5$ Orang | Bertanggung jawab atas operasional dan keselamatan aset software di labnya; memahami praktikum komputasi. | Validasi temuan scanner, alur persetujuan/penolakan (*review & approval*) laporan berkala, monitoring histori. |
-| **Staf / Teknisi Laboratorium** | Pranata Laboratorium Pendidikan (PLP) / Teknisi Lab Komputer | $3 - 5$ Orang | Mengelola instalasi fisik PC lab, jaringan komputer lab, dan instalasi software praktikum sehari-hari. | Efisiensi penyiapan scanner per lab, inventarisasi status unit komputer, dan navigasi operasional. |
+| **Staf / Teknisi Laboratorium** | Pranata Laboratorium Pendidikan (PLP) / Teknisi Lab Komputer | $3 - 5$ Orang | Mengelola instalasi fisik PC lab, jaringan komputer lab, dan instalasi software praktikum sehari-hari. | Efisiensi penyiapan scanner per lab, inventarisasi status unit komputer, pengambilan kunci lisensi resmi fakultas (*product key reveal*), dan navigasi operasional. |
 | **Total Responden Formal** | | **$N = 8 - 13$ Orang** | Sampel memenuhi standar uji usability kualitatif-kuantitatif (Nielsen: 5 responden per profil cukup mendeteksi >85% masalah kegunaan). |
 
 > **Catatan Metodologis**: Peran **Admin Sistem** tidak dijadikan subjek uji formal untuk mencegah konflik kepentingan (*researcher bias*). Peneliti bertindak sebagai Fasilitator/Admin yang menyiapkan alokasi awal, mengirim draf laporan, dan memfasilitasi lingkungan pengujian.
@@ -217,6 +217,17 @@ Seluruh skenario tugas disusun dalam bentuk lembar misi (*task cards*) mandiri. 
   - Partisipan menemukan menu Download Scanner.
   - Partisipan berhasil mengunduh berkas paket agen pemindai secara mandiri.
 
+#### SKENARIO TUGAS S-03: Akses Lisensi Fakultas dan Pengambilan Kunci Lisensi Legal (Product Key)
+- **Konteks Masalah**:  
+  Sebagai teknisi laboratorium, Anda sedang menyiapkan workstation komputer lab yang baru diinstal ulang dan memerlukan *Product Key* resmi untuk aktivasi software komersial berlisensi tanpa harus meminta secara manual kepada Administrator TI universitas.
+- **Misi Pengguna**:  
+  *"Silakan cari informasi lisensi software resmi yang dialokasikan untuk fakultas Anda pada sistem ini, lalu temukan dan salin kunci lisensi (Product Key) resmi dari salah satu software komersial yang tersedia untuk keperluan aktivasi workstation laboratorium."*
+- **Kondisi Awal**: Pengguna masuk dengan akun Staf Lab dan berada pada dashboard utama.
+- **Kriteria Keberhasilan Evaluator**:
+  - Partisipan berhasil menavigasi ke menu *Lisensi Fakultas* (`/lab/licenses`).
+  - Partisipan memicu tombol pengungkapan kunci (*Reveal Key*).
+  - Kunci lisensi asli berhasil tampil dan disalin (*copy*) sebelum batas waktu *auto-hide* (30 detik) berakhir.
+
 ---
 
 ### 3.4 Matriks Pemetaan Tugas ke Rute Antarmuka (*Evaluator Reference Key*)
@@ -233,6 +244,7 @@ Tabel ini menjadi panduan rahasia bagi evaluator untuk memverifikasi alur yang d
 | **K-03** | Kepala Lab | Menu PJ Lab -> Download Scanner -> Unduh ZIP | `/agent/download` |
 | **S-01** | Staf Lab | Menu Staff Lab -> Komputer & Aset -> Detail Komputer | `/lab/inventory`, `/lab/inventory/{id}` |
 | **S-02** | Staf Lab | Menu Staff Lab -> Download Scanner -> Unduh | `/agent/download` |
+| **S-03** | Staf Lab | Menu Staff Lab -> Lisensi Fakultas -> Buka Kunci (Reveal) | `/lab/licenses`, `/lab/licenses/{id}/key` |
 
 ---
 
@@ -276,7 +288,7 @@ Nama Evaluator    : ___________________________
 |---|---|---|---|---|---|
 | **Tugas 1** | *(Misal: Identifikasi defisit lisensi / Riwayat perubahan)* | - [ ] Berhasil Mandiri (100%)<br>- [ ] Berhasil dg Bantuan (50%)<br>- [ ] Gagal/Menyerah (0%) | ___ Menit<br>___ Detik<br>*(Total: ___ dt)* | ___ kali salah klik / navigasi | *Kutipan/Perilaku:*<br><br> |
 | **Tugas 2** | *(Misal: Analisis kebutuhan lisensi & cetak / Review laporan)* | - [ ] Berhasil Mandiri (100%)<br>- [ ] Berhasil dg Bantuan (50%)<br>- [ ] Gagal/Menyerah (0%) | ___ Menit<br>___ Detik<br>*(Total: ___ dt)* | ___ kali salah klik / navigasi | *Kutipan/Perilaku:*<br><br> |
-| **Tugas 3** | *(Misal: Deteksi software ilegal / Download scanner)* | - [ ] Berhasil Mandiri (100%)<br>- [ ] Berhasil dg Bantuan (50%)<br>- [ ] Gagal/Menyerah (0%) | ___ Menit<br>___ Detik<br>*(Total: ___ dt)* | ___ kali salah klik / navigasi | *Kutipan/Perilaku:*<br><br> |
+| **Tugas 3** | *(Misal: Deteksi software ilegal / Download scanner / Buka kunci lisensi)* | - [ ] Berhasil Mandiri (100%)<br>- [ ] Berhasil dg Bantuan (50%)<br>- [ ] Gagal/Menyerah (0%) | ___ Menit<br>___ Detik<br>*(Total: ___ dt)* | ___ kali salah klik / navigasi | *Kutipan/Perilaku:*<br><br> |
 
 **Catatan Umum Evaluator terhadap Gestur & Respon Responden:**  
 ________________________________________________________________________________________  

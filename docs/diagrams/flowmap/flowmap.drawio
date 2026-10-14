@@ -265,8 +265,7 @@
   </root>
 </mxGraphModel>
   </diagram>
-  <diagram id="flowmap-p3" name="Flowmap 3.0 (Output)">
-    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1400" math="0" shadow="0">
+  <diagram id="flowmap-p3" name="Flowmap 3.0 (Output)"><mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1400" math="0" shadow="0">
   <root>
     <mxCell id="0"/>
     <mxCell id="1" parent="0"/>
@@ -276,23 +275,23 @@
     </mxCell>
 
     <mxCell id="lane3_pim" value="&lt;b&gt;Pimpinan&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
-      <mxGeometry x="40" y="100" width="320" height="1100" as="geometry"/>
+      <mxGeometry x="40" y="100" width="320" height="1200" as="geometry"/>
     </mxCell>
 
     <mxCell id="lane3_admin" value="&lt;b&gt;Administrator&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
-      <mxGeometry x="360" y="100" width="340" height="1100" as="geometry"/>
+      <mxGeometry x="360" y="100" width="340" height="1200" as="geometry"/>
     </mxCell>
 
     <mxCell id="lane3_lab" value="&lt;b&gt;Kepala &amp;amp; Staf Lab&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
-      <mxGeometry x="700" y="100" width="340" height="1100" as="geometry"/>
+      <mxGeometry x="700" y="100" width="340" height="1200" as="geometry"/>
     </mxCell>
 
     <mxCell id="lane3_sys" value="&lt;b&gt;Sistem Informasi Manifest USN&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
-      <mxGeometry x="1040" y="100" width="400" height="1100" as="geometry"/>
+      <mxGeometry x="1040" y="100" width="400" height="1200" as="geometry"/>
     </mxCell>
 
     <mxCell id="lane3_db" value="&lt;b&gt;Basis Data (Database)&lt;/b&gt;" style="swimlane;startSize=30;fillColor=#FFFFFF;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=12;align=center;html=1;" vertex="1" parent="1">
-      <mxGeometry x="1440" y="100" width="320" height="1100" as="geometry"/>
+      <mxGeometry x="1440" y="100" width="320" height="1200" as="geometry"/>
     </mxCell>
 
     <mxCell id="n3_start" value="Mulai (Akses Output)" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;" vertex="1" parent="lane3_pim">
@@ -363,8 +362,20 @@
       <mxGeometry x="85" y="790" width="170" height="60" as="geometry"/>
     </mxCell>
 
+        <mxCell id="n3_lab_lic_req" value="Akses Lisensi Fakultas &amp;&#xa;Permintaan Buka Product Key" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_lab">
+      <mxGeometry x="80" y="880" width="180" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_sys_lic_reveal" value="Validasi Alokasi Fakultas,&#xa;Rate Limit (10/m), &amp;amp; Audit Log" style="html=1;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=10;align=center;" vertex="1" parent="lane3_sys">
+      <mxGeometry x="100" y="880" width="200" height="50" as="geometry"/>
+    </mxCell>
+
+    <mxCell id="n3_doc_lab_key" value="Kunci Lisensi Fakultas Terbuka&#xa;(Auto-hide 30s &amp;amp; Salin Key)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=9;align=center;" vertex="1" parent="lane3_lab">
+      <mxGeometry x="85" y="960" width="170" height="60" as="geometry"/>
+    </mxCell>
+
     <mxCell id="n3_end" value="Selesai (Fase Output)" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontSize=11;align=center;" vertex="1" parent="lane3_lab">
-      <mxGeometry x="100" y="900" width="140" height="40" as="geometry"/>
+      <mxGeometry x="100" y="1050" width="140" height="40" as="geometry"/>
     </mxCell>
 
     <mxCell id="e3_1" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_start" target="n3_pim_req" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
@@ -382,9 +393,12 @@
     <mxCell id="e3_13" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_sys_reveal_key" target="n3_doc_key" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
     <mxCell id="e3_14" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_lab_access" target="n3_sys_filter_lab" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
     <mxCell id="e3_15" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_sys_filter_lab" target="n3_doc_lab_rep" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
-    <mxCell id="e3_16" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_doc_lab_rep" target="n3_end" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_16" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_doc_lab_rep" target="n3_lab_lic_req" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_17" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_lab_lic_req" target="n3_sys_lic_reveal" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_18" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_sys_lic_reveal" target="n3_db_d7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_19" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_sys_lic_reveal" target="n3_doc_lab_key" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e3_20" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;endArrow=classic;" edge="1" source="n3_doc_lab_key" target="n3_end" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
 
   </root>
-</mxGraphModel>
-  </diagram>
+</mxGraphModel></diagram>
 </mxfile>

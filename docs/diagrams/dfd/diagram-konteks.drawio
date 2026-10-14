@@ -1,6 +1,5 @@
 <mxfile host="app.diagrams.net" modified="2026-10-07T00:00:00.000Z" agent="Antigravity" version="24.0.0">
-  <diagram id="diagram-konteks-manifest" name="Diagram Konteks">
-    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+  <diagram id="diagram-konteks-manifest" name="Diagram Konteks"><mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -71,7 +70,7 @@
           </mxGeometry>
         </mxCell>
 
-        <mxCell id="c1" value="Status persetujuan laporan&#xa;Catatan peninjauan" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=right;verticalAlign=middle;labelPosition=right;verticalLabelPosition=middle;endArrow=classic;endSize=8;labelBackgroundColor=#FFFFFF;" edge="1" source="ext_kalab" target="proc" parent="1">
+        <mxCell id="c1" value="Status persetujuan laporan&#xa;Catatan peninjauan&#xa;Permintaan kunci lisensi" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=right;verticalAlign=middle;labelPosition=right;verticalLabelPosition=middle;endArrow=classic;endSize=8;labelBackgroundColor=#FFFFFF;" edge="1" source="ext_kalab" target="proc" parent="1">
           <mxGeometry x="-0.2" y="-20" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1450" y="660"/>
@@ -81,7 +80,7 @@
           </mxGeometry>
         </mxCell>
 
-        <mxCell id="c2" value="Dashboard laboratorium&#xa;Laporan kepatuhan laboratorium&#xa;Laporan menunggu persetujuan&#xa;Paket agent scanner" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=right;verticalAlign=middle;labelPosition=right;verticalLabelPosition=middle;endArrow=classic;endSize=8;labelBackgroundColor=#FFFFFF;" edge="1" source="proc" target="ext_kalab" parent="1">
+        <mxCell id="c2" value="Dashboard laboratorium&#xa;Laporan kepatuhan laboratorium&#xa;Laporan menunggu persetujuan&#xa;Paket agent scanner&#xa;Informasi lisensi fakultas&#xa;Kunci lisensi" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=right;verticalAlign=middle;labelPosition=right;verticalLabelPosition=middle;endArrow=classic;endSize=8;labelBackgroundColor=#FFFFFF;" edge="1" source="proc" target="ext_kalab" parent="1">
           <mxGeometry x="-0.3" y="20" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="1100" y="560"/>
@@ -92,7 +91,7 @@
           </mxGeometry>
         </mxCell>
 
-        <mxCell id="d1" value="Data registrasi komputer&#xa;Data hasil pemindaian&#xa;Polling perintah pemindaian" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=left;verticalAlign=middle;labelPosition=left;verticalLabelPosition=middle;endArrow=classic;endSize=8;labelBackgroundColor=#FFFFFF;" edge="1" source="ext_stafflab" target="proc" parent="1">
+        <mxCell id="d1" value="Data registrasi komputer&#xa;Data hasil pemindaian&#xa;Polling perintah pemindaian&#xa;Permintaan kunci lisensi" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=left;verticalAlign=middle;labelPosition=left;verticalLabelPosition=middle;endArrow=classic;endSize=8;labelBackgroundColor=#FFFFFF;" edge="1" source="ext_stafflab" target="proc" parent="1">
           <mxGeometry x="-0.2" y="20" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="150" y="660"/>
@@ -102,7 +101,7 @@
           </mxGeometry>
         </mxCell>
 
-        <mxCell id="d2" value="Inventaris komputer laboratorium&#xa;Paket agent scanner&#xa;Token autentikasi&#xa;Perintah pemindaian" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=left;verticalAlign=middle;labelPosition=left;verticalLabelPosition=middle;endArrow=classic;endSize=8;labelBackgroundColor=#FFFFFF;" edge="1" source="proc" target="ext_stafflab" parent="1">
+        <mxCell id="d2" value="Inventaris komputer laboratorium&#xa;Paket agent scanner&#xa;Token autentikasi&#xa;Perintah pemindaian&#xa;Informasi lisensi fakultas&#xa;Kunci lisensi" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=left;verticalAlign=middle;labelPosition=left;verticalLabelPosition=middle;endArrow=classic;endSize=8;labelBackgroundColor=#FFFFFF;" edge="1" source="proc" target="ext_stafflab" parent="1">
           <mxGeometry x="-0.3" y="-20" relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="500" y="560"/>
@@ -122,6 +121,5 @@
         </mxCell>
 
       </root>
-    </mxGraphModel>
-  </diagram>
+    </mxGraphModel></diagram>
 </mxfile>

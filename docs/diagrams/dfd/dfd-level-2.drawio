@@ -335,8 +335,7 @@
   </root>
 </mxGraphModel>
   </diagram>
-  <diagram id="dfd2-p3" name="DFD Level 2 - Proses 3.0">
-    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1400" math="0" shadow="0">
+  <diagram id="dfd2-p3" name="DFD Level 2 - Proses 3.0"><mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1400" math="0" shadow="0">
   <root>
     <mxCell id="0"/>
     <mxCell id="1" parent="0"/>
@@ -483,7 +482,7 @@
       </mxGeometry>
     </mxCell>
 
-    <mxCell id="p3_f_sub3_kalab" value="Paket agent scanner" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=center;endArrow=classic;endSize=7;labelBackgroundColor=#FFFFFF;" edge="1" source="p3_sub3" target="p3_kalab" parent="1">
+    <mxCell id="p3_f_sub3_kalab" value="Paket agent scanner&#xa;Informasi lisensi fakultas&#xa;Kunci lisensi" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=center;endArrow=classic;endSize=7;labelBackgroundColor=#FFFFFF;" edge="1" source="p3_sub3" target="p3_kalab" parent="1">
       <mxGeometry relative="1" as="geometry">
         <Array as="points">
           <mxPoint x="1450" y="915"/>
@@ -492,7 +491,7 @@
       </mxGeometry>
     </mxCell>
 
-    <mxCell id="p3_f_sub3_stf" value="Paket agent scanner&#xa;Token autentikasi&#xa;Perintah pemindaian" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=center;endArrow=classic;endSize=7;labelBackgroundColor=#FFFFFF;" edge="1" source="p3_sub3" target="p3_staff" parent="1">
+    <mxCell id="p3_f_sub3_stf" value="Paket agent scanner&#xa;Token autentikasi&#xa;Perintah pemindaian&#xa;Informasi lisensi fakultas&#xa;Kunci lisensi" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=center;endArrow=classic;endSize=7;labelBackgroundColor=#FFFFFF;" edge="1" source="p3_sub3" target="p3_staff" parent="1">
       <mxGeometry relative="1" as="geometry">
         <Array as="points">
           <mxPoint x="1400" y="980"/>
@@ -509,7 +508,27 @@
     <mxCell id="p3_leg_ent" value="&lt;b&gt;Persegi Panjang:&lt;/b&gt; Entitas Luar (Admin, Pimpinan, Kepala Lab, Staf Lab)&lt;br&gt;&lt;b&gt;Lingkaran (Elips):&lt;/b&gt; Sub-Proses 3.1, 3.2, 3.3&lt;br&gt;&lt;b&gt;Dua Garis Sejajar:&lt;/b&gt; Penyimpanan Data (D1-D7)&lt;br&gt;&lt;b&gt;Panah Berarah:&lt;/b&gt; Alur Data (Berlabel frasa kata benda)" style="text;html=1;align=left;verticalAlign=middle;fontSize=9;fontColor=#000000;" vertex="1" parent="1">
       <mxGeometry x="70" y="1155" width="440" height="60" as="geometry"/>
     </mxCell>
+  
+    <mxCell id="p3_f_kalab_sub3_req" value="Permintaan kunci lisensi" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=center;endArrow=classic;endSize=7;labelBackgroundColor=#FFFFFF;" edge="1" source="p3_kalab" target="p3_sub3" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1890" y="710"/>
+          <mxPoint x="1500" y="710"/>
+          <mxPoint x="1500" y="890"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
+    <mxCell id="p3_f_staff_sub3_req" value="Permintaan kunci lisensi" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeColor=#000000;strokeWidth=1;fontColor=#000000;fontSize=9;align=center;endArrow=classic;endSize=7;labelBackgroundColor=#FFFFFF;" edge="1" source="p3_staff" target="p3_sub3" parent="1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1900" y="1000"/>
+          <mxPoint x="1300" y="1000"/>
+          <mxPoint x="1300" y="940"/>
+        </Array>
+      </mxGeometry>
+    </mxCell>
+
   </root>
-</mxGraphModel>
-  </diagram>
+</mxGraphModel></diagram>
 </mxfile>

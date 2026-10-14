@@ -89,8 +89,8 @@ Proses tunggal pada DFD Level 0 (**0. Sistem Informasi Manifest USN**) didekompo
 - **Interaksi Entitas Luar:**
   - **Administrator:** Menerima *Dashboard sistem*, *Laporan kepatuhan lisensi*, *Laporan inventaris komputer*, *Laporan inventaris perangkat lunak*, *Laporan perubahan perangkat lunak*, *Laporan kebutuhan lisensi*, *Laporan monitoring pemindaian*, *Log aktivitas*, dan *Kunci lisensi*.
   - **Pimpinan:** Mengirimkan *Permintaan laporan eksekutif*; menerima *Dashboard eksekutif*, *Matriks kepatuhan lintas fakultas*, *Laporan kebutuhan lisensi*, dan *Laporan status lisensi*.
-  - **Kepala Laboratorium:** Menerima *Dashboard laboratorium*, *Laporan kepatuhan laboratorium*, *Laporan menunggu persetujuan*, dan *Paket agent scanner*.
-  - **Staf Laboratorium:** Menerima *Paket agent scanner*, *Token autentikasi*, *Perintah pemindaian*, dan *Inventaris komputer laboratorium*.
+  - **Kepala Laboratorium:** Mengirimkan *Permintaan kunci lisensi*; menerima *Dashboard laboratorium*, *Laporan kepatuhan laboratorium*, *Laporan menunggu persetujuan*, *Paket agent scanner*, *Informasi lisensi fakultas*, dan *Kunci lisensi*.
+  - **Staf Laboratorium:** Mengirimkan *Permintaan kunci lisensi*; menerima *Paket agent scanner*, *Token autentikasi*, *Perintah pemindaian*, *Inventaris komputer laboratorium*, *Informasi lisensi fakultas*, dan *Kunci lisensi*.
 - **Interaksi Data Store:**
   - Membaca data secara agregat dari `D1` (Data Pengguna), `D2` (Data Organisasi), `D3` (Data Lisensi & Katalog), `D4` (Data Komputer & Pemindaian), `D5` (Data Kepatuhan Lisensi), `D6` (Data Persetujuan Laporan), dan `D7` (Data Log Aktivitas).
 
@@ -139,16 +139,22 @@ Data store dikonsolidasikan menjadi tujuh (7) repositori persisten logis:
 | **Staf Laboratorium** | Masuk &rarr; | Data registrasi komputer | `1.0` (Input) | Registrasi identitas fisik komputer lab via agent. |
 | **Staf Laboratorium** | Masuk &rarr; | Data hasil pemindaian | `1.0` (Input) | Muatan data hardware & software hasil scan. |
 | **Staf Laboratorium** | Masuk &rarr; | Polling perintah pemindaian | `1.0` (Input) | Pengecekan berkala adanya perintah scan aktif. |
+| **Staf Laboratorium** | Masuk &rarr; | Permintaan kunci lisensi | `3.0` (Output) | Permintaan buka kunci lisensi alokasi fakultas. |
 | **Staf Laboratorium** | &larr; Keluar | Paket agent scanner | `3.0` (Output) | Paket berkas ZIP scanner untuk instalasi lab. |
 | **Staf Laboratorium** | &larr; Keluar | Token autentikasi | `3.0` (Output) | Token otorisasi API Sanctum bagi komputer terdaftar. |
 | **Staf Laboratorium** | &larr; Keluar | Perintah pemindaian | `3.0` (Output) | Respons status instruksi pemindaian (true/false). |
 | **Staf Laboratorium** | &larr; Keluar | Inventaris komputer laboratorium | `3.0` (Output) | Daftar aset komputer dalam lingkup lab operator. |
+| **Staf Laboratorium** | &larr; Keluar | Informasi lisensi fakultas | `3.0` (Output) | Daftar lisensi software yang dialokasikan ke fakultas. |
+| **Staf Laboratorium** | &larr; Keluar | Kunci lisensi | `3.0` (Output) | Nilai kunci lisensi terdekripsi (teraudit & auto-hide). |
 | **Kepala Laboratorium** | Masuk &rarr; | Status persetujuan laporan | `2.0` (Proses) | Keputusan persetujuan/penolakan laporan lab. |
 | **Kepala Laboratorium** | Masuk &rarr; | Catatan peninjauan | `2.0` (Proses) | Evaluasi tertulis hasil telaah laporan. |
+| **Kepala Laboratorium** | Masuk &rarr; | Permintaan kunci lisensi | `3.0` (Output) | Permintaan buka kunci lisensi alokasi fakultas. |
 | **Kepala Laboratorium** | &larr; Keluar | Dashboard laboratorium | `3.0` (Output) | Tampilan ringkasan statistik khusus lab binaannya. |
 | **Kepala Laboratorium** | &larr; Keluar | Laporan kepatuhan laboratorium | `3.0` (Output) | Dokumen kepatuhan spesifik lingkup laboratorium. |
 | **Kepala Laboratorium** | &larr; Keluar | Laporan menunggu persetujuan | `3.0` (Output) | Daftar draf laporan yang memerlukan verifikasi. |
 | **Kepala Laboratorium** | &larr; Keluar | Paket agent scanner | `3.0` (Output) | Berkas ZIP scanner untuk komputer laboratorium. |
+| **Kepala Laboratorium** | &larr; Keluar | Informasi lisensi fakultas | `3.0` (Output) | Daftar lisensi software yang dialokasikan ke fakultas. |
+| **Kepala Laboratorium** | &larr; Keluar | Kunci lisensi | `3.0` (Output) | Nilai kunci lisensi terdekripsi (teraudit & auto-hide). |
 | **Pimpinan** | Masuk &rarr; | Permintaan laporan eksekutif | `3.0` (Output) | Permintaan akses informasi tingkat pimpinan. |
 | **Pimpinan** | &larr; Keluar | Dashboard eksekutif | `3.0` (Output) | Tampilan ringkasan metrik kepatuhan universitas. |
 | **Pimpinan** | &larr; Keluar | Matriks kepatuhan lintas fakultas | `3.0` (Output) | Matriks perbandingan kepatuhan antar fakultas. |
@@ -244,17 +250,23 @@ Tabel berikut membuktikan korespondensi 1-ke-1 antara alur data pada Diagram Kon
 | **Pimpinan** | Laporan status lisensi (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 | **Kepala Lab** | Status persetujuan laporan (In) | `2.0` Pemrosesan dan Evaluasi Kepatuhan | Seimbang |
 | **Kepala Lab** | Catatan peninjauan (In) | `2.0` Pemrosesan dan Evaluasi Kepatuhan | Seimbang |
+| **Kepala Lab** | Permintaan kunci lisensi (In) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 | **Kepala Lab** | Laporan menunggu persetujuan (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 | **Kepala Lab** | Dashboard laboratorium (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 | **Kepala Lab** | Laporan kepatuhan laboratorium (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 | **Kepala Lab** | Paket agent scanner (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
+| **Kepala Lab** | Informasi lisensi fakultas (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
+| **Kepala Lab** | Kunci lisensi (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 | **Staf Lab** | Data registrasi komputer (In) | `1.0` Pengelolaan Data Masukan | Seimbang |
 | **Staf Lab** | Data hasil pemindaian (In) | `1.0` Pengelolaan Data Masukan | Seimbang |
 | **Staf Lab** | Polling perintah pemindaian (In) | `1.0` Pengelolaan Data Masukan | Seimbang |
+| **Staf Lab** | Permintaan kunci lisensi (In) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 | **Staf Lab** | Paket agent scanner (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 | **Staf Lab** | Token autentikasi (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 | **Staf Lab** | Perintah pemindaian (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 | **Staf Lab** | Inventaris komputer laboratorium (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
+| **Staf Lab** | Informasi lisensi fakultas (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
+| **Staf Lab** | Kunci lisensi (Out) | `3.0` Penyajian Informasi dan Laporan | Seimbang |
 
 *Hasil Verifikasi:* **Tidak terdapat kebocoran alur (*black hole*) maupun masukan/keluaran tanpa sumber (*miracle process*)**. Keseimbangan alur data antara DFD Level 0 dan DFD Level 1 terverifikasi 100% konsisten.
 

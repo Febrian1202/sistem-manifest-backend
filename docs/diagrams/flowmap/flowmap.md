@@ -156,6 +156,8 @@ Prosedur ini menangani penyajian informasi keluaran sistem dalam bentuk visual i
     └─────────────> Permintaan Buka Kunci ─────> [Sistem] ──> Dekripsi & Audit Log (D7) ──> Kunci Lisensi Terbuka
 
 [Kepala/Staf Lab] > Akses Lab Dashboard ───────> [Sistem] ──> Isolasi ScopedByLaboratory ─> Dokumen Kepatuhan & Aset PC Lab
+    │
+    └─────────────> Akses Lisensi Fakultas ────> [Sistem] ──> Validasi Alokasi & Reveal ──> Kunci Lisensi Terbuka (Auto-hide 30s)
 ```
 
 1. **Monitoring dan Pelaporan Eksekutif oleh Pimpinan:**
@@ -178,6 +180,11 @@ Prosedur ini menangani penyajian informasi keluaran sistem dalam bentuk visual i
    - Kepala dan Staf Laboratorium mengakses portal laboratorium masing-masing.
    - Trait `ScopedByLaboratory` pada sistem memastikan data komputer dan kepatuhan diisolasi secara ketat (*multi-tenant laboratory scope*).
    - Pengguna laboratorium menerima tampilan dashboard lokal dan dapat mencetak *Dokumen Kepatuhan Lab & Inventaris PC Lab*.
+5. **Akses Lisensi Fakultas dan Pengungkapan Kunci Mandiri (Kepala & Staf Lab):**
+   - Kepala Laboratorium dan Staf Laboratorium mengakses menu *Lisensi Fakultas* untuk melihat perangkat lunak berlisensi aktif yang dialokasikan khusus ke fakultas mereka.
+   - Pengguna meminta pembukaan kunci lisensi (*reveal key*) untuk keperluan aktivasi workstation komputer laboratorium.
+   - Sistem memvalidasi kaitan alokasi fakultas pengguna, membatasi laju akses (*rate limiting* 10 permintaan/menit), mencatat akses ke tabel `D7` (Activity Log), serta mendekripsi kunci secara aman ke antarmuka klien.
+   - Antarmuka menyajikan fitur salin kunci satu kali klik dan pengamanan penyembunyian otomatis (*auto-hide*) kembali setelah 30 detik untuk mencegah paparan fisik kunci di layar monitor laboratorium.
 
 ### 5.3. Dokumen Terkait Prosedur 3.0
 - **Tampilan Matriks Kepatuhan Lintas Fakultas:** Antarmuka visual analitik eksekutif kepatuhan kampus.
@@ -185,6 +192,7 @@ Prosedur ini menangani penyajian informasi keluaran sistem dalam bentuk visual i
 - **Dokumen Laporan Resmi Institusi:** Berkas resmi arsip aset TI dan kepatuhan lisensi universitas.
 - **Dokumen Kunci Lisensi Terbuka:** Nilai kunci lisensi legal hasil dekripsi yang telah tercatat pada audit trail.
 - **Dokumen Kepatuhan Lab & Inventaris PC Lab:** Laporan rekapitulasi aset dan lisensi pada tingkat unit laboratorium.
+- **Dokumen Kunci Lisensi Fakultas Terbuka:** Tampilan kunci lisensi hasil dekripsi terkendali untuk kebutuhan aktivasi perangkat lab fakultas (dilengkapi timer hitung mundur 30 detik).
 
 ---
 

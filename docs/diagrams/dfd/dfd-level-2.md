@@ -201,12 +201,12 @@ Proses 3.0 bertindak sebagai subsistem penyaji informasi (*presentation and outp
      - Staf Laboratorium: *Inventaris komputer laboratorium*.
 
 3. **Sub-Proses 3.3: Distribusi Paket dan Otorisasi Teknis**
-   - **Tanggung Jawab:** Menyediakan berkas instalasi teknis, kredensial otorisasi API, respons instruksi pemindaian, serta layanan pengungkapan kunci lisensi yang aman.
-   - **Masukan Penyimpanan:** Membaca kunci terenkripsi dari `D3` serta status registrasi dan perintah scan dari `D4`.
+   - **Tanggung Jawab:** Menyediakan berkas instalasi teknis, kredensial otorisasi API, respons instruksi pemindaian, daftar alokasi lisensi tingkat fakultas, serta layanan pengungkapan kunci lisensi yang aman (*secure on-demand key reveal*).
+   - **Masukan Penyimpanan:** Membaca kunci terenkripsi dan alokasi fakultas dari `D3`, status registrasi dan perintah scan dari `D4`, serta mencatat audit penyingkapan kunci ke `D7`.
    - **Keluaran ke Entitas:**
      - Administrator: *Kunci lisensi* (nilai terdekripsi dengan pencatatan audit log).
-     - Kepala Laboratorium: *Paket agent scanner* (arsip ZIP konfigurasi lab).
-     - Staf Laboratorium: *Paket agent scanner*, *Token autentikasi* (Sanctum bearer token), *Perintah pemindaian* (respons polling `{should_scan: true/false}`).
+     - Kepala Laboratorium: *Paket agent scanner* (arsip ZIP konfigurasi lab), *Informasi lisensi fakultas*, dan *Kunci lisensi* (nilai product key terdekripsi dengan proteksi auto-hide dan audit trail).
+     - Staf Laboratorium: *Paket agent scanner*, *Token autentikasi* (Sanctum bearer token), *Perintah pemindaian* (respons polling `{should_scan: true/false}`), *Informasi lisensi fakultas*, dan *Kunci lisensi* (untuk aktivasi mandiri workstation lab).
 
 ---
 
@@ -236,9 +236,15 @@ Proses 3.0 bertindak sebagai subsistem penyaji informasi (*presentation and outp
 | 20 | Data Store D3, D4 | Sub-Proses 3.3 | Data paket scanner, token & kunci | Berkas skrip, kunci terenkripsi, flag scan. |
 | 21 | Sub-Proses 3.3 | Administrator | Kunci lisensi | Nilai kunci lisensi terdekripsi (teraudit). |
 | 22 | Sub-Proses 3.3 | Kepala Laboratorium | Paket agent scanner | Berkas ZIP installer agent untuk laboratorium. |
-| 23 | Sub-Proses 3.3 | Staf Laboratorium | Paket agent scanner | Berkas ZIP installer agent scanner. |
-| 24 | Sub-Proses 3.3 | Staf Laboratorium | Token autentikasi | API token Sanctum bagi PC lab terdaftar. |
-| 25 | Sub-Proses 3.3 | Staf Laboratorium | Perintah pemindaian | Respons perintah pemindaian komputer klien. |
+| 23 | Sub-Proses 3.3 | Kepala Laboratorium | Informasi lisensi fakultas | Daftar alokasi lisensi aktif untuk fakultas lab. |
+| 24 | Sub-Proses 3.3 | Kepala Laboratorium | Kunci lisensi | Product key terdekripsi (teraudit & auto-hide). |
+| 25 | Kepala Laboratorium | Sub-Proses 3.3 | Permintaan kunci lisensi | Permintaan reveal product key alokasi fakultas. |
+| 26 | Sub-Proses 3.3 | Staf Laboratorium | Paket agent scanner | Berkas ZIP installer agent scanner. |
+| 27 | Sub-Proses 3.3 | Staf Laboratorium | Token autentikasi | API token Sanctum bagi PC lab terdaftar. |
+| 28 | Sub-Proses 3.3 | Staf Laboratorium | Perintah pemindaian | Respons perintah pemindaian komputer klien. |
+| 29 | Sub-Proses 3.3 | Staf Laboratorium | Informasi lisensi fakultas | Daftar alokasi lisensi aktif untuk fakultas lab. |
+| 30 | Sub-Proses 3.3 | Staf Laboratorium | Kunci lisensi | Product key terdekripsi (teraudit & auto-hide). |
+| 31 | Staf Laboratorium | Sub-Proses 3.3 | Permintaan kunci lisensi | Permintaan reveal product key untuk aktivasi lab. |
 
 ---
 
@@ -247,6 +253,8 @@ Proses 3.0 bertindak sebagai subsistem penyaji informasi (*presentation and outp
 | Alur Data pada DFD Level 1 (Proses 3.0) | Alur Data pada DFD Level 2 (3.1, 3.2, 3.3) | Status |
 |------------------------------------------|--------------------------------------------|:------:|
 | In: Permintaan laporan eksekutif (Pimpinan) | In: Permintaan laporan eksekutif &rarr; 3.1 | Seimbang |
+| In: Permintaan kunci lisensi (Kepala Lab) | In: Permintaan kunci lisensi &rarr; 3.3 | Seimbang |
+| In: Permintaan kunci lisensi (Staf Lab) | In: Permintaan kunci lisensi &rarr; 3.3 | Seimbang |
 | Out: Dashboard sistem (Admin) | Out: Dashboard sistem (3.1 &rarr; Admin) | Seimbang |
 | Out: Dashboard eksekutif (Pimpinan) | Out: Dashboard eksekutif (3.1 &rarr; Pimpinan) | Seimbang |
 | Out: Matriks kepatuhan lintas fakultas (Pimpinan) | Out: Matriks kepatuhan lintas fakultas (3.1 &rarr; Pimpinan) | Seimbang |
@@ -265,9 +273,13 @@ Proses 3.0 bertindak sebagai subsistem penyaji informasi (*presentation and outp
 | Out: Inventaris komputer laboratorium (Staf Lab) | Out: Inventaris komputer laboratorium (3.2 &rarr; Staf Lab) | Seimbang |
 | Out: Kunci lisensi (Admin) | Out: Kunci lisensi (3.3 &rarr; Admin) | Seimbang |
 | Out: Paket agent scanner (Kepala Lab) | Out: Paket agent scanner (3.3 &rarr; Kepala Lab) | Seimbang |
+| Out: Informasi lisensi fakultas (Kepala Lab) | Out: Informasi lisensi fakultas (3.3 &rarr; Kepala Lab) | Seimbang |
+| Out: Kunci lisensi (Kepala Lab) | Out: Kunci lisensi (3.3 &rarr; Kepala Lab) | Seimbang |
 | Out: Paket agent scanner (Staf Lab) | Out: Paket agent scanner (3.3 &rarr; Staf Lab) | Seimbang |
 | Out: Token autentikasi (Staf Lab) | Out: Token autentikasi (3.3 &rarr; Staf Lab) | Seimbang |
 | Out: Perintah pemindaian (Staf Lab) | Out: Perintah pemindaian (3.3 &rarr; Staf Lab) | Seimbang |
+| Out: Informasi lisensi fakultas (Staf Lab) | Out: Informasi lisensi fakultas (3.3 &rarr; Staf Lab) | Seimbang |
+| Out: Kunci lisensi (Staf Lab) | Out: Kunci lisensi (3.3 &rarr; Staf Lab) | Seimbang |
 
 ---
 

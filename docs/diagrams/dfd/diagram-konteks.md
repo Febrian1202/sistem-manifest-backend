@@ -106,6 +106,7 @@ Berikut adalah penjelasan rinci mengenai setiap alur data yang tergambar pada di
 |----|-----------|-----------|
 | 1 | Status persetujuan laporan | Keputusan persetujuan (disetujui atau ditolak) terhadap laporan kepatuhan laboratorium yang diajukan oleh Administrator. |
 | 2 | Catatan peninjauan | Catatan tertulis yang menyertai keputusan persetujuan atau penolakan laporan sebagai dokumentasi hasil tinjauan. |
+| 3 | Permintaan kunci lisensi | Permintaan pembukaan (*reveal*) nilai kunci lisensi perangkat lunak yang dialokasikan ke fakultas pengguna. |
 
 #### 4.3.2. Alur Data Keluar (Sistem ke Kepala Laboratorium)
 
@@ -115,6 +116,8 @@ Berikut adalah penjelasan rinci mengenai setiap alur data yang tergambar pada di
 | 2 | Laporan kepatuhan laboratorium | Laporan status kepatuhan lisensi untuk seluruh komputer dalam lingkup laboratorium yang menjadi tanggung jawabnya. |
 | 3 | Laporan menunggu persetujuan | Daftar laporan kepatuhan yang telah diajukan oleh Administrator dan menunggu keputusan persetujuan. |
 | 4 | Paket agent scanner | Berkas paket dalam format ZIP berisi skrip pemindaian (PowerShell) dan konfigurasi yang telah disesuaikan dengan laboratorium terkait, untuk di-deploy ke komputer klien. |
+| 5 | Informasi lisensi fakultas | Daftar seluruh lisensi perangkat lunak resmi yang dialokasikan aktif untuk fakultas yang menaungi laboratorium pengguna. |
+| 6 | Kunci lisensi | Nilai kunci lisensi (*product key*) terdekripsi secara on-demand dengan pengamanan auto-hide 30 detik dan audit trail. |
 
 ### 4.4. Alur Data antara Staf Laboratorium dan Sistem
 
@@ -125,6 +128,7 @@ Berikut adalah penjelasan rinci mengenai setiap alur data yang tergambar pada di
 | 1 | Data registrasi komputer | Informasi identitas komputer yang didaftarkan melalui agent scanner meliputi alamat MAC, hostname, nomor seri, dan identitas laboratorium. |
 | 2 | Data hasil pemindaian | Informasi hasil pemindaian otomatis dari agent scanner meliputi spesifikasi perangkat keras (prosesor, RAM, disk, sistem operasi) dan daftar perangkat lunak yang terinstal (nama, versi, vendor, tanggal instalasi). |
 | 3 | Polling perintah pemindaian | Permintaan berkala dari agent scanner untuk memeriksa apakah terdapat instruksi pemindaian ulang dari sistem. |
+| 4 | Permintaan kunci lisensi | Permintaan pembukaan (*reveal*) nilai kunci lisensi perangkat lunak yang dialokasikan ke fakultas pengguna untuk keperluan aktivasi workstation lab. |
 
 #### 4.4.2. Alur Data Keluar (Sistem ke Staf Laboratorium)
 
@@ -134,6 +138,8 @@ Berikut adalah penjelasan rinci mengenai setiap alur data yang tergambar pada di
 | 2 | Paket agent scanner | Berkas paket dalam format ZIP berisi skrip pemindaian dan konfigurasi untuk di-deploy ke komputer klien di laboratorium. |
 | 3 | Token autentikasi | Token keamanan (Sanctum) yang diberikan kepada agent scanner setelah proses registrasi komputer berhasil, digunakan untuk autentikasi pada komunikasi selanjutnya. |
 | 4 | Perintah pemindaian | Instruksi pemindaian yang dikirimkan sebagai respons terhadap polling agent scanner, menunjukkan apakah komputer perlu melakukan pemindaian ulang. |
+| 5 | Informasi lisensi fakultas | Daftar seluruh lisensi perangkat lunak resmi yang dialokasikan aktif untuk fakultas yang menaungi laboratorium pengguna. |
+| 6 | Kunci lisensi | Nilai kunci lisensi (*product key*) terdekripsi secara on-demand dengan pengamanan auto-hide 30 detik dan audit trail. |
 
 ---
 
