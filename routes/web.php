@@ -9,6 +9,7 @@ use App\Http\Controllers\ComputerDataController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\LabInventoryController;
+use App\Http\Controllers\LabLicenseController;
 use App\Http\Controllers\LaboratoryController;
 use App\Http\Controllers\LicenseAllocationController;
 use App\Http\Controllers\LicenseDataController;
@@ -144,6 +145,12 @@ Route::middleware(['auth', 'role:kepala_lab|staff_lab'])->group(function () {
     // Inventaris Lab
     Route::get('/lab/inventory', [LabInventoryController::class, 'index'])->name('lab.inventory.index');
     Route::get('/lab/inventory/{computer}', [LabInventoryController::class, 'show'])->name('lab.inventory.show');
+
+    // Lisensi Alokasi Fakultas
+    Route::get('/lab/licenses', [LabLicenseController::class, 'index'])->name('lab.licenses.index');
+    Route::post('/lab/licenses/{license}/key', [LabLicenseController::class, 'getKey'])
+        ->name('lab.licenses.key')
+        ->middleware('throttle:10,1');
 });
 
 Route::middleware(['auth', 'role:kepala_lab|admin'])->group(function () {
