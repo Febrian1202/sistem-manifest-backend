@@ -176,3 +176,31 @@ test('lab licenses view renders search and allocations properly', function () {
         ->assertSee($license->masked_license_key)
         ->assertDontSee('VK7JG-NPHTM-C97JM-9MPGT'); // Plain key must not exist in HTML
 });
+
+test('sidebar shows Lisensi Fakultas link for kepala_lab and staff_lab but not for pimpinan', function () {
+    $faculty = Faculty::factory()->create();
+    $lab = Laboratory::factory()->create(['faculty_id' => $faculty->id]);
+
+    $kepalaLab = User::factory()->create(['laboratory_id' => $lab->id]);
+    $kepalaLab->assignRole('kepala_lab');
+
+    $this->actingAs($kepalaLab)
+        ->get(route('dashboard'))
+        ->assertSee(route('lab.licenses.index'))
+        ->assertSee('Lisensi Fakultas');
+
+    $staffLab = User::factory()->create(['laboratory_id' => $lab->id]);
+    $staffLab->assignRole('staff_lab');
+
+    $this->actingAs($staffLab)
+        ->get(route('lab.inventory.index'))
+        ->assertSee(route('lab.licenses.index'))
+        ->assertSee('Lisensi Fakultas');
+
+    $pimpinan = User::factory()->create();
+    $pimpinan->assignRole('pimpinan');
+
+    $this->actingAs($pimpinan)
+        ->get(route('dashboard'))
+        ->assertDontSee(route('lab.licenses.index'));
+});

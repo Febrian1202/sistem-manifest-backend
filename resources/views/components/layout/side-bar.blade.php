@@ -89,6 +89,7 @@
             <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
 
             <x-layout.nav-item href="{{ route('lab.inventory.index') }}" icon="fa-boxes-stacked" label="Inventaris Lab" :active="request()->is('lab/inventory*')" />
+            <x-layout.nav-item href="{{ route('lab.licenses.index') }}" icon="fa-key" label="Lisensi Fakultas" :active="request()->is('lab/licenses*')" />
             <x-layout.nav-item href="{{ route('lab.reports.index') }}" icon="fa-clipboard-check" label="Review Laporan" :active="request()->is('lab/reports*')" />
             <x-layout.nav-item href="{{ route('agent.download-page') }}" icon="fa-download" label="Download Scanner" :active="request()->is('agent*')" />
         @endrole
@@ -101,6 +102,7 @@
             <div class="mt-4 mb-2 border-t border-sidebar-border" x-show="!sidebarOpen" style="display: none;"></div>
 
             <x-layout.nav-item href="{{ route('lab.inventory.index') }}" icon="fa-desktop" label="Komputer & Aset" :active="request()->is('lab/inventory*')" />
+            <x-layout.nav-item href="{{ route('lab.licenses.index') }}" icon="fa-key" label="Lisensi Fakultas" :active="request()->is('lab/licenses*')" />
             <x-layout.nav-item href="{{ route('agent.download-page') }}" icon="fa-download" label="Download Scanner" :active="request()->is('agent*')" />
         @endrole
 
