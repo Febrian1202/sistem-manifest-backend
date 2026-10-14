@@ -6,7 +6,18 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 
 ---
 
-## [1.1.1] - 2026-10-14
+## [1.1.2] - 2026-10-14
+
+### Fixed
+- **Pengelolaan Katalog Software Admin (`SoftwareDataController` & Views):**
+  - Mengubah aturan validasi `UpdateSoftwareRequest` untuk field `category` dan `status` menjadi `sometimes|required`, sehingga update kategori saja atau status saja dapat diproses dengan sukses.
+  - Memisahkan tombol **Edit Detail** (Sheet drawer dengan ikon pensil) keluar dari menu dropdown titik tiga untuk mencegah konflik event click pada Alpine.js.
+  - Mengaktifkan kembali field pilihan `status` (`Unreviewed`, `Whitelist`, `Blacklist`) pada form Edit Detail Katalog Software.
+  - Menambahkan dukungan opsi kategori lengkap (`Shareware`, `Other`) pada formulir edit detail dan filter kategori katalog software.
+  - Menjadikan menu dropdown titik tiga (⋮) sebagai aksi cepat ubah status (`Set Whitelist`, `Set Blacklist`, `Set Unreviewed`).
+- **Pengujian:**
+  - Menambahkan feature test komprehensif pada `SoftwareCatalogManagementTest` untuk memastikan admin dapat memperbarui kategori secara terpisah, status secara terpisah, atau seluruh metadata sekaligus.
+
 
 ### Fixed
 - **Validasi dan Penanganan Payload Scan Agen (`ScanController`):**

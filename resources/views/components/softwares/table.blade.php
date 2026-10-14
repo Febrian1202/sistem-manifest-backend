@@ -30,6 +30,7 @@
                         'Freeware' => 'bg-blue-50 text-blue-700 border-blue-200',
                         'Commercial' => 'bg-purple-50 text-purple-700 border-purple-200',
                         'OpenSource' => 'bg-teal-50 text-teal-700 border-teal-200',
+                        'Shareware' => 'bg-amber-50 text-amber-700 border-amber-200',
                         default => 'bg-gray-100 text-gray-600',
                     };
                 @endphp
@@ -77,116 +78,129 @@
 
                     <x-ui.table.table-cell class="text-right">
                         @role('admin')
-                        <div class="flex items-center justify-end">
-                            {{-- DROPDRWON ACTIONS --}}
+                        <div class="flex items-center justify-end gap-1">
+                            {{-- 1. TOMBOL EDIT DETAIL (SHEET) --}}
+                            <x-ui.sheet.sheet>
+                                <x-ui.sheet.trigger>
+                                    <x-ui.button variant="ghost" size="sm" class="h-8 w-8 p-0" title="Edit Detail Software">
+                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                    </x-ui.button>
+                                </x-ui.sheet.trigger>
+
+                                <x-ui.sheet.content side="right">
+                                    <x-ui.sheet.header>
+                                        <x-ui.sheet.title>Edit Katalog Software</x-ui.sheet.title>
+                                        <x-ui.sheet.description>
+                                            Perbarui kategori, status kepatuhan, dan catatan untuk software terdeteksi ini.
+                                        </x-ui.sheet.description>
+                                    </x-ui.sheet.header>
+
+                                    <form action="{{ route('softwares.update', $software->id) }}" method="POST"
+                                        class="mt-6 space-y-6">
+                                        @csrf
+                                        @method('PUT')
+
+                                        <div class="space-y-4">
+                                            <div class="space-y-1">
+                                                <x-form.label>Nama Software</x-form.label>
+                                                <x-form.input value="{{ $software->normalized_name }}" disabled
+                                                    class="bg-muted" />
+                                            </div>
+
+                                            <div class="space-y-1.5">
+                                                <x-form.label>Kategori</x-form.label>
+                                                <x-ui.select.index name="category"
+                                                    value="{{ $software->category }}">
+                                                    <x-ui.select.trigger />
+                                                    <x-ui.select.content>
+                                                        <x-ui.select.item value="Freeware">Freeware</x-ui.select.item>
+                                                        <x-ui.select.item value="Commercial">Commercial</x-ui.select.item>
+                                                        <x-ui.select.item value="OpenSource">Open Source</x-ui.select.item>
+                                                        <x-ui.select.item value="Shareware">Shareware</x-ui.select.item>
+                                                        <x-ui.select.item value="Other">Other</x-ui.select.item>
+                                                    </x-ui.select.content>
+                                                </x-ui.select.index>
+                                            </div>
+
+                                            <div class="space-y-1.5">
+                                                <x-form.label>Status</x-form.label>
+                                                <x-ui.select.index name="status" value="{{ $software->status }}">
+                                                    <x-ui.select.trigger />
+                                                    <x-ui.select.content>
+                                                        <x-ui.select.item value="Unreviewed">
+                                                            <i class="fa-solid fa-circle-question mr-2 text-yellow-500"></i> Unreviewed
+                                                        </x-ui.select.item>
+                                                        <x-ui.select.item value="Whitelist" class="text-success">
+                                                            <i class="fa-solid fa-circle-check mr-2 text-green-500"></i> Whitelist
+                                                        </x-ui.select.item>
+                                                        <x-ui.select.item value="Blacklist" class="text-destructive">
+                                                            <i class="fa-solid fa-ban mr-2 text-red-500"></i> Blacklist
+                                                        </x-ui.select.item>
+                                                    </x-ui.select.content>
+                                                </x-ui.select.index>
+                                            </div>
+
+                                            <div class="space-y-1.5">
+                                                <x-form.label>Deskripsi</x-form.label>
+                                                <textarea name="description"
+                                                    class="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                                    placeholder="Tambahkan catatan tentang software ini...">{{ $software->description }}</textarea>
+                                            </div>
+                                        </div>
+
+                                        <x-ui.sheet.footer>
+                                            <x-ui.button type="submit" class="w-full">
+                                                <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Perubahan
+                                            </x-ui.button>
+                                        </x-ui.sheet.footer>
+                                    </form>
+                                </x-ui.sheet.content>
+                            </x-ui.sheet.sheet>
+
+                            {{-- 2. DROPDOWN AKSI CEPAT STATUS --}}
                             <x-ui.dropdown align="right" width="48">
                                 <x-slot name="trigger">
-                                    <x-ui.button variant="ghost" size="sm" class="h-8 w-8 p-0">
+                                    <x-ui.button variant="ghost" size="sm" class="h-8 w-8 p-0" title="Aksi Cepat Status">
                                         <i class="fa-solid fa-ellipsis"></i>
                                     </x-ui.button>
                                 </x-slot>
                                 <x-slot name="content">
-                                    <x-ui.dropdown-label>Aksi</x-ui.dropdown-label>
+                                    <x-ui.dropdown-label>Ubah Status Cepat</x-ui.dropdown-label>
 
                                     <x-ui.dropdown-separator />
 
-                                    {{-- TRIGGER SHEET DARI DROPDown --}}
-                                    <x-ui.sheet.sheet>
-                                        <x-ui.sheet.trigger class="w-full block">
-                                            {{-- Gunakan dropdown-item langsung tanpa tag <button> lagi di dalamnya --}}
-                                                <x-ui.dropdown-item type="button">
-                                                    <i class="fa-regular fa-pen-to-square mr-2 w-4 text-center opacity-70"></i>
-                                                    <span>Edit Detail</span>
-                                                </x-ui.dropdown-item>
-                                        </x-ui.sheet.trigger>
-
-                                        <x-ui.sheet.content side="right">
-                                            <x-ui.sheet.header>
-                                                <x-ui.sheet.title>Edit Katalog Software</x-ui.sheet.title>
-                                                <x-ui.sheet.description>
-                                                    Perbarui kategori dan status keamanan untuk software terdeteksi.
-                                                </x-ui.sheet.description>
-                                            </x-ui.sheet.header>
-
-                                            <form action="{{ route('softwares.update', $software->id) }}" method="POST"
-                                                class="mt-6 space-y-6">
-                                                @csrf
-                                                @method('PUT')
-
-                                                <div class="space-y-4">
-                                                    <div class="space-y-1">
-                                                        <x-form.label>Nama Software</x-form.label>
-                                                        <x-form.input value="{{ $software->normalized_name }}" disabled
-                                                            class="bg-muted" />
-                                                    </div>
-
-                                                    <div class="space-y-1.5">
-                                                        <x-form.label>Kategori</x-form.label>
-                                                        <x-ui.select.index name="category"
-                                                            value="{{ $software->category }}">
-                                                            <x-ui.select.trigger />
-                                                            <x-ui.select.content>
-                                                                <x-ui.select.item
-                                                                    value="Freeware">Freeware</x-ui.select.item>
-                                                                <x-ui.select.item
-                                                                    value="Commercial">Commercial</x-ui.select.item>
-                                                                <x-ui.select.item value="OpenSource">Open
-                                                                    Source</x-ui.select.item>
-                                                            </x-ui.select.content>
-                                                        </x-ui.select.index>
-                                                    </div>
-
-                                                    <!-- <div class="space-y-1.5">
-                                                            <x-form.label>Status</x-form.label>
-                                                            <x-ui.select.index name="status" value="{{ $software->status }}">
-                                                                <x-ui.select.trigger />
-                                                                <x-ui.select.content>
-                                                                    <x-ui.select.item
-                                                                        value="Unreviewed">Unreviewed</x-ui.select.item>
-                                                                    <x-ui.select.item value="Whitelist"
-                                                                        class="text-success">Whitelist</x-ui.select.item>
-                                                                    <x-ui.select.item value="Blacklist"
-                                                                        class="text-destructive">Blacklist</x-ui.select.item>
-                                                                </x-ui.select.content>
-                                                            </x-ui.select.index>
-                                                        </div> -->
-
-                                                    <div class="space-y-1.5">
-                                                        <x-form.label>Deskripsi</x-form.label>
-                                                        <textarea name="description"
-                                                            class="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                                            placeholder="Tambahkan catatan tentang software ini...">{{ $software->description }}</textarea>
-                                                    </div>
-                                                </div>
-
-                                                <x-ui.sheet.footer>
-                                                    <x-ui.button type="submit" class="w-full">
-                                                        <i class="fa-solid fa-floppy-disk mr-2"></i> Simpan Perubahan
-                                                    </x-ui.button>
-                                                </x-ui.sheet.footer>
-                                            </form>
-                                        </x-ui.sheet.content>
-                                    </x-ui.sheet.sheet>
-
+                                    @if($software->status !== 'Whitelist')
                                     <form action="{{ route('softwares.update', $software->id) }}" method="POST">
                                         @csrf @method('PUT')
-                                        <input type="hidden" name="category" value="{{ $software->category }}">
                                         <input type="hidden" name="status" value="Whitelist">
                                         <x-ui.dropdown-item type="button" @click.stop="$el.closest('form').submit()">
                                             <i class="fa-regular fa-circle-check mr-2 w-4 text-center text-green-600 opacity-70"></i>
                                             <span>Set Whitelist</span>
                                         </x-ui.dropdown-item>
                                     </form>
+                                    @endif
 
+                                    @if($software->status !== 'Blacklist')
                                     <form action="{{ route('softwares.update', $software->id) }}" method="POST">
                                         @csrf @method('PUT')
-                                        <input type="hidden" name="category" value="{{ $software->category }}">
                                         <input type="hidden" name="status" value="Blacklist">
                                         <x-ui.dropdown-item type="button" @click.stop="$el.closest('form').submit()">
                                             <i class="fa-solid fa-ban mr-2 w-4 text-center text-red-600 opacity-70"></i>
                                             <span>Set Blacklist</span>
                                         </x-ui.dropdown-item>
                                     </form>
+                                    @endif
+
+                                    @if($software->status !== 'Unreviewed')
+                                    <form action="{{ route('softwares.update', $software->id) }}" method="POST">
+                                        @csrf @method('PUT')
+                                        <input type="hidden" name="status" value="Unreviewed">
+                                        <x-ui.dropdown-item type="button" @click.stop="$el.closest('form').submit()">
+                                            <i class="fa-solid fa-circle-question mr-2 w-4 text-center text-yellow-600 opacity-70"></i>
+                                            <span>Set Unreviewed</span>
+                                        </x-ui.dropdown-item>
+                                    </form>
+                                    @endif
                                 </x-slot>
                             </x-ui.dropdown>
                         </div>

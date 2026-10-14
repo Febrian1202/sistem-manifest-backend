@@ -74,6 +74,8 @@
                         <x-ui.select.item value="Freeware">Freeware</x-ui.select.item>
                         <x-ui.select.item value="Commercial">Commercial</x-ui.select.item>
                         <x-ui.select.item value="OpenSource">Open Source</x-ui.select.item>
+                        <x-ui.select.item value="Shareware">Shareware</x-ui.select.item>
+                        <x-ui.select.item value="Other">Other</x-ui.select.item>
                     </x-ui.select.content>
                 </x-ui.select.index>
             </div>

@@ -14,8 +14,8 @@ class UpdateSoftwareRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category' => 'required|string|in:Freeware,Commercial,OpenSource,Shareware,Other',
-            'status' => 'required|string|in:Whitelist,Blacklist,Unreviewed',
+            'category' => 'sometimes|required|string|in:Freeware,Commercial,OpenSource,Shareware,Other',
+            'status' => 'sometimes|required|string|in:Whitelist,Blacklist,Unreviewed',
             'description' => 'nullable|string',
         ];
     }
