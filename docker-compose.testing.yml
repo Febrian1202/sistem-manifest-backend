@@ -1,0 +1,96 @@
+services:
+  app:
+    image: ghcr.io/febrian1202/sistem-manifest-backend:${IMAGE_TAG:-latest}
+    pull_policy: always
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - testing-app-public:/var/www/html/public
+      - testing-app-storage:/var/www/html/storage
+      - testing-app-bootstrap:/var/www/html/bootstrap/cache
+    networks:
+      internal:
+        aliases:
+          - app
+      dokploy-network:
+        aliases:
+          - testing-app
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  web:
+    image: nginx:alpine
+    restart: unless-stopped
+    expose:
+      - "80"
+    depends_on:
+      - app
+    volumes:
+      - ./.docker/nginx/conf.d/app.conf:/etc/nginx/conf.d/default.conf:ro
+      - testing-app-public:/var/www/html/public:ro
+      - testing-app-storage:/var/www/html/storage:ro
+    networks:
+      - internal
+      - dokploy-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  worker:
+    image: ghcr.io/febrian1202/sistem-manifest-backend:${IMAGE_TAG:-latest}
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+    env_file: .env
+    command: php artisan horizon
+    volumes:
+      - testing-app-storage:/var/www/html/storage
+      - testing-app-bootstrap:/var/www/html/bootstrap/cache
+    networks:
+      - dokploy-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  cron:
+    image: ghcr.io/febrian1202/sistem-manifest-backend:${IMAGE_TAG:-latest}
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_started
+    env_file: .env
+    command: >
+      sh -c "while true; do
+        php artisan schedule:run --verbose --no-interaction;
+        sleep 60;
+      done"
+    volumes:
+      - testing-app-storage:/var/www/html/storage
+      - testing-app-bootstrap:/var/www/html/bootstrap/cache
+    networks:
+      - dokploy-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  testing-app-public:
+  testing-app-storage:
+  testing-app-bootstrap:
+
+networks:
+  internal:
+  dokploy-network:
+    external: true
