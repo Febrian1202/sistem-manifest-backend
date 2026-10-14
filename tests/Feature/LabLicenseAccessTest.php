@@ -7,6 +7,7 @@ use App\Models\LicenseInventory;
 use App\Models\SoftwareCatalog;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 
 uses(RefreshDatabase::class);
@@ -114,6 +115,53 @@ test('kepala_lab can retrieve real license key and it is logged to activity log'
         'subject_id' => $license->id,
         'description' => 'Melihat license key alokasi fakultas',
     ]);
+
+    $log = Activity::where('subject_type', LicenseInventory::class)
+        ->where('subject_id', $license->id)
+        ->latest('id')
+        ->first();
+
+    expect($log)->not->toBeNull();
+    expect($log->properties['software'])->toBe('Windows 11 Pro');
+    expect($log->properties['faculty'])->toBe('Fakultas Teknik');
+    expect($log->properties)->not->toHaveKey('key');
+    expect($log->properties)->not->toHaveKey('license_key');
+});
+
+test('user without laboratory or faculty receives 403 when attempting to get key', function () {
+    $staff = User::factory()->create(['laboratory_id' => null, 'faculty_id' => null]);
+    $staff->assignRole('staff_lab');
+
+    $catalog = SoftwareCatalog::factory()->create();
+    $license = LicenseInventory::factory()->create(['catalog_id' => $catalog->id]);
+
+    $this->actingAs($staff)
+        ->postJson(route('lab.licenses.key', $license->id))
+        ->assertForbidden();
+});
+
+test('licenses with revoked or inactive allocation are not listed and key retrieval is forbidden', function () {
+    $faculty = Faculty::factory()->create(['name' => 'Fakultas Teknik']);
+    $lab = Laboratory::factory()->create(['faculty_id' => $faculty->id]);
+    $catalog = SoftwareCatalog::factory()->create(['normalized_name' => 'Revoked Tool']);
+    $license = LicenseInventory::factory()->create(['catalog_id' => $catalog->id, 'license_key' => 'REVOKED-KEY-123']);
+
+    LicenseAllocation::factory()->create([
+        'license_inventory_id' => $license->id,
+        'faculty_id' => $faculty->id,
+        'allocated_quota' => 10,
+        'status' => 'revoked',
+    ]);
+
+    $staff = User::factory()->create(['laboratory_id' => $lab->id]);
+    $staff->assignRole('staff_lab');
+
+    $this->actingAs($staff)->get(route('lab.licenses.index'))
+        ->assertOk()
+        ->assertDontSee('Revoked Tool');
+
+    $this->actingAs($staff)->postJson(route('lab.licenses.key', $license->id))
+        ->assertForbidden();
 });
 
 test('user cannot retrieve license key belonging to another faculty', function () {

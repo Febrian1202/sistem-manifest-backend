@@ -124,7 +124,7 @@
                                         error: null,
                                         timer: null,
 
-                                        async revealKey(licenseId) {
+                                        async revealKey(keyUrl) {
                                             if (this.realKey) {
                                                 this.showKey = true;
                                                 this.startTimer();
@@ -135,7 +135,7 @@
                                             this.error = null;
 
                                             try {
-                                                const response = await fetch('/lab/licenses/' + licenseId + '/key', {
+                                                const response = await fetch(keyUrl, {
                                                     method: 'POST',
                                                     headers: {
                                                         'Accept': 'application/json',
@@ -195,7 +195,7 @@
 
                                             <div class="flex items-center gap-1">
                                                 {{-- Tombol Toggle Reveal --}}
-                                                <button type="button" @click="showKey ? hideKey() : revealKey({{ $inventory->id }})"
+                                                <button type="button" @click="showKey ? hideKey() : revealKey('{{ route('lab.licenses.key', $inventory->id) }}')"
                                                     class="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-all focus:outline-none"
                                                     :title="showKey ? 'Sembunyikan' : 'Tampilkan Key'">
                                                     <i class="fa-solid" :class="showKey ? 'fa-eye-slash text-primary' : 'fa-eye'"></i>

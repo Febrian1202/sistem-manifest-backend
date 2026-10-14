@@ -26,8 +26,10 @@ class LabLicenseController extends Controller
 
         $query = LicenseAllocation::query()
             ->with(['licenseInventory.catalog'])
-            ->where('faculty_id', $faculty->id)
-            ->where('status', 'active');
+            ->forFaculty($faculty->id)
+            ->active()
+            ->orderByDesc('allocation_date')
+            ->orderBy('id');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -51,8 +53,8 @@ class LabLicenseController extends Controller
         }
 
         $isAllocated = $license->allocations()
-            ->where('faculty_id', $facultyId)
-            ->where('status', 'active')
+            ->forFaculty($facultyId)
+            ->active()
             ->exists();
 
         if (! $isAllocated) {
