@@ -21,7 +21,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  web:
+  testing-web:
     image: nginx:alpine
     restart: unless-stopped
     expose:
