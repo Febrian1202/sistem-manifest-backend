@@ -16,7 +16,6 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 
 class UserTestingSeeder extends Seeder
@@ -167,9 +166,7 @@ class UserTestingSeeder extends Seeder
         $licOffice = LicenseInventory::firstOrCreate(
             ['catalog_id' => $catOffice->id],
             [
-                'license_key' => Crypt::encryptString(
-                    'OFFICE-2019-PRO-USN-KOLAKA-0001',
-                ),
+                'license_key' => 'OFFICE-2019-PRO-USN-KOLAKA-0001',
                 'purchase_order_number' => 'PO/USN/2026/01/001',
                 'quota_limit' => 20,
                 'purchase_date' => Carbon::now()->subMonths(6),
@@ -200,9 +197,7 @@ class UserTestingSeeder extends Seeder
         $licPhotoshop = LicenseInventory::firstOrCreate(
             ['catalog_id' => $catPhotoshop->id],
             [
-                'license_key' => Crypt::encryptString(
-                    'ADOBE-PHOTO-2022-USN-KOLAKA-0002',
-                ),
+                'license_key' => 'ADOBE-PHOTO-2022-USN-KOLAKA-0002',
                 'purchase_order_number' => 'PO/USN/2026/01/002',
                 'quota_limit' => 10,
                 'purchase_date' => Carbon::now()->subMonths(4),
@@ -233,9 +228,7 @@ class UserTestingSeeder extends Seeder
         $licAutoCAD = LicenseInventory::firstOrCreate(
             ['catalog_id' => $catAutoCAD->id],
             [
-                'license_key' => Crypt::encryptString(
-                    'AUTOCAD-2024-USN-KOLAKA-0003',
-                ),
+                'license_key' => 'AUTOCAD-2024-USN-KOLAKA-0003',
                 'purchase_order_number' => 'PO/USN/2026/01/003',
                 'quota_limit' => 5,
                 'purchase_date' => Carbon::now()->subMonths(3),

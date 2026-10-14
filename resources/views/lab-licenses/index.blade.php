@@ -119,6 +119,7 @@
                                     <div x-data="{
                                         showKey: false,
                                         realKey: '',
+                                        maskedKey: @js($inventory?->masked_license_key ?? '-'),
                                         loading: false,
                                         copied: false,
                                         error: null,
@@ -182,18 +183,18 @@
                                                 console.error('Gagal menyalin: ', err);
                                             }
                                         }
-                                    }" class="inline-flex flex-col gap-1">
+                                    }" class="inline-flex flex-col gap-1 max-w-full">
                                         <div class="flex items-center gap-2">
-                                            <code class="text-xs bg-muted px-2 py-1 rounded border border-border font-mono min-w-[130px] flex items-center justify-center">
+                                            <code class="text-xs bg-muted px-2 py-1 rounded border border-border font-mono min-w-[150px] max-w-[280px] truncate flex items-center justify-center select-all">
                                                 <template x-if="loading">
                                                     <i class="fa-solid fa-circle-notch fa-spin text-primary opacity-50"></i>
                                                 </template>
                                                 <template x-if="!loading">
-                                                    <span x-text="showKey ? realKey : '{{ $inventory?->masked_license_key ?? '-' }}'"></span>
+                                                    <span x-text="showKey ? realKey : maskedKey"></span>
                                                 </template>
                                             </code>
 
-                                            <div class="flex items-center gap-1">
+                                            <div class="flex items-center gap-1 shrink-0">
                                                 {{-- Tombol Toggle Reveal --}}
                                                 <button type="button" @click="showKey ? hideKey() : revealKey('{{ route('lab.licenses.key', $inventory->id) }}')"
                                                     class="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-all focus:outline-none"

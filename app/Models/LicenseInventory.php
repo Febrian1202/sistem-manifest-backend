@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Crypt;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -90,6 +91,33 @@ class LicenseInventory extends Model
     ];
 
     /**
+     * Get the decrypted license key, unwrapping double-encryption if legacy seeder data exists.
+     */
+    public function getLicenseKeyAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        try {
+            $decrypted = Crypt::decryptString($value);
+        } catch (\Exception $e) {
+            return $value;
+        }
+
+        // If it was double-encrypted (e.g. from legacy seeder)
+        if (is_string($decrypted) && str_starts_with($decrypted, 'eyJ')) {
+            try {
+                return Crypt::decryptString($decrypted);
+            } catch (\Exception $e) {
+                // Return once-decrypted value
+            }
+        }
+
+        return $decrypted;
+    }
+
+    /**
      * Get the masked license key.
      * Format: XXXX-XXXX-****-**** (Show first 2 segments, mask the rest)
      */
@@ -107,6 +135,15 @@ class LicenseInventory extends Model
 
         $segments = explode('-', $key);
         $count = count($segments);
+
+        if ($count < 2) {
+            $len = strlen($key);
+            if ($len <= 4) {
+                return '****';
+            }
+
+            return substr($key, 0, 4).'-****-****';
+        }
 
         $masked = [];
         for ($i = 0; $i < $count; $i++) {

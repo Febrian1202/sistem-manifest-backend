@@ -7,6 +7,7 @@ use App\Models\LicenseInventory;
 use App\Models\SoftwareCatalog;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Crypt;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 
@@ -274,4 +275,19 @@ test('retrieving license key is throttled to 10 requests per minute', function (
 
     $this->actingAs($staff)->postJson(route('lab.licenses.key', $license->id))
         ->assertStatus(429);
+});
+
+test('masked_license_key masks keys without dashes and unwraps double encrypted keys', function () {
+    // 1. Double encrypted key (simulating legacy seeder)
+    $doubleEncrypted = LicenseInventory::factory()->create([
+        'license_key' => Crypt::encryptString('OFFICE-2019-PRO-USN-KOLAKA-0001'),
+    ]);
+    expect($doubleEncrypted->license_key)->toBe('OFFICE-2019-PRO-USN-KOLAKA-0001');
+    expect($doubleEncrypted->masked_license_key)->toBe('OFFICE-2019-****-****-****-****');
+
+    // 2. Key without hyphens
+    $noDash = LicenseInventory::factory()->create([
+        'license_key' => 'AUTOCADKEY1234567890',
+    ]);
+    expect($noDash->masked_license_key)->toBe('AUTO-****-****');
 });
