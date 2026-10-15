@@ -30,7 +30,7 @@ try {
     Unregister-ScheduledTask -TaskName $task1Name -Confirm:$false -ErrorAction SilentlyContinue
 
     $trigger1 = New-ScheduledTaskTrigger -Daily -At 08:00AM
-    $action1  = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File ""$agentPath"" -Mode scheduled -ScanMode scheduled"
+    $action1  = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File ""$agentPath"" -Mode scheduled -ScanMode scheduled" -WorkingDirectory $PSScriptRoot
 
     Register-ScheduledTask -TaskName $task1Name -Action $action1 -Trigger $trigger1 -Principal $taskPrincipal -Settings $taskSettings
     Write-Host " [+] Task berhasil didaftarkan: Berjalan setiap hari jam 08:00 AM." -ForegroundColor Green
@@ -47,7 +47,7 @@ try {
 
     # Trigger: Mulai sekarang, ulangi setiap 15 menit selamanya
     $trigger2 = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 15)
-    $action2  = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File ""$agentPath"" -Mode poll"
+    $action2  = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File ""$agentPath"" -Mode poll" -WorkingDirectory $PSScriptRoot
 
     Register-ScheduledTask -TaskName $task2Name -Action $action2 -Trigger $trigger2 -Principal $taskPrincipal -Settings $taskSettings
     Write-Host " [+] Task berhasil didaftarkan: Berjalan setiap 15 menit." -ForegroundColor Green

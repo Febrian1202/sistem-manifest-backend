@@ -163,4 +163,30 @@ class AgentDownloadTest extends TestCase
         $zip->close();
         @unlink($filePath);
     }
+
+    /** @test */
+    public function batch_launcher_files_have_valid_cmd_syntax_and_no_premature_parenthesis_blocks()
+    {
+        $batFiles = [
+            '1-Jalankan-Scan-Sekarang.bat' => base_path('script/agent/1-Jalankan-Scan-Sekarang.bat'),
+            '2-Pasang-Jadwal-Otomatis.bat' => base_path('script/agent/2-Pasang-Jadwal-Otomatis.bat'),
+            '3-Hapus-Jadwal-Otomatis.bat' => base_path('script/agent/3-Hapus-Jadwal-Otomatis.bat'),
+        ];
+
+        foreach ($batFiles as $filename => $path) {
+            $this->assertFileExists($path, "File {$filename} must exist.");
+            $content = file_get_contents($path);
+
+            // Ensure no raw unescaped parentheses like '(Extract All)' or '(UAC)' that break CMD compound blocks
+            $this->assertStringNotContainsString('(Extract All)', $content, "{$filename} must not contain raw (Extract All) inside parentheses blocks.");
+            $this->assertStringNotContainsString('(UAC)', $content, "{$filename} must not contain raw (UAC) inside parentheses blocks.");
+
+            // On Windows platforms, execute cmd.exe syntax check
+            if (PHP_OS_FAMILY === 'Windows') {
+                $output = shell_exec('cmd.exe /c "'.str_replace('/', '\\', $path).'" < nul 2>&1');
+                $this->assertNotNull($output);
+                $this->assertStringNotContainsString('was unexpected at this time', $output, "{$filename} caused a CMD parsing syntax error.");
+            }
+        }
+    }
 }

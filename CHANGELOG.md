@@ -6,6 +6,16 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 
 ---
 
+## [1.1.4] - 2026-10-15
+
+### Fixed
+- **Peluncur Skrip Batch Agen Windows (`script/agent/*.bat`):**
+  - Memperbaiki parsing sintaks CMD batch pada `1-Jalankan-Scan-Sekarang.bat`, `2-Pasang-Jadwal-Otomatis.bat`, dan `3-Hapus-Jadwal-Otomatis.bat` yang sebelumnya crash instan (`seluruh was unexpected at this time` dan `... was unexpected at this time`) akibat tanda kurung `(Extract All)` dan `(UAC)` di dalam blok majemuk `if (...)` / `else (...)`.
+  - Mengubah alur elevasi Administrator pada file batch agar menggunakan `if %errorLevel% equ 0 goto :run_script` yang kebal terhadap jebakan evaluasi parse-time CMD `%errorLevel%` dan nesting parentheses.
+  - Menambahkan `-WorkingDirectory $PSScriptRoot` pada penjadwalan tugas di `setup_tasks.ps1` agar eksekusi Windows Task Scheduler selalu berbasiskan direktori berkas pemindai.
+- **Pengujian:**
+  - Menambahkan pengujian integrasi sintaks CMD batch file pada `AgentDownloadTest` untuk memvalidasi ketiadaan terminator blok prematur dan verifikasi eksekusi via `cmd.exe`.
+
 ## [1.1.3] - 2026-10-14
 
 ### Fixed

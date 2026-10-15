@@ -6,21 +6,19 @@ echo ========================================================
 echo Memeriksa hak akses Administrator...
 
 net session >nul 2>&1
-if %errorLevel% == 0 (
-    goto :run_script
-) else (
-    echo Meminta izin Administrator (UAC)...
-    set "SCRIPT_PATH=%~f0"
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList ('/c ' + [char]34 + $env:SCRIPT_PATH + [char]34) -Verb RunAs"
-    if %errorLevel% neq 0 (
-        echo.
-        echo [!] GAGAL MEMINTA IZIN ADMINISTRATOR OTOMATIS.
-        echo Silakan KLIK KANAN file ini lalu pilih "Run as administrator".
-        echo.
-        pause
-    )
-    exit /b
+if %errorLevel% equ 0 goto :run_script
+
+echo Meminta izin Administrator [UAC]...
+set "SCRIPT_PATH=%~f0"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "Start-Process cmd.exe -ArgumentList ('/c ' + [char]34 + $env:SCRIPT_PATH + [char]34) -Verb RunAs"
+if %errorLevel% neq 0 (
+    echo.
+    echo [!] GAGAL MEMINTA IZIN ADMINISTRATOR OTOMATIS.
+    echo Silakan KLIK KANAN file ini lalu pilih 'Run as administrator'.
+    echo.
+    pause
 )
+exit /b
 
 :run_script
 cd /d "%~dp0"

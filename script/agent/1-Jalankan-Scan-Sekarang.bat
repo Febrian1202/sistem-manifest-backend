@@ -6,7 +6,7 @@ echo ========================================================
 cd /d "%~dp0"
 if not exist "%~dp0scanner.ps1" (
     echo [!] ERROR: File scanner.ps1 tidak ditemukan!
-    echo     Pastikan Anda sudah mengekstrak (Extract All) seluruh isi ZIP
+    echo     Pastikan Anda sudah mengekstrak [Extract All] seluruh isi ZIP
     echo     ke dalam satu folder sebelum menjalankan file ini.
     echo.
     pause

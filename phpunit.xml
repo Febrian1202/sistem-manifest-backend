@@ -28,6 +28,8 @@
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
+        <env name="AGENT_REGISTRATION_KEY" value="testing-agent-key"/>
+        <env name="DEFAULT_USER_PASSWORD" value="ManifestUSN_2026!"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
