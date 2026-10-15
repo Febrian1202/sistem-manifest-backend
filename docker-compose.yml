@@ -32,7 +32,9 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - app
+      app:
+        condition: service_started
+        restart: true
     volumes:
       - ./.docker/nginx/conf.d/app.conf:/etc/nginx/conf.d/default.conf:ro
       - app-public:/var/www/html/public:ro

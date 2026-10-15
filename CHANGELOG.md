@@ -9,6 +9,9 @@ Format penulisan changelog ini mengacu pada [Keep a Changelog](https://keepachan
 ## [1.1.4] - 2026-10-15
 
 ### Fixed
+- **Otomatisasi Deployment & Docker Nginx:**
+  - Mengatasi galat 502 Bad Gateway pasca deployment otomatis on-tag di Dokploy dengan menambahkan direktif `resolver 127.0.0.11 valid=5s ipv6=off;` dan pemanggilan upstream dinamis pada Nginx (`app.conf` & `testing.conf`). Nginx kini otomatis me-resolve ulang IP privat kontainer PHP-FPM secara berkala tanpa memerlukan restart manual pada kontainer web.
+  - Menambahkan `depends_on: { restart: true }` pada service `web` dan `testing-web` di seluruh berkas `docker-compose.*.yml` agar Docker Compose otomatis memicu restart/recreate kontainer web ketika kontainer backend diperbarui ke image rilis baru.
 - **Peluncur Skrip Batch Agen Windows (`script/agent/*.bat`):**
   - Memperbaiki parsing sintaks CMD batch pada `1-Jalankan-Scan-Sekarang.bat`, `2-Pasang-Jadwal-Otomatis.bat`, dan `3-Hapus-Jadwal-Otomatis.bat` yang sebelumnya crash instan (`seluruh was unexpected at this time` dan `... was unexpected at this time`) akibat tanda kurung `(Extract All)` dan `(UAC)` di dalam blok majemuk `if (...)` / `else (...)`.
   - Mengubah alur elevasi Administrator pada file batch agar menggunakan `if %errorLevel% equ 0 goto :run_script` yang kebal terhadap jebakan evaluasi parse-time CMD `%errorLevel%` dan nesting parentheses.
