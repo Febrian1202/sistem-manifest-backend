@@ -1,11 +1,12 @@
 # RENCANA DAN INSTRUMEN PENGUJIAN PENGGUNA (USER TESTING)
 ## Sistem Manifest dan Kepatuhan Lisensi Perangkat Lunak Laboratorium (UniLicense)
 ### Universitas Sembilanbelas November Kolaka
+#### Pendekatan Observasi Kinerja Tugas (Task-Based Usability Observation) & Evaluasi Dukungan Keputusan (Decision Support)
 
 ---
 
 **Dokumen Instrumen Penelitian Skripsi**  
-- **Topik Penelitian**: Evaluasi Kebergunaan Antarmuka (*Usability*) dan Efektivitas Dukungan Pengambilan Keputusan (*Decision Support*) pada Sistem Manajemen Aset dan Audit Lisensi Software Kampus.  
+- **Topik Penelitian**: Evaluasi Kebergunaan Antarmuka (*Usability*) dan Efektivitas Dukungan Pengambilan Keputusan (*Decision Support*) pada Sistem Manajemen Aset dan Audit Lisensi Software Kampus melalui Metode Observasi Tugas Nyata.  
 - **Lokasi Pengujian**: Laboratorium Komputer Terpadu & Ruang Rapat Pimpinan, Universitas Sembilanbelas November Kolaka.  
 - **Waktu Pelaksanaan**: Semester Ganjil TA 2026/2027.  
 - **Penyusun / Peneliti**: Peneliti Skripsi Program Studi Sistem Informasi / Teknik Informatika.  
@@ -16,26 +17,27 @@
 1. **BAGIAN I: LANDASAN METODOLOGI & PROFIL RESPONDEN**
 2. **BAGIAN II: PROTOKOL PELAKSANAAN DAN ETIKA PENGUJIAN**
 3. **BAGIAN III: PAKET SKENARIO TUGAS (TASK SCENARIOS) BERBASIS RUBIN & CHISNELL**
-4. **BAGIAN IV: LEMBAR OBSERVASI EVALUATOR & METRIK PERFORMA**
+4. **BAGIAN IV: LEMBAR OBSERVASI EVALUATOR & METRIK PERFORMA EMPIRIS**
 5. **BAGIAN V: INSTRUMEN EVALUASI PENGAMBILAN KEPUTUSAN (DECISION SUPPORT)**
-6. **BAGIAN VI: INSTRUMEN KUESIONER SYSTEM USABILITY SCALE (SUS)**
+6. **BAGIAN VI: INSTRUMEN TAMBAHAN / CADANGAN: KUESIONER SYSTEM USABILITY SCALE (SUS)**
 7. **BAGIAN VII: METODOLOGI PENGOLAHAN DATA & PEDOMAN ANALISIS SKRIPSI (BAB 4)**
+8. **LAMPIRAN: FORMULIR PERSETUJUAN PARTISIPAN (INFORMED CONSENT)**
 
 ---
 
 ## BAGIAN I: LANDASAN METODOLOGI & PROFIL RESPONDEN
 
 ### 1.1 Latar Belakang & Urgensi Pengujian
-Pengujian pengguna (*user testing*) empiris ini diselenggarakan sebagai pembuktian ilmiah untuk Bab 3 (Metodologi Penelitian) dan Bab 4 (Hasil dan Pembahasan) Skripsi. Pengujian ini tidak sekadar menguji ketiadaan kutu (*bug*) pada aplikasi, melainkan membuktikan secara terukur dua fokus penelitian utama:
-1. **Kebergunaan Antarmuka (*Usability & User Experience*)**: Mengukur tingkat efektivitas, efisiensi, dan kepuasan pengguna saat berinteraksi dengan antarmuka sistem multiperan (Pimpinan, Kepala Lab, Staf Lab) menggunakan kerangka standar ISO/IEC 25010 dan System Usability Scale (SUS).
+Pengujian pengguna (*user testing*) empiris ini diselenggarakan sebagai pembuktian ilmiah untuk Bab 3 (Metodologi Penelitian) dan Bab 4 (Hasil dan Pembahasan) Skripsi. Sesuai arahan dosen pembimbing, pengujian ini difokuskan pada **Metode Observasi Tugas (*Task-Based Usability Observation*)** yang dikombinasikan dengan protokol berpikir bersuara (*think-aloud protocol*) untuk mengukur performa riil pengguna, bukan sekadar persepsi kuesioner. Pengujian ini membuktikan secara terukur dua fokus penelitian utama:
+1. **Kebergunaan Antarmuka Berbasis Kinerja (*Performance-Based Usability*)**: Mengukur tingkat efektivitas (*Task Success Rate*), efisiensi (*Time on Task*), dan tingkat kendala (*Error Count*) pengguna saat berinteraksi dengan antarmuka sistem multiperan (Pimpinan, Kepala Lab, Staf Lab) merujuk pada standar ISO 9241-11 dan metodologi *Rubin & Chisnell (2008)*.
 2. **Dukungan Pengambilan Keputusan (*Decision Support & Compliance Transparency*)**: Mengukur sejauh mana visualisasi data audit lisensi (*Executive Dashboard*, matriks antarfakultas, dan analisis kebutuhan lisensi) mampu mentransformasi data mentah komputer menjadi informasi strategis yang akurat, cepat dipahami, dan dapat diandalkan untuk perencanaan anggaran pengadaan lisensi resmi universitas.
 
-### 1.2 Triangulasi Instrumen Pengujian
-Sesuai metodologi baku pengujian kebergunaan (Rubin & Chisnell, 2008; Brooke, 1996), pengujian ini mengintegrasikan 3 instrumen komplementer:
+### 1.2 Kerangka Integrasi Instrumen Pengujian
+Sesuai metodologi baku pengujian kebergunaan berbasis tugas (*Rubin & Chisnell, 2008*), pengujian ini mengintegrasikan rangkaian instrumen observasi:
 ```
 +--------------------------------------------------------------------------+
 | 1. SKENARIO TUGAS REALISTIS (Task Scenarios - Rubin & Chisnell)          |
-|    - Stimulus misi kontekstual tanpa instruksi yang mengarahkan tombol    |
+|    - Stimulus misi kontekstual tanpa instruksi yang mengarahkan tombol   |
 +--------------------------------------------------------------------------+
                                      |
                                      v
@@ -46,8 +48,14 @@ Sesuai metodologi baku pengujian kebergunaan (Rubin & Chisnell, 2008; Brooke, 19
                                      |
                                      v
 +--------------------------------------------------------------------------+
-| 3. EVALUASI PASCA-UJI (Decision Accuracy & SUS 10-Item Questionnaire)     |
-|    - Case Vignette (Decision Accuracy Rate %) & Skor SUS (Skala 0 - 100) |
+| 3. EVALUASI DUKUNGAN KEPUTUSAN (Decision Support Evaluation)             |
+|    - Case Vignette & Decision Accuracy Rate (%) untuk Kelompok Pimpinan   |
++--------------------------------------------------------------------------+
+                                     |
+                                     v
++--------------------------------------------------------------------------+
+| 4. (OPSIONAL / CADANGAN) KUESIONER STANDAR SKALA PERSEPSI (SUS)          |
+|    - Instrumen pelengkap cadangan jika diminta oleh dewan penguji sidang  |
 +--------------------------------------------------------------------------+
 ```
 
@@ -394,11 +402,11 @@ Responden kelompok Pimpinan dan Kepala Lab memberikan penilaian persepsi kogniti
 
 ---
 
-## BAGIAN VI: INSTRUMEN KUESIONER SYSTEM USABILITY SCALE (SUS)
+## BAGIAN VI: INSTRUMEN TAMBAHAN / CADANGAN: KUESIONER SYSTEM USABILITY SCALE (SUS)
 
-Setelah seluruh rangkaian skenario tugas selesai dikerjakan, setiap partisipan (Pimpinan, Kepala Lab, dan Staf Lab) diminta mengisi instrumen evaluasi subjektif standar **System Usability Scale (SUS)** (John Brooke, 1996).
+> **Catatan Metodologis Skripsi**: Sesuai arahan dosen pembimbing, instrumen utama yang wajib dieksekusi dan dilaporkan dalam naskah skripsi (Bab III dan Bab IV) adalah **Metode Observasi Tugas (*Task-Based Usability Observation*)** dan **Evaluasi Dukungan Keputusan (*Decision Support Evaluation*)**. Kuesioner SUS pada bagian ini disediakan sebagai instrumen komplemen/cadangan apabila dewan penguji sidang skripsi menghendaki data pembanding berupa skor persepsi kuantitatif terstandarisasi.
 
-### 6.1 Petunjuk Pengisian Kuesioner
+### 6.1 Petunjuk Pengisian Kuesioner (Bila Digunakan)
 1. Kuesioner ini terdiri atas 10 butir pernyataan mengenai persepsi Anda saat menggunakan sistem UniLicense.
 2. Berikan tanda centang ($\checkmark$) atau tanda silang ($\times$) pada salah satu angka skala 1 sampai 5:
    - **1** = Sangat Tidak Setuju (STS)
@@ -438,58 +446,72 @@ Peran Pengguna  : [ ] Pimpinan   [ ] Kepala Lab   [ ] Staf/Teknisi Lab
 
 ## BAGIAN VII: METODOLOGI PENGOLAHAN DATA & PEDOMAN ANALISIS SKRIPSI (BAB 4)
 
-Bagian ini dirancang sebagai panduan kalkulasi kuantitatif dan interpretasi ilmiah bagi peneliti dalam menyusun Bab 4 Skripsi.
+Bagian ini dirancang sebagai panduan kalkulasi kuantitatif dan interpretasi ilmiah bagi peneliti dalam menyusun Bab 4 Skripsi. Sesuai fokus penelitian berbasis observasi tugas, analisis data berfokus pada **kinerja empiris di lapangan** dan **akurasi pengambilan keputusan**.
 
 ---
 
-### 7.1 Formula Matematis Perhitungan Skor SUS (John Brooke, 1996)
-Skor SUS tidak dihitung sebagai rata-rata mentah (skala 1–5), melainkan melalui proses normalisasi kontribusi skor ganjil dan genap untuk menghasilkan nilai skala standar **0 – 100**:
+### 7.1 Analisis Kuantitatif Metrik Kinerja Tugas (Task Performance Metrics)
+
+Data yang terekam pada Lembar Observasi diolah menggunakan statistik deskriptif:
+
+1. **Rata-rata Tingkat Keberhasilan Tugas (*Mean Task Success Rate*)**:
+   Menghitung persentase efektivitas penyelesaian tugas di mana skor keberhasilan didefinisikan sebagai: Mandiri = $1.0$ ($100\%$), Dengan Bantuan = $0.5$ ($50\%$), dan Gagal = $0.0$ ($0\%$):
+   $$\text{Mean Success Rate}_j = \frac{1}{N} \sum_{i=1}^{N} S_{ij} \times 100\%$$
+   $$\text{Overall Success Rate} = \frac{1}{K \times N} \sum_{j=1}^{K} \sum_{i=1}^{N} S_{ij} \times 100\%$$
+   *(di mana $N$ adalah jumlah partisipan pada peran terkait, dan $K$ adalah jumlah skenario tugas).*  
+   *Target Skripsi*: Tingkat keberhasilan rata-rata $\ge 85\%$ membuktikan antarmuka memiliki efektivitas yang tinggi.
+
+2. **Rata-rata Waktu Pengerjaan Tugas (*Mean Time on Task*)**:
+   Menghitung durasi efisiensi rata-rata yang dibutuhkan untuk menuntaskan masing-masing tugas:
+   $$\overline{T}_j = \frac{1}{N} \sum_{i=1}^{N} T_{ij} \quad (\text{satuan detik})$$
+
+3. **Rata-rata Jumlah Kesalahan (*Mean Error Count*)**:
+   Menghitung frekuensi kekeliruan navigasi atau klik pengguna sebelum mencapai target:
+   $$\overline{E}_j = \frac{1}{N} \sum_{i=1}^{N} E_{ij}$$
+   *Target Skripsi*: Rata-rata kesalahan navigasi $\le 1.0$ kali per tugas mengindikasikan struktur menu dan hierarki informasi intuitif bagi pengguna.
+
+---
+
+### 7.2 Analisis Kuantitatif Metrik Akurasi Keputusan Strategis (Decision Support)
+
+1. **Tingkat Akurasi Keputusan (*Decision Accuracy Rate - DAR*)**:
+   Mengukur ketepatan Pimpinan dalam menjawab studi kasus (Soal 1 s.d 3) berdasarkan data dashboard:
+   $$\overline{\text{DAR}} = \frac{1}{M} \sum_{k=1}^{M} \text{DAR}_k \times 100\%$$
+   *(Target Skripsi*: $\overline{\text{DAR}} \ge 80\%$ membuktikan transparansi data audit lisensi berhasil mendukung keputusan pengadaan).
+
+2. **Skor Rata-rata Persepsi Kognitif (Pernyataan D-01 s.d D-04)**:
+   Menghitung nilai rata-rata persepsi pimpinan terhadap visualisasi, transparansi, dan kegunaan laporan resmi untuk bahan rapat anggaran.
+
+---
+
+### 7.3 Analisis Kualitatif Protokol Think-Aloud & Matriks Rekomendasi UI/UX
+
+Peneliti melakukan transkripsi atas ungkapan lisan (*verbal protocol*) responden selama pengujian berlangsung, memetakan titik friksi kognitif (*cognitive friction*), dan merumuskan tabel tindak lanjut rekomendasi perbaikan:
+
+| No | Komponen UI / Alur | Isu Kebergunaan yang Teramati | Bukti Empiris (Think-Aloud / Error) | Rekomendasi Solusi Desain UI/UX | Prioritas |
+|---|---|---|---|---|:---:|
+| 1 | Filter Periode & Lab | Pengguna ragu apakah tabel otomatis ter-update saat filter diubah. | Responden berhenti sejenak mencari tombol "Terapkan". | Berikan indikator *loading state* halus atau tombol eksplisit "Filter". | Medium |
+| 2 | Notifikasi Approval | Kepala Lab ingin melihat pratinjau PDF sebelum menyetujui. | Responden mencari tombol pratinjau dokumen resmi. | Pastikan tombol "Pratinjau PDF" diletakkan berdampingan dengan tombol *Approve*. | High |
+| 3 | Ekspor Analisis Kebutuhan | Ikon ekspor Excel/PDF di pojok kanan atas sempat terlewatkan. | Pimpinan membutuhkan waktu >40 detik mencari tombol ekspor. | Berikan label teks kontras tinggi dengan ikon yang familiar. | Low |
+
+---
+
+### 7.4 (Instrumen Cadangan) Metodologi Perhitungan Skor SUS (John Brooke, 1996)
+
+*Bagian ini digunakan apabila kuesioner SUS turut dibagikan sebagai instrumen pelengkap.*
+
+Skor SUS dihitung melalui proses normalisasi kontribusi skor ganjil dan genap untuk menghasilkan nilai skala standar **0 – 100**:
 
 1. **Normalisasi Butir Ganjil (Pernyataan Positif: 1, 3, 5, 7, 9)**:  
-   Setiap butir ganjil dikurangi dengan angka 1:
    $$R_i = X_i - 1 \quad (\text{untuk } i \in \{1, 3, 5, 7, 9\})$$
-   *(Rentang nilai kontribusi: 0 sampai 4)*
-
 2. **Normalisasi Butir Genap (Pernyataan Negatif: 2, 4, 6, 8, 10)**:  
-   Angka 5 dikurangi dengan nilai skala respon:
    $$R_i = 5 - X_i \quad (\text{untuk } i \in \{2, 4, 6, 8, 10\})$$
-   *(Rentang nilai kontribusi: 0 sampai 4)*
-
 3. **Perhitungan Total Skor SUS Individu**:  
-   Jumlahkan seluruh nilai kontribusi $R_i$, kemudian kalikan dengan faktor koreksi $2.5$:
    $$\text{Skor SUS}_k = \left( \sum_{i=1}^{10} R_i \right) \times 2.5$$
-
 4. **Perhitungan Rata-rata Skor SUS Keseluruhan (*Mean SUS Score*)**:
    $$\overline{\text{SUS}} = \frac{1}{N} \sum_{k=1}^{N} \text{Skor SUS}_k$$
-   *di mana $N$ adalah jumlah total responden penelitian ($N = 8 - 13$).*
 
----
-
-### 7.2 Contoh Komputasi Langkah demi Langkah (Simulasi Numerik)
-Jika Responden $R_1$ memberikan respon mentah:  
-`Q1: 4, Q2: 2, Q3: 5, Q4: 1, Q5: 4, Q6: 2, Q7: 4, Q8: 1, Q9: 5, Q10: 2`
-
-- Kontribusi Ganjil:  
-  - $R_1 = 4 - 1 = 3$  
-  - $R_3 = 5 - 1 = 4$  
-  - $R_5 = 4 - 1 = 3$  
-  - $R_7 = 4 - 1 = 3$  
-  - $R_9 = 5 - 1 = 4$  
-  *Subtotal Ganjil = 17*
-- Kontribusi Genap:  
-  - $R_2 = 5 - 2 = 3$  
-  - $R_4 = 5 - 1 = 4$  
-  - $R_6 = 5 - 2 = 3$  
-  - $R_8 = 5 - 1 = 4$  
-  - $R_{10} = 5 - 2 = 3$  
-  *Subtotal Genap = 17*
-- Total Kontribusi = $17 + 17 = 34$  
-- **Skor Akhir SUS** = $34 \times 2.5 = \mathbf{85.0}$ (*Kategori: Grade A, Excellent*).
-
----
-
-### 7.3 Kerangka Interpretasi Standar Skor SUS untuk Bab 4 Skripsi
-Untuk membahas temuan skor SUS pada sidang skripsi, peneliti mengacu pada klasifikasi standar yang dirumuskan oleh **Bangor, Kortum, & Miller (2008)** serta **Sauro (2011)**:
+#### Kerangka Interpretasi Standar Skor SUS (Bangor et al., 2008 & Sauro, 2011)
 
 ```
  Skor SUS:  0 -------- 50 -------- 68 -------- 74 -------- 80.3 -------- 100
@@ -509,43 +531,28 @@ Untuk membahas temuan skor SUS pada sidang skripsi, peneliti mengacu pada klasif
 | **$51.0 - 67.9$** | **Marginal (Perlu Perbaikan)** | **Grade D** | **OK** | Detractor |
 | **$< 51.0$** | **Not Acceptable (Tidak Layak)** | **Grade F** | **Poor / Worst Imaginable** | Detractor |
 
-*Tolok Ukur Kelulusan Usability Skripsi*:  
-Sistem dinyatakan berhasil memenuhi standar kebergunaan yang baik apabila menghasilkan rata-rata skor SUS gabungan $\mathbf{> 68.0}$ (melebihi rata-rata industri global) dan masuk ke dalam kategori **Acceptable**.
-
 ---
 
-### 7.4 Struktur Pembahasan Hasil Pengujian di Bab 4 Skripsi
+### 7.5 Struktur Pembahasan Hasil Pengujian di Bab 4 Skripsi
 
-Untuk menyusun narasi Bab 4 Skripsi secara sistematis, peneliti disarankan membagi pembahasan ke dalam 4 sub-bab berikut:
+Untuk menyusun narasi Bab 4 Skripsi secara sistematis sesuai pendekatan observasi pengguna, peneliti membagi pembahasan ke dalam 4 sub-bab berikut:
 
 #### 1. Analisis Metrik Efektivitas & Efisiensi Tugas (*Task Performance*)
 - Sajikan tabel rekapitulasi *Task Success Rate (%)*, *Mean Time on Task (detik)*, dan *Error Count*.
-- Buat grafik batang perbandingan tingkat keberhasilan tugas antar-peran.
-- Bahas tugas mana yang membutuhkan waktu paling lama dan identifikasi penyebabnya berdasarkan catatan evaluator.
+- Buat grafik batang perbandingan tingkat keberhasilan tugas antar-peran (Pimpinan, Kepala Lab, Staf Lab).
+- Bahas tugas mana yang paling cepat diselesaikan dan tugas mana yang membutuhkan waktu adaptasi paling lama berdasarkan catatan evaluator.
 
 #### 2. Analisis Efektivitas Dukungan Keputusan (*Decision Support Validation*)
 - Laporkan persentase rata-rata *Decision Accuracy Rate (DAR %)* kelompok Pimpinan.
-- Bahas ketepatan Pimpinan dalam mengidentifikasi defisit lisensi dan estimasi kebutuhan unit lisensi baru berdasarkan studi kasus.
+- Bahas ketepatan Pimpinan dalam mengidentifikasi defisit lisensi dan estimasi kebutuhan unit lisensi baru berdasarkan data riil dashboard.
 - Sajikan tabulasi skor rata-rata persepsi kognitif (Pernyataan D-01 s.d D-04) untuk membuktikan peningkatan transparansi audit aset kampus.
 
-#### 3. Analisis Skor Kebergunaan Sistem (*System Usability Scale Analysis*)
-- Tampilkan tabel tabulasi skor individual seluruh responden ($N = 8 - 13$) dan hitung nilai $\overline{\text{SUS}}$ agregat serta standar deviasinya.
-- Tampilkan analisis komparasi deskriptif rata-rata skor SUS antarkelompok peran:
-  - $\overline{\text{SUS}}_{\text{Pimpinan}}$ vs $\overline{\text{SUS}}_{\text{Kepala Lab}}$ vs $\overline{\text{SUS}}_{\text{Staf Lab}}$.
-- Tempatkan nilai akhir pada grafik interpretasi Bangor et al. (menentukan *Grade*, *Adjective*, dan *Acceptability*).
+#### 3. Analisis Kualitatif Protokol Think-Aloud & Rekomendasi Desain UI/UX
+- Uraikan kutipan verbal positif dan kendala spontan yang diutarakan responden selama berinteraksi dengan sistem.
+- Sajikan matriks tindak lanjut rekomendasi perbaikan desain antarmuka (*actionable design recommendations*).
 
-#### 4. Triangulasi Kualitatif & Rekomendasi Perbaikan Antarmuka (*Actionable Recommendations*)
-- Silangkan temuan butir SUS yang mendapat nilai koreksi terendah (misal butir bernada "membingungkan" atau "membutuhkan bantuan") dengan data *Think-Aloud* dan titik *Error Count*.
-- Susun tabel tindak lanjut rekomendasi perbaikan desain antarmuka (*design recommendation table*):
-  - **Masalah Usability yang Ditemukan**: (Contoh: Label filter periode kurang mencolok).
-  - **Bukti Empiris Lapangan**: (Contoh: 2 responden Kepala Lab sempat ragu selama 25 detik).
-  - **Rekomendasi Perbaikan UI**: (Contoh: Menambahkan ikon kalender dan indikator aktif berwarna kontras).
-
-| No | Komponen UI / Alur | Isu Kebergunaan yang Teramati | Bukti Empiris (Think-Aloud / Error) | Rekomendasi Solusi Desain UI/UX | Prioritas |
-|---|---|---|---|---|:---:|
-| 1 | Filter Periode & Lab | Pengguna ragu apakah tabel otomatis ter-update saat filter diubah. | Responden berhenti sejenak mencari tombol "Terapkan". | Berikan indikator *loading state* halus atau tombol eksplisit "Filter". | Medium |
-| 2 | Notifikasi Approval | Kepala Lab ingin melihat pratinjau PDF sebelum menyetujui. | Responden mencari tombol pratinjau dokumen resmi. | Pastikan tombol "Pratinjau PDF" diletakkan berdampingan dengan tombol *Approve*. | High |
-| 3 | Ekspor Analisis Kebutuhan | Ikon ekspor Excel/PDF di pojok kanan atas sempat terlewatkan. | Pimpinan membutuhkan waktu >40 detik mencari tombol ekspor. | Berikan label teks kontras tinggi dengan ikon yang familiar. | Low |
+#### 4. (Opsional) Analisis Skor Kebergunaan Sistem (*System Usability Scale*)
+- Tampilkan komparasi skor SUS jika kuesioner turut disebarkan, dan letakkan nilainya pada diagram interpretasi Bangor et al. (Grade, Adjective, dan Acceptability).
 
 ---
 
@@ -568,7 +575,7 @@ Menyatakan dengan sesungguhnya bahwa:
 2. Saya memahami bahwa pengujian ini semata-mata menguji kebergunaan sistem aplikasi,
    bukan menguji kemampuan atau kinerja pribadi saya.
 3. Saya bersedia berpartisipasi secara sukarela tanpa paksaan, bersedia menjalankan skenario
-   tugas yang diberikan, serta mengisi kuesioner evaluasi secara objektif dan jujur.
+   tugas yang diberikan, serta memberikan tanggapan secara objektif dan jujur selama proses observasi pengujian.
 4. Saya mengizinkan data interaksi, metrik performa, dan masukan kualitatif yang saya berikan
    digunakan sebagai data penelitian skripsi dengan tetap menjaga kerahasiaan identitas pribadi.
 

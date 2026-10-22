@@ -2,7 +2,7 @@
 
 ## Project
 
-Laravel 12 (PHP 8.2+, production on PHP 8.4 Alpine) IT asset & software license compliance system for Universitas Sembilanbelas November (USN) Kolaka. Blade + Tailwind CSS 4 + Alpine.js frontend (ApexCharts & Chart.js), REST API for remote agent scanners (PowerShell), MySQL in production, SQLite for tests, Redis for queue/cache, and Laravel Horizon for queue worker orchestration.
+Laravel 12 (PHP 8.2+, production on PHP 8.4 Alpine) IT asset & software license compliance system for Universitas Sembilanbelas November (USN) Kolaka (current release: v1.1.5). Blade + Tailwind CSS 4 + Alpine.js frontend (ApexCharts, Chart.js, FontAwesome 7 Free, Poppins font), REST API for remote agent scanners (PowerShell & Windows Batch), MySQL in production, SQLite for tests, Redis for queue/cache, and Laravel Horizon for queue worker orchestration.
 
 ## Commands
 
@@ -12,6 +12,7 @@ composer dev
 
 # Run tests (Pest on SQLite :memory:, no external services needed)
 composer test                         # clears config cache then runs `php artisan test`
+php artisan test --compact            # compact test output (392 tests, 2000+ assertions)
 php artisan test --filter=SomeTest    # single test
 npm run test:e2e                      # Playwright E2E test suite (all roles)
 
@@ -21,8 +22,13 @@ npm run test:e2e                      # Playwright E2E test suite (all roles)
 # Queue worker & monitoring (Horizon)
 php artisan horizon
 
-# Migrations & Seeding (roles, faculties, sample labs, and default accounts)
-php artisan migrate --seed
+# Migrations & Seeding
+php artisan migrate --seed            # roles, faculties, sample labs, and default accounts
+php artisan db:seed --class=UserTestingSeeder # deterministic user testing dataset
+
+# Maintenance & Cache
+php artisan software:reclassify       # auto-classify unreviewed software & clean junk (--dry-run, --force)
+php artisan cache:clear-dashboard     # clear dashboard and compliance metric caches
 
 # One-shot setup (composer install, key:generate, migrate, npm install, npm build)
 composer setup
@@ -45,22 +51,35 @@ composer setup
 - **Key services**:
   - `LicenseComplianceService`: centralized compliance calculation, multi-level faculty/lab quota tracking, entitlement vs installed calculation.
   - `SoftwareChangeDetectionService`: detects software state changes between scan sessions (`added`, `removed`, `changed`, `returned`).
-  - `SoftwareFilterService`: filters OS updates and noise, normalizes raw software names.
-  - `SoftwareCatalogService`: manages master software catalog and categorization.
+  - `SoftwareFilterService`: filters OS updates, .NET toolsets, and system junk/noise, normalizes raw software names.
+  - `SoftwareCatalogService`: manages master software catalog, keyword matching for auto-categorization and whitelist status.
 - **License key encryption & auditing**:
   - `LicenseInventory.license_key` uses Laravel's `encrypted` cast. Never decrypted in views; exposed only via `masked_license_key` accessor.
-  - Decryption endpoint (`POST /licenses/{license}/key`) is throttled (10 req/min) and audit-logged.
-- **Activity Logging & Backups**:
-  - `spatie/laravel-activitylog`: tracks entity mutations, user accounts, password changes, and license key reveals.
-  - `spatie/laravel-backup`: automated database and storage file backups.
+  - Decryption endpoints:
+    - Admin: `POST /licenses/{license}/key` (throttled 10 req/min, audit-logged to `activity_log`).
+    - Lab (`kepala_lab` & `staff_lab`): `POST /lab/licenses/{license}/key` (scoped to faculty, throttled 10 req/min, audit-logged).
+- **Activity Logging, Scheduled Tasks & Backups**:
+  - `spatie/laravel-activitylog`: tracks entity mutations, user accounts, password changes, and license key reveals. Scheduled daily prune (`activitylog:clean --force`).
+  - `spatie/laravel-backup`: automated daily database backup (`backup:run --only-db` at 01:30) and cleanup (`backup:clean` at 01:00). Docker image includes `mariadb-client` for `mysqldump`.
 
 ## Roles & Permissions (spatie/laravel-permission)
 
-- `admin` -- full system access: user accounts, faculties, laboratories, licenses & allocations, compliance scans, activity logs, Horizon.
+- `admin` -- full system access: user accounts, faculties, laboratories, master catalog, licenses & allocations, compliance scans, report submissions, activity logs, Horizon.
 - `pimpinan` -- read-only executive view across all faculties: executive dashboard, license needs reports, computer/software/license inventory, compliance status.
-- `kepala_lab` -- laboratory coordinator scoped to assigned laboratory/faculty: review/approve/reject laboratory compliance reports, view lab computer inventory & software changes, download lab agent scanner.
-- `staff_lab` -- laboratory operator scoped to assigned laboratory/faculty: view lab computer inventory, download lab agent scanner.
-- Routes enforce roles via `role:admin|pimpinan|kepala_lab|staff_lab`, `role:admin|pimpinan|kepala_lab`, `role:admin|pimpinan`, `role:admin|kepala_lab`, and `role:admin` middleware in `routes/web.php`.
+- `kepala_lab` -- laboratory coordinator scoped to assigned laboratory/faculty: review/approve/reject laboratory compliance reports, view lab computer inventory & software changes, access faculty licenses & decrypt keys (rate-limited), download lab agent scanner.
+- `staff_lab` -- laboratory operator scoped to assigned laboratory/faculty: view lab computer inventory, access faculty licenses & decrypt keys (rate-limited), download lab agent scanner.
+- Routes enforce roles via `role:admin|pimpinan|kepala_lab|staff_lab`, `role:admin|pimpinan|kepala_lab`, `role:admin|pimpinan`, `role:admin|kepala_lab|staff_lab`, `role:admin|kepala_lab`, and `role:admin` middleware in `routes/web.php`.
+
+## Client Scanner Agent (`script/agent/`)
+
+- One-click Windows batch launchers with errorLevel isolation and UAC auto-elevation:
+  - `1-Jalankan-Scan-Sekarang.bat`: runs immediate scan via `scanner.ps1`.
+  - `2-Pasang-Jadwal-Otomatis.bat`: elevates to Admin and registers Windows Task Scheduler tasks via `setup_tasks.ps1` (daily scan at 08:00 AM, polling command checks every 15 minutes).
+  - `3-Hapus-Jadwal-Otomatis.bat`: unregisters scheduled scan tasks cleanly.
+- PowerShell scripts:
+  - `scanner.ps1`: gathers hardware specs (CPU, RAM, Disks, MAC) and software inventories (Registry 32/64 bit, AppX packages), normalizes payload types, posts to `/api/scan-result`.
+  - `setup_tasks.ps1`: configures Windows Task Scheduler with explicit working directory.
+- Dynamic packaging via `AgentDownloadController` (`POST /agent/download`): downloads `usn-manifest-agent.zip` containing all scripts, auto-generated `config.json` (server URL, token, lab ID), and `instruksi.txt`.
 
 ## Custom Config Files
 
@@ -71,27 +90,35 @@ composer setup
 
 ## Testing
 
-- Framework: **Pest** (with underlying PHPUnit 11)
-- Tests run on SQLite `:memory:` (configured in `phpunit.xml`), no external Redis/MySQL required
-- `RefreshDatabase` is configured in individual feature tests or test traits
+- Framework: **Pest 3.8** (with underlying PHPUnit 11)
+- Tests run on SQLite `:memory:` (configured in `phpunit.xml`), no external Redis/MySQL required (392 tests, 2076 assertions).
+- `RefreshDatabase` is configured in individual feature tests or test traits.
 - Feature tests cover:
   - Role-based Golden Paths (`AdminGoldenPathTest`, `PimpinanGoldenPathTest`, `KepalaLabGoldenPathTest`, `StaffLabGoldenPathTest`)
-  - Faculty & Laboratory scoping (`ScopedByLaboratoryTest`, `MultiLabScopeTest`)
-  - License calculations & allocation (`LicenseCalculationAccuracyTest`, `LicenseAllocationTest`)
-  - Software change detection & periodic scanning
-  - Report submission and approval workflows (`ReportApprovalTest`, `ReportSubmissionTest`)
-  - Agent authentication, registration, scan payload processing
-  - License key encryption & Activity Log auditing
-- End-to-End: **Playwright** (`npm run test:e2e`) covering critical user flows for all 4 roles
-- CI runs on PHP 8.4 + Node 20 (`.github/workflows/deploy.yml`)
+  - Faculty & Laboratory scoping (`ScopedByLaboratoryTest`, `MultiLabScopeTest`, `ReportMultiLabScopeTest`)
+  - License calculations & allocation (`LicenseCalculationAccuracyTest`, `LicenseAllocationTest`, `FacultyLicenseSystemIntegrationTest`)
+  - Scoped faculty license view & key reveal (`LabLicenseAccessTest`)
+  - Software change detection & periodic scanning (`SoftwareChangeTest`, `PeriodicScanTest`, `ScanPipelineTest`)
+  - Report submission and approval workflows (`ReportApprovalTest`, `ReportSubmissionTest`, `ReportApprovalPeriodDatesTest`)
+  - Agent authentication, registration, scan payload processing, batch launcher syntax validation (`AgentAuthTest`, `AgentLabRegistrationTest`, `AgentDownloadTest`)
+  - Software catalog auto-classification & junk pruning (`ReclassifySoftwareCatalogCommandTest`, `SoftwareCatalogManagementTest`)
+  - License key encryption & Activity Log auditing (`LicenseKeyEncryptionTest`, `ActivityLogTest`)
+- Unit tests cover:
+  - ERD consistency audits across Chen Draw.io, Mermaid, and thesis docs (`ErdConsistencyAuditTest`, `ErdDrawioValidationTest`, `ErdMermaidValidationTest`, `ErdSkripsiDocValidationTest`, `ErdDrawioCollisionTest`)
+  - Service logic (`SoftwareFilterServiceTest`, `SoftwareCatalogServiceTest`)
+- End-to-End: **Playwright** (`npm run test:e2e`) covering critical user flows for all 4 roles.
+- CI runs on PHP 8.4 + Node 20 (`.github/workflows/deploy.yml`).
 
-## Environment Quirks
+## Deployment & Environment Quirks
 
+- Container stack: Multi-stage Dockerfile (`php:8.4-fpm-alpine`, Node 20, Composer 2.7, `mariadb-client`), Nginx with dynamic DNS upstream resolving (`resolver 127.0.0.11 valid=5s`), Horizon worker container, and cron scheduler container.
+- Production deployment: Hosted via Dokploy connected to external `dokploy-network` (shared MySQL 8.0 & Redis 7). Production compose: `docker-compose.prod.yml`.
+- Testing environment: Isolated compose `docker-compose.testing.yml` (`testing-app` and `testing-web`).
+- CI/CD: Push/PR to `main` triggers GitHub Actions test suite. Pushing git tag (`v*`) triggers automated multi-platform Docker build and push to GHCR (`ghcr.io/febrian1202/sistem-manifest-backend`). Production server pulls latest image (`pull_policy: always`).
 - `AGENT_REGISTRATION_KEY` -- shared secret key required by client scanner agents to register a computer
 - `DEFAULT_USER_PASSWORD` -- seed default user password (default: `ManifestUSN_2026!`)
 - Default timezone is `Asia/Makassar` (WITA, UTC+8), locale is `id` (Indonesian)
 - `REDIS_CLIENT=predis` (in Laravel `.env`), `QUEUE_CONNECTION=redis`, `CACHE_STORE=redis`
-- Docker setup: Multi-stage build (`php:8.4-fpm-alpine`, Node 20, Composer 2.7), Nginx web server (host port `8080:80` in `docker-compose.yml`, `127.0.0.1:8080` behind host reverse proxy in `docker-compose.prod.yml`), MySQL 8.0, Redis 7, Horizon worker container, and cron scheduler container.
 
 ## API Endpoints (routes/api.php)
 
@@ -103,24 +130,27 @@ composer setup
 ## Directory Guide
 
 - `app/Http/Controllers/Api/` -- agent-facing API controllers (`AgentRegisterController`, `ScanController`, `AgentCommandController`)
-- `app/Http/Controllers/` -- web admin & lab portal controllers (Faculties, Laboratories, LicenseAllocations, Reports, Approvals, Submissions, Monitoring, etc.)
+- `app/Http/Controllers/` -- web admin, pimpinan & lab portal controllers (Faculties, Laboratories, LicenseAllocations, LabLicenses, Reports, Approvals, Submissions, Monitoring, etc.)
 - `app/Http/Requests/` -- form request validation classes
 - `app/Models/Traits/` -- `ScopedByLaboratory` multi-tenant scoping trait
 - `app/Services/` -- `LicenseComplianceService`, `SoftwareChangeDetectionService`, `SoftwareCatalogService`, `SoftwareFilterService`
 - `app/Observers/` -- model observers for Computer, LicenseInventory, SoftwareCatalog
 - `app/Exports/` -- Excel/PDF export classes (LicenseNeedsExport, SoftwareChangesExport, MonitoringRecapExport, KepatuhanExport, etc.)
+- `app/Console/Commands/` -- custom Artisan commands (`software:reclassify`, `cache:clear-dashboard`)
+- `docs/diagrams/` -- system diagrams (ERD in Chen Draw.io & Mermaid, DFD Context/Level 1/Level 2, Flowmap)
+- `docs/Testing/` -- user testing protocol, observation sheets, scenarios, SUS questionnaire
 - `e2e/` -- Playwright end-to-end tests for all roles (`admin`, `pimpinan`, `kepala_lab`, `staff_lab`)
-- `script/agent/` -- PowerShell scanner scripts deployed to client machines (`scanner.ps1`, `setup_tasks.ps1`, `config.example.json`)
-- `.docker/` -- Docker entrypoint, Nginx configurations, PHP production INI
+- `script/agent/` -- PowerShell scanner scripts and batch launchers deployed to client machines (`scanner.ps1`, `setup_tasks.ps1`, `1-Jalankan-Scan-Sekarang.bat`, `2-Pasang-Jadwal-Otomatis.bat`, `3-Hapus-Jadwal-Otomatis.bat`, `config.example.json`)
+- `.docker/` -- Docker entrypoint, Nginx configurations (`app.conf`, `testing.conf`, reverse proxy example), PHP production INI
 - `lang/id/` -- Indonesian translations
 - `prompt/` -- reference prompts and planning documents (not application code)
 
 ## Conventions
 
-- Commit messages follow conventional commits: `feat:`, `fix:`, `docs:`, `test:`, etc.
+- Commit messages follow conventional commits: `feat:`, `fix:`, `docs:`, `test:`, `chore:`, `refactor:`, etc.
 - Indonesian used in UI labels, seeder descriptions, and log messages. Code (variables, classes, comments in logic) is in English.
 - Feature branches named `feature/FeatureName`, PRs target `main`.
-- Deployment: push to `main` triggers GitHub Actions CI (linting, tests, Docker build & push to GHCR) followed by automated SSH deploy to VPS.
+- Formatting enforced by Laravel Pint: `./vendor/bin/pint`.
 
 ===
 
