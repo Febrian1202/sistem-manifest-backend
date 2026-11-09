@@ -3,7 +3,7 @@ param(
     [string]$ScanMode = ""
 )
 
-$AgentVersion = "1.1.6"
+$AgentVersion = "1.1.8"
 
 # ---------------------------------------------------------
 # Konfigurasi API via config.json
@@ -338,7 +338,7 @@ try {
     Write-AgentLog "Payload hasil scan berhasil disimpan di $payloadDumpFile ($($uniqueSoftware.Count) software)"
 } catch {
     Write-Host " [WARN] Gagal menyimpan salinan payload lokal: $($_.Exception.Message)" -ForegroundColor DarkYellow
-    Write-AgentLog "Gagal menyimpan payload lokal ke $payloadDumpFile: $($_.Exception.Message)" -Level "WARN"
+    Write-AgentLog "Gagal menyimpan payload lokal ke $($payloadDumpFile): $($_.Exception.Message)" -Level "WARN"
 }
 
 # Simpan state untuk retry sebelum kirim
