@@ -105,3 +105,33 @@ test('software:reclassify clears cache when changes are made', function () {
 
     expect(Cache::has('dashboard.charts'))->toBeFalse();
 });
+
+test('software:reclassify correctly categorizes SPSS, EViews, and LibreOffice', function () {
+    $spss = SoftwareCatalog::create([
+        'normalized_name' => 'IBM SPSS Statistics 24',
+        'category' => 'Freeware',
+        'status' => 'Unreviewed',
+    ]);
+
+    $eviews = SoftwareCatalog::create([
+        'normalized_name' => 'EViews 13',
+        'category' => 'Freeware',
+        'status' => 'Unreviewed',
+    ]);
+
+    $libre = SoftwareCatalog::create([
+        'normalized_name' => 'LibreOffice 7.5.5.2',
+        'category' => 'Freeware',
+        'status' => 'Unreviewed',
+    ]);
+
+    $this->artisan('software:reclassify')
+        ->assertSuccessful();
+
+    expect($spss->fresh()->category)->toBe('Commercial')
+        ->and($spss->fresh()->status)->toBe('Whitelist')
+        ->and($eviews->fresh()->category)->toBe('Commercial')
+        ->and($eviews->fresh()->status)->toBe('Whitelist')
+        ->and($libre->fresh()->category)->toBe('OpenSource')
+        ->and($libre->fresh()->status)->toBe('Whitelist');
+});

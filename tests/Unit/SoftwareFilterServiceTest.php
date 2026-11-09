@@ -44,6 +44,11 @@ test('SoftwareFilterService correctly identifies newly identified system junk, u
         ['name' => 'WinRT Intellisense Desktop - en-us'],
         ['name' => 'WPTx64 (DesktopEditions)'],
         ['name' => 'WPTx64 (OnecoreUAP)'],
+        ['name' => 'Dynamic Application Loader Host Interface Service'],
+        ['name' => 'Penghapusan Instalan Printer EPSON L3210 Series'],
+        ['name' => 'www.msn.com-72E32543'],
+        ['name' => 'Tobii Experience Software For Windows'],
+        ['name' => 'Mozilla Maintenance Service'],
         // Clean items:
         ['name' => 'CorelDRAW Graphics Suite 2021'],
         ['name' => 'Adobe Premiere Pro 2019'],
@@ -68,5 +73,31 @@ test('SoftwareFilterService correctly identifies newly identified system junk, u
         ->toContain('Microsoft .NET Toolset 9.0.203 (x64)')
         ->toContain('VS JIT Debugger')
         ->toContain('icecap_collection_neutral')
-        ->toContain('WPTx64 (DesktopEditions)');
+        ->toContain('WPTx64 (DesktopEditions)')
+        ->toContain('Dynamic Application Loader Host Interface Service')
+        ->toContain('Penghapusan Instalan Printer EPSON L3210 Series')
+        ->toContain('www.msn.com-72E32543')
+        ->toContain('Tobii Experience Software For Windows')
+        ->toContain('Mozilla Maintenance Service');
+});
+
+test('SoftwareFilterService flags pirated activator loaders but does not false-positive on Dynamic Application Loader', function () {
+    $service = new SoftwareFilterService;
+
+    $items = [
+        ['name' => 'Re-Loader v3.0 Beta 3'],
+        ['name' => 'Windows Loader by Daz'],
+        ['name' => 'Dynamic Application Loader Host Interface Service'],
+    ];
+
+    $result = $service->filter($items);
+
+    $flaggedNames = collect($result->flagged)->pluck('name')->all();
+    $junkNames = collect($result->junk)->pluck('name')->all();
+
+    expect($flaggedNames)->toContain('Re-Loader v3.0 Beta 3')
+        ->toContain('Windows Loader by Daz')
+        ->not->toContain('Dynamic Application Loader Host Interface Service');
+
+    expect($junkNames)->toContain('Dynamic Application Loader Host Interface Service');
 });

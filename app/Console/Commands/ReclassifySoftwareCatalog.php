@@ -80,6 +80,21 @@ class ReclassifySoftwareCatalog extends Command
 
             // 2. Cek apakah memenuhi syarat auto-klasifikasi
             if ($catalog->status === 'Unreviewed' || $isForce) {
+                // Prioritas: tandai Blacklist jika terdeteksi software terlarang / pembajakan
+                if (! empty($filterResult->flagged)) {
+                    if ($catalog->status !== 'Blacklist') {
+                        if ($isDryRun) {
+                            $this->line("[DRY-RUN] Akan menandai Blacklist (software terlarang): {$name}");
+                        } else {
+                            $catalog->update(['status' => 'Blacklist']);
+                        }
+
+                        $reclassifiedCount++;
+
+                        continue;
+                    }
+                }
+
                 $auto = $this->catalogService->getAutoProcessedData($name);
 
                 if ($auto['status'] === 'Whitelist') {

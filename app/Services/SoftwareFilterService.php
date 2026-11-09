@@ -32,7 +32,11 @@ class SoftwareFilterService
         'KMSPico',
         'KMSAuto',
         'KMS Activator',
-        'Loader',
+        'Re-Loader',
+        'Daz Loader',
+        'Windows Loader',
+        'SLIC Loader',
+        'KMS Loader',
         'Cheat Engine',
     ];
 
@@ -78,6 +82,8 @@ class SoftwareFilterService
         'Realtek',
         'BIOS',
         'Firmware',
+        'Dynamic Application Loader',
+        'Tobii Experience',
         'Branding64',
         'DVR64',
         'WVR64',
@@ -126,6 +132,7 @@ class SoftwareFilterService
         'Documentation',
         'Help',
         'Manual',
+        'Mozilla Maintenance Service',
 
         // ---- DiagnosticsHub / Telemetry ----
         'DiagnosticsHub',
@@ -146,6 +153,7 @@ class SoftwareFilterService
         'LanguageExperiencePack',
         'ApplicationCompatibility',
         'MixedReality.Portal',
+        'www.msn.com',
 
         // ---- Python sub-components ----
         'Core Interpreter',
@@ -162,6 +170,7 @@ class SoftwareFilterService
         'Epson USB',
         'Uninstall',
         'Printer Uninstall',
+        'Penghapusan Instalan',
         'Scan OCR Component',
 
         // ---- Developer SDKs / Testing / Profiling / Diagnostics ----

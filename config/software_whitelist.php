@@ -70,6 +70,62 @@ return [
             'category' => 'Commercial',
             'status' => 'Whitelist',
         ],
+        'IBM SPSS' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'SPSS' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'EViews' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Internet Download Manager' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Microsoft Word' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Microsoft Excel' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Microsoft PowerPoint' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Microsoft Access' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Microsoft Outlook' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Microsoft Publisher' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Microsoft InfoPath' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Microsoft Lync' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Microsoft Groove' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
+        'Microsoft DCF' => [
+            'category' => 'Commercial',
+            'status' => 'Whitelist',
+        ],
     ],
 
     /**
@@ -274,6 +330,50 @@ return [
             'status' => 'Whitelist',
         ],
         'Zoom Workplace' => [
+            'category' => 'Freeware',
+            'status' => 'Whitelist',
+        ],
+        'LibreOffice' => [
+            'category' => 'OpenSource',
+            'status' => 'Whitelist',
+        ],
+        'Veyon' => [
+            'category' => 'OpenSource',
+            'status' => 'Whitelist',
+        ],
+        'Zotero' => [
+            'category' => 'OpenSource',
+            'status' => 'Whitelist',
+        ],
+        'Mozilla Firefox' => [
+            'category' => 'OpenSource',
+            'status' => 'Whitelist',
+        ],
+        'Firefox' => [
+            'category' => 'OpenSource',
+            'status' => 'Whitelist',
+        ],
+        'Multimedia Logic' => [
+            'category' => 'Freeware',
+            'status' => 'Whitelist',
+        ],
+        'foobar2000' => [
+            'category' => 'Freeware',
+            'status' => 'Whitelist',
+        ],
+        'Canva' => [
+            'category' => 'Freeware',
+            'status' => 'Whitelist',
+        ],
+        'WhatsApp' => [
+            'category' => 'Freeware',
+            'status' => 'Whitelist',
+        ],
+        'Opera' => [
+            'category' => 'Freeware',
+            'status' => 'Whitelist',
+        ],
+        'Intel Software Package' => [
             'category' => 'Freeware',
             'status' => 'Whitelist',
         ],
