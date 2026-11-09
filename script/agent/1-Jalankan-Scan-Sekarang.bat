@@ -27,5 +27,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0scanner.ps1" -Mode
 echo.
 echo ========================================================
 echo Pemindaian selesai. Jendela ini dapat ditutup.
+echo.
+echo Catatan: Salinan data hasil scan tersimpan di folder ini:
+echo   - last_scan_payload.json [data lengkap hardware dan software]
+echo   - scan_agent.log         [catatan proses dan respon server]
 echo ========================================================
 pause

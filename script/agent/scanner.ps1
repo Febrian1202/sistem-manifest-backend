@@ -3,16 +3,31 @@ param(
     [string]$ScanMode = ""
 )
 
-$AgentVersion = "1.1.3"
+$AgentVersion = "1.1.6"
 
 # ---------------------------------------------------------
 # Konfigurasi API via config.json
 # ---------------------------------------------------------
-$configFile = "$PSScriptRoot\config.json"
+$configFile      = "$PSScriptRoot\config.json"
+$logFile         = "$PSScriptRoot\scan_agent.log"
+$payloadDumpFile = "$PSScriptRoot\last_scan_payload.json"
+
+function Write-AgentLog {
+    param(
+        [string]$Message,
+        [string]$Level = "INFO"
+    )
+    $timestamp = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+    $logEntry = "[$timestamp] [$Level] $Message"
+    try {
+        Add-Content -Path $logFile -Value $logEntry -Encoding utf8 -ErrorAction SilentlyContinue
+    } catch {}
+}
 
 if (-not (Test-Path $configFile)) {
     Write-Host " [!] File config.json tidak ditemukan di folder agent!" -ForegroundColor Red
     Write-Host "     Silakan pastikan config.json berada di folder yang sama dengan skrip ini." -ForegroundColor Yellow
+    Write-AgentLog "File config.json tidak ditemukan di $configFile" -Level "ERROR"
     exit 1
 }
 
@@ -23,6 +38,7 @@ try {
     $laboratoryId = $config.laboratoryId
 } catch {
     Write-Host " [!] Format config.json tidak valid (bukan JSON yang benar)." -ForegroundColor Red
+    Write-AgentLog "Format config.json tidak valid: $($_.Exception.Message)" -Level "ERROR"
     exit 1
 }
 
@@ -36,6 +52,7 @@ $tokenFile      = "$PSScriptRoot\agent_token.txt"
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "    USN MANIFEST - SYSTEM SCANNER AGENT   " -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
+Write-AgentLog "Menjalankan USN Manifest Scanner v$AgentVersion (Mode: $Mode, ScanMode: $ScanMode)"
 
 # ---------------------------------------------------------
 # TAHAP 0: OTENTIKASI & REGISTRASI
@@ -80,6 +97,7 @@ if ($net -and $net.IPAddress) {
 
 if (-not (Test-Path $tokenFile)) {
     Write-Host " [!] Token tidak ditemukan. Melakukan registrasi..." -ForegroundColor Cyan
+    Write-AgentLog "Token tidak ditemukan. Memulai registrasi ke $registerUrl untuk host '$hostname' (MAC: '$macAddress')"
 
     $regPayload = @{
         mac_address   = $macAddress
@@ -97,8 +115,10 @@ if (-not (Test-Path $tokenFile)) {
         $token = ([string]$regResponse.token).Trim()
         $token | Out-File -FilePath $tokenFile -Encoding ascii
         Write-Host " [+] Registrasi berhasil. Token disimpan." -ForegroundColor Green
+        Write-AgentLog "Registrasi BERHASIL. Token disimpan di $tokenFile"
     } catch {
         Write-Host " [!] Registrasi GAGAL: $($_.Exception.Message)" -ForegroundColor Red
+        $errText = ""
         if ($_.Exception.Response) {
             try {
                 $stream = $_.Exception.Response.GetResponseStream()
@@ -109,11 +129,13 @@ if (-not (Test-Path $tokenFile)) {
                 }
             } catch {}
         }
+        Write-AgentLog "Registrasi GAGAL: $($_.Exception.Message). Detail Server: $errText" -Level "ERROR"
         exit 1
     }
 } else {
     $token = (Get-Content $tokenFile -Raw).Trim()
     Write-Host " [+] Token ditemukan. Menggunakan identitas tersimpan." -ForegroundColor Green
+    Write-AgentLog "Token tersimpan ditemukan di $tokenFile. Melanjutkan dengan identitas terdaftar."
 }
 
 $headers = @{
@@ -130,15 +152,19 @@ if ($Mode -eq "poll") {
         $command = Invoke-RestMethod -Uri $scanCommandUrl -Method Get -Headers $headers
         if (-not $command.should_scan) {
             Write-Host " [!] Tidak ada permintaan scan. Keluar." -ForegroundColor Cyan
+            Write-AgentLog "Mode poll: Server merespon should_scan = false. Keluar tanpa melakukan scan."
             exit 0
         }
         Write-Host " [+] Ada permintaan scan. Melanjutkan..." -ForegroundColor Green
+        Write-AgentLog "Mode poll: Server meminta scan aktif (should_scan = true). Melanjutkan..."
     } catch {
         Write-Host " [WARN] Gagal cek perintah: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        Write-AgentLog "Mode poll: Gagal memeriksa perintah scan dari server: $($_.Exception.Message)" -Level "WARN"
         exit 0
     }
 } else {
     Write-Host " [0.5/3] Mode Scan: Menjalankan Scan Lengkap..." -ForegroundColor Green
+    Write-AgentLog "Mode manual/scheduled: Memulai pemindaian lengkap..."
 }
 
 if ($ScanMode -ne "") {
@@ -270,6 +296,7 @@ try {
 }
 
 $uniqueSoftware = @($allSoftware | Sort-Object name -Unique)
+Write-AgentLog "Selesai memindai aplikasi: $($uniqueSoftware.Count) software unik terdeteksi."
 
 # ---------------------------------------------------------
 # TAHAP 3: KIRIM DATA
@@ -304,6 +331,16 @@ $payload = @{
 
 $jsonPayload = $payload | ConvertTo-Json -Depth 5
 
+# Simpan salinan payload lokal ke folder agent untuk kemudahan inspeksi & debugging
+try {
+    $jsonPayload | Out-File -FilePath $payloadDumpFile -Encoding utf8
+    Write-Host " [+] Salinan payload tersimpan di: last_scan_payload.json" -ForegroundColor Cyan
+    Write-AgentLog "Payload hasil scan berhasil disimpan di $payloadDumpFile ($($uniqueSoftware.Count) software)"
+} catch {
+    Write-Host " [WARN] Gagal menyimpan salinan payload lokal: $($_.Exception.Message)" -ForegroundColor DarkYellow
+    Write-AgentLog "Gagal menyimpan payload lokal ke $payloadDumpFile: $($_.Exception.Message)" -Level "WARN"
+}
+
 # Simpan state untuk retry sebelum kirim
 try {
     $jsonPayload | Out-File -FilePath $retryFile -Encoding utf8
@@ -317,26 +354,33 @@ try {
     Write-Host "`n [SUKSES]" -ForegroundColor Green
     Write-Host " Server  : $($response.message)"
     Write-Host " Komputer: $($response.computer)"
+    Write-AgentLog "Pengiriman hasil scan BERHASIL. Pesan Server: $($response.message) (Komputer: $($response.computer), UUID: $scanUuid)"
 } catch {
     $statusCode = $_.Exception.Response.StatusCode
+    $errorBody = ""
+    if ($_.Exception.Response) {
+        try {
+            $stream = $_.Exception.Response.GetResponseStream()
+            if ($stream) {
+                $reader = New-Object System.IO.StreamReader($stream)
+                $errorBody = $reader.ReadToEnd()
+            }
+        } catch {}
+    }
+
     if ($statusCode -eq "Unauthorized") {
         Write-Host "`n [!] Token tidak valid atau dicabut." -ForegroundColor Red
         if (Test-Path $tokenFile) { Remove-Item $tokenFile }
         Write-Host " Token dihapus. Jalankan ulang script untuk registrasi ulang." -ForegroundColor Yellow
+        Write-AgentLog "Pengiriman hasil scan GAGAL [Unauthorized]: Token tidak valid/dicabut. Token dihapus." -Level "ERROR"
     } else {
         Write-Host "`n [GAGAL] Pengiriman data ke server gagal ($statusCode)." -ForegroundColor Red
         Write-Host " Error: $($_.Exception.Message)"
-        if ($_.Exception.Response) {
-            try {
-                $stream = $_.Exception.Response.GetResponseStream()
-                if ($stream) {
-                    $reader = New-Object System.IO.StreamReader($stream)
-                    $errorBody = $reader.ReadToEnd()
-                    Write-Host " Detail Error Server:`n$errorBody" -ForegroundColor Yellow
-                }
-            } catch {}
+        if ($errorBody -ne "") {
+            Write-Host " Detail Error Server:`n$errorBody" -ForegroundColor Yellow
         }
         Write-Warning " Pengunggahan hasil scan gagal, berkas retry tersimpan dengan UUID: $scanUuid"
+        Write-AgentLog "Pengiriman hasil scan GAGAL [$statusCode]: $($_.Exception.Message). Detail Server: $errorBody" -Level "ERROR"
     }
 }
 

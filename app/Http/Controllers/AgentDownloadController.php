@@ -70,7 +70,7 @@ class AgentDownloadController extends Controller
             'registrationKey' => $registrationKey,
             'laboratoryId' => $lab->id,
             'laboratoryName' => $lab->name,
-            'agentVersion' => '1.1.3',
+            'agentVersion' => '1.1.6',
         ];
 
         $configJson = json_encode($configData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
@@ -113,6 +113,12 @@ C. MENGHAPUS JADWAL OTOMATIS (UNINSTALL):
    - Klik 2x pada file: "3-Hapus-Jadwal-Otomatis.bat"
    - Jika muncul konfirmasi Administrator (UAC), pilih "Yes".
    - Semua jadwal pemindaian USN Manifest akan dihapus secara bersih.
+
+D. INSPEKSI HASIL SCAN & LOG DEBUGGING:
+   - "last_scan_payload.json" : Berkas salinan data JSON lengkap (hardware & 
+     daftar software terdeteksi) yang dikirimkan ke server.
+   - "scan_agent.log"         : Catatan log setiap proses scan dan respon 
+     dari server (sangat berguna jika data scan tidak masuk ke server).
 
 =========================================================
 PENTING: Jangan menghapus atau memindahkan config.json, karena 
