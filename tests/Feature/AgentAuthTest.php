@@ -3,6 +3,7 @@
 use App\Models\Computer;
 use App\Models\Laboratory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Laravel\Sanctum\Sanctum;
 
 uses(RefreshDatabase::class);
 
@@ -83,6 +84,42 @@ test('agent cannot submit scan without scan:submit ability', function () {
         ]);
 
     $response->assertStatus(403);
+});
+
+test('multiple computers with identical hostname can submit scans independently', function () {
+    $comp1 = Computer::factory()->create([
+        'mac_address' => 'AA:BB:CC:DD:EE:01',
+        'hostname' => 'MYPCONEPROK-24',
+    ]);
+    $comp2 = Computer::factory()->create([
+        'mac_address' => 'AA:BB:CC:DD:EE:02',
+        'hostname' => 'MYPCONEPROK-24',
+    ]);
+
+    // Comp 1 submits scan
+    Sanctum::actingAs($comp1, ['scan:submit']);
+    $this->postJson('/api/scan-result', [
+        'hostname' => 'MYPCONEPROK-24',
+        'mac_address' => 'AA:BB:CC:DD:EE:01',
+        'ip_address' => '192.168.1.101',
+        'installed_software' => [
+            ['name' => 'Chrome', 'version' => '120'],
+        ],
+    ])->assertStatus(202);
+
+    // Comp 2 submits scan with same hostname
+    Sanctum::actingAs($comp2, ['scan:submit']);
+    $this->postJson('/api/scan-result', [
+        'hostname' => 'MYPCONEPROK-24',
+        'mac_address' => 'AA:BB:CC:DD:EE:02',
+        'ip_address' => '192.168.1.102',
+        'installed_software' => [
+            ['name' => 'Firefox', 'version' => '121'],
+        ],
+    ])->assertStatus(202);
+
+    expect($comp1->fresh()->ip_address)->toBe('192.168.1.101');
+    expect($comp2->fresh()->ip_address)->toBe('192.168.1.102');
 });
 
 test('retired computer cannot submit scan results', function () {

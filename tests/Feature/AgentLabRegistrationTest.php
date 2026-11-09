@@ -178,3 +178,34 @@ test('registers a computer with diverse MAC address formats (cisco dot, dashed, 
     ['001122334455', '00:11:22:33:44:55'],
     ['aa:bb:cc:dd:ee:ff', 'AA:BB:CC:DD:EE:FF'],
 ]);
+
+test('allows registration of multiple computers with identical hostname', function () {
+    $lab = Laboratory::factory()->create();
+
+    // First computer registers with hostname MYPCONEPROK-24
+    $this->withHeader('X-Agent-Key', 'TEST_AGENT_KEY_123')
+        ->postJson('/api/agent/register', [
+            'hostname' => 'MYPCONEPROK-24',
+            'mac_address' => 'AA:BB:CC:DD:EE:01',
+            'serial_number' => 'SN-1001',
+            'laboratory_id' => $lab->id,
+        ])
+        ->assertStatus(201);
+
+    // Second computer with different MAC but IDENTICAL hostname registers
+    $response = $this->withHeader('X-Agent-Key', 'TEST_AGENT_KEY_123')
+        ->postJson('/api/agent/register', [
+            'hostname' => 'MYPCONEPROK-24',
+            'mac_address' => 'AA:BB:CC:DD:EE:02',
+            'serial_number' => 'SN-1002',
+            'laboratory_id' => $lab->id,
+        ]);
+
+    $response->assertStatus(201)
+        ->assertJson([
+            'status' => 'registered',
+            'hostname' => 'MYPCONEPROK-24',
+        ]);
+
+    expect(Computer::where('hostname', 'MYPCONEPROK-24')->count())->toBe(2);
+});
