@@ -443,3 +443,75 @@ test('POST /api/scan-result is resilient against device quirks: missing hostname
         return true;
     });
 });
+
+test('POST /api/scan-result handles payloads with UTF-8 BOM emitted by Windows PowerShell', function () {
+    Queue::fake();
+
+    $computer = Computer::factory()->create([
+        'hostname' => 'PREV-HOST',
+        'processor' => null,
+        'ram_gb' => null,
+        'mac_address' => 'AA:BB:CC:DD:EE:01',
+    ]);
+
+    $payloadArray = [
+        'hostname' => 'MYPCONEPROK-24',
+        'processor' => '11th Gen Intel(R) Core(TM) i5-1155G7 @ 2.50GHz',
+        'ram_gb' => 16,
+        'disk_total_gb' => 476,
+        'disk_free_gb' => 320,
+        'manufacturer' => 'Axioo',
+        'model' => 'MyPC One Pro K-24',
+        'serial_number' => '0A24170006523006319',
+        'ip_address' => '192.168.1.53',
+        'mac_address' => 'C8:5E:A9:02:19:49',
+        'os_name' => 'Microsoft Windows 11 Pro',
+        'os_version' => '10.0.26200',
+        'os_architecture' => '64-bit',
+        'os_license_status' => 'Licensed',
+        'os_partial_key' => 'PWGP3',
+        'installed_software' => [
+            ['name' => 'Axioo Control Center', 'version' => '1.0.0'],
+            ['name' => 'Google Chrome', 'version' => '120.0.0'],
+        ],
+    ];
+
+    // Prepend UTF-8 BOM (\xEF\xBB\xBF) as emitted by Windows PowerShell
+    $rawContentWithBom = "\xef\xbb\xbf".json_encode($payloadArray);
+
+    Sanctum::actingAs($computer, ['scan:submit']);
+
+    $response = $this->call(
+        'POST',
+        '/api/scan-result',
+        [],
+        [],
+        [],
+        [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_ACCEPT' => 'application/json',
+        ],
+        $rawContentWithBom
+    );
+
+    $response->assertStatus(202);
+
+    $computer->refresh();
+    expect($computer->hostname)->toBe('MYPCONEPROK-24')
+        ->and($computer->processor)->toBe('11th Gen Intel(R) Core(TM) i5-1155G7 @ 2.50GHz')
+        ->and($computer->ram_gb)->toBe(16)
+        ->and($computer->disk_total_gb)->toBe(476)
+        ->and($computer->manufacturer)->toBe('Axioo')
+        ->and($computer->mac_address)->toBe('C8:5E:A9:02:19:49')
+        ->and($computer->ip_address)->toBe('192.168.1.53')
+        ->and($computer->os_name)->toBe('Microsoft Windows 11 Pro')
+        ->and($computer->os_license_status)->toBe('Licensed');
+
+    Queue::assertPushed(ProcessScanResultJob::class, function ($job) {
+        expect($job->softwareList)->toHaveCount(2)
+            ->and($job->softwareList[0]['name'])->toBe('Axioo Control Center')
+            ->and($job->softwareList[1]['name'])->toBe('Google Chrome');
+
+        return true;
+    });
+});

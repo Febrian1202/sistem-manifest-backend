@@ -97,22 +97,22 @@ class ScanController extends Controller
 
         $computer->update([
             'hostname' => $request->hostname,
-            'processor' => $request->processor,
-            'ram_gb' => $request->ram_gb,
-            'disk_total_gb' => $request->disk_total_gb,
-            'disk_free_gb' => $request->disk_free_gb,
-            'manufacturer' => $request->manufacturer,
-            'model' => $request->model,
-            'serial_number' => $request->serial_number,
+            'processor' => ! empty($request->processor) ? $request->processor : $computer->processor,
+            'ram_gb' => $request->ram_gb ?? $computer->ram_gb,
+            'disk_total_gb' => $request->disk_total_gb ?? $computer->disk_total_gb,
+            'disk_free_gb' => $request->disk_free_gb ?? $computer->disk_free_gb,
+            'manufacturer' => ! empty($request->manufacturer) ? $request->manufacturer : $computer->manufacturer,
+            'model' => ! empty($request->model) ? $request->model : $computer->model,
+            'serial_number' => ! empty($request->serial_number) ? $request->serial_number : $computer->serial_number,
 
             'ip_address' => $request->ip_address ?? $request->ip(),
-            'mac_address' => $request->mac_address,
+            'mac_address' => ! empty($request->mac_address) ? $request->mac_address : $computer->mac_address,
 
-            'os_name' => $request->os_name,
-            'os_version' => $request->os_version,
-            'os_architecture' => $request->os_architecture,
-            'os_license_status' => $request->os_license_status,
-            'os_partial_key' => $request->os_partial_key,
+            'os_name' => ! empty($request->os_name) ? $request->os_name : $computer->os_name,
+            'os_version' => ! empty($request->os_version) ? $request->os_version : $computer->os_version,
+            'os_architecture' => ! empty($request->os_architecture) ? $request->os_architecture : $computer->os_architecture,
+            'os_license_status' => ! empty($request->os_license_status) ? $request->os_license_status : $computer->os_license_status,
+            'os_partial_key' => ! empty($request->os_partial_key) ? $request->os_partial_key : $computer->os_partial_key,
 
             'last_seen_at' => now(),
             'scan_requested' => false,
@@ -153,6 +153,19 @@ class ScanController extends Controller
      */
     protected function normalizeScanPayload(Request $request): void
     {
+        // 0. Decode raw content if UTF-8 BOM (\xEF\xBB\xBF) or client encoding issues prevented JSON parsing
+        $rawContent = $request->getContent();
+        if (! empty($rawContent)) {
+            if (str_starts_with($rawContent, "\xef\xbb\xbf")) {
+                $rawContent = substr($rawContent, 3);
+            }
+            $rawContent = trim($rawContent);
+            $decoded = json_decode($rawContent, true);
+            if (is_array($decoded)) {
+                $request->merge($decoded);
+            }
+        }
+
         $updates = [];
 
         // 1. Hostname fallback & max length

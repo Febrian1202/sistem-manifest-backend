@@ -209,3 +209,44 @@ test('allows registration of multiple computers with identical hostname', functi
 
     expect(Computer::where('hostname', 'MYPCONEPROK-24')->count())->toBe(2);
 });
+
+test('POST /api/agent/register handles payloads with UTF-8 BOM emitted by Windows PowerShell', function () {
+    $lab = Laboratory::factory()->create();
+
+    $payloadArray = [
+        'hostname' => 'MYPCONEPROK-24',
+        'mac_address' => 'C8:5E:A9:02:19:49',
+        'serial_number' => '0A24170006523006319',
+        'laboratory_id' => $lab->id,
+    ];
+
+    // Prepend UTF-8 BOM (\xEF\xBB\xBF) as emitted by Windows PowerShell
+    $rawContentWithBom = "\xef\xbb\xbf".json_encode($payloadArray);
+
+    $response = $this->call(
+        'POST',
+        '/api/agent/register',
+        [],
+        [],
+        [],
+        [
+            'HTTP_X_AGENT_KEY' => 'TEST_AGENT_KEY_123',
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_ACCEPT' => 'application/json',
+        ],
+        $rawContentWithBom
+    );
+
+    $response->assertStatus(201)
+        ->assertJson([
+            'status' => 'registered',
+            'hostname' => 'MYPCONEPROK-24',
+            'laboratory_id' => $lab->id,
+        ]);
+
+    $this->assertDatabaseHas('computers', [
+        'hostname' => 'MYPCONEPROK-24',
+        'mac_address' => 'C8:5E:A9:02:19:49',
+        'laboratory_id' => $lab->id,
+    ]);
+});

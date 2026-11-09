@@ -3,7 +3,7 @@ param(
     [string]$ScanMode = ""
 )
 
-$AgentVersion = "1.1.8"
+$AgentVersion = "1.1.9"
 
 # ---------------------------------------------------------
 # Konfigurasi API via config.json
@@ -111,7 +111,9 @@ if (-not (Test-Path $tokenFile)) {
             "X-Agent-Key"  = $registrationKey
             "Accept"       = "application/json"
         }
-        $regResponse = Invoke-RestMethod -Uri $registerUrl -Method Post -Headers $regHeaders -Body $regPayload -ContentType "application/json"
+        $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+        $regBytes = $utf8NoBom.GetBytes($regPayload)
+        $regResponse = Invoke-RestMethod -Uri $registerUrl -Method Post -Headers $regHeaders -Body $regBytes -ContentType "application/json; charset=utf-8"
         $token = ([string]$regResponse.token).Trim()
         $token | Out-File -FilePath $tokenFile -Encoding ascii
         Write-Host " [+] Registrasi berhasil. Token disimpan." -ForegroundColor Green
@@ -330,10 +332,11 @@ $payload = @{
 }
 
 $jsonPayload = $payload | ConvertTo-Json -Depth 5
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 
-# Simpan salinan payload lokal ke folder agent untuk kemudahan inspeksi & debugging
+# Simpan salinan payload lokal ke folder agent untuk kemudahan inspeksi & debugging (UTF-8 tanpa BOM)
 try {
-    $jsonPayload | Out-File -FilePath $payloadDumpFile -Encoding utf8
+    [System.IO.File]::WriteAllText($payloadDumpFile, $jsonPayload, $utf8NoBom)
     Write-Host " [+] Salinan payload tersimpan di: last_scan_payload.json" -ForegroundColor Cyan
     Write-AgentLog "Payload hasil scan berhasil disimpan di $payloadDumpFile ($($uniqueSoftware.Count) software)"
 } catch {
@@ -341,13 +344,14 @@ try {
     Write-AgentLog "Gagal menyimpan payload lokal ke $($payloadDumpFile): $($_.Exception.Message)" -Level "WARN"
 }
 
-# Simpan state untuk retry sebelum kirim
+# Simpan state untuk retry sebelum kirim (UTF-8 tanpa BOM)
 try {
-    $jsonPayload | Out-File -FilePath $retryFile -Encoding utf8
+    [System.IO.File]::WriteAllText($retryFile, $jsonPayload, $utf8NoBom)
 } catch {}
 
 try {
-    $response = Invoke-RestMethod -Uri $scanUrl -Method Post -Headers $headers -Body $jsonPayload -ContentType "application/json"
+    $bodyBytes = $utf8NoBom.GetBytes($jsonPayload)
+    $response = Invoke-RestMethod -Uri $scanUrl -Method Post -Headers $headers -Body $bodyBytes -ContentType "application/json; charset=utf-8"
     if (Test-Path $retryFile) {
         Remove-Item $retryFile -ErrorAction SilentlyContinue
     }

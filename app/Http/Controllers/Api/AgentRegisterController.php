@@ -86,6 +86,19 @@ class AgentRegisterController extends Controller
      */
     protected function normalizeRegistrationPayload(Request $request): void
     {
+        // 0. Decode raw content if UTF-8 BOM (\xEF\xBB\xBF) or client encoding issues prevented JSON parsing
+        $rawContent = $request->getContent();
+        if (! empty($rawContent)) {
+            if (str_starts_with($rawContent, "\xef\xbb\xbf")) {
+                $rawContent = substr($rawContent, 3);
+            }
+            $rawContent = trim($rawContent);
+            $decoded = json_decode($rawContent, true);
+            if (is_array($decoded)) {
+                $request->merge($decoded);
+            }
+        }
+
         $updates = [];
 
         $rawMac = $request->input('mac_address');
