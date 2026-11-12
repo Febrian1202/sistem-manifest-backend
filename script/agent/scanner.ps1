@@ -3,7 +3,7 @@ param(
     [string]$ScanMode = ""
 )
 
-$AgentVersion = "1.1.9"
+$AgentVersion = "1.2.1"
 
 # ---------------------------------------------------------
 # Konfigurasi API via config.json
@@ -179,12 +179,20 @@ if ($ScanMode -ne "") {
     $actualScanMode = "manual"
 }
 
-$retryFile = "$env:TEMP\usn-manifest-last-scan.json"
+$retryFile = "$PSScriptRoot\.usn-manifest-last-scan.json"
+$legacyRetryFile = "$env:TEMP\usn-manifest-last-scan.json"
 $scanUuid = $null
 
-if (Test-Path $retryFile) {
+if ([System.IO.File]::Exists($retryFile)) {
     try {
-        $cachedData = Get-Content $retryFile -Raw | ConvertFrom-Json
+        $cachedData = [System.IO.File]::ReadAllText($retryFile, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+        if ($cachedData.scan_uuid) {
+            $scanUuid = $cachedData.scan_uuid
+        }
+    } catch {}
+} elseif ([System.IO.File]::Exists($legacyRetryFile)) {
+    try {
+        $cachedData = [System.IO.File]::ReadAllText($legacyRetryFile, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
         if ($cachedData.scan_uuid) {
             $scanUuid = $cachedData.scan_uuid
         }
@@ -349,19 +357,17 @@ try {
     [System.IO.File]::WriteAllText($retryFile, $jsonPayload, $utf8NoBom)
 } catch {}
 
+$uploadSuccess = $false
+$response = $null
+$statusCode = $null
+$errorBody = ""
+
 try {
     $bodyBytes = $utf8NoBom.GetBytes($jsonPayload)
     $response = Invoke-RestMethod -Uri $scanUrl -Method Post -Headers $headers -Body $bodyBytes -ContentType "application/json; charset=utf-8"
-    if (Test-Path $retryFile) {
-        Remove-Item $retryFile -ErrorAction SilentlyContinue
-    }
-    Write-Host "`n [SUKSES]" -ForegroundColor Green
-    Write-Host " Server  : $($response.message)"
-    Write-Host " Komputer: $($response.computer)"
-    Write-AgentLog "Pengiriman hasil scan BERHASIL. Pesan Server: $($response.message) (Komputer: $($response.computer), UUID: $scanUuid)"
+    $uploadSuccess = $true
 } catch {
     $statusCode = $_.Exception.Response.StatusCode
-    $errorBody = ""
     if ($_.Exception.Response) {
         try {
             $stream = $_.Exception.Response.GetResponseStream()
@@ -374,7 +380,9 @@ try {
 
     if ($statusCode -eq "Unauthorized") {
         Write-Host "`n [!] Token tidak valid atau dicabut." -ForegroundColor Red
-        if (Test-Path $tokenFile) { Remove-Item $tokenFile }
+        if ([System.IO.File]::Exists($tokenFile)) {
+            try { [System.IO.File]::Delete($tokenFile) } catch {}
+        }
         Write-Host " Token dihapus. Jalankan ulang script untuk registrasi ulang." -ForegroundColor Yellow
         Write-AgentLog "Pengiriman hasil scan GAGAL [Unauthorized]: Token tidak valid/dicabut. Token dihapus." -Level "ERROR"
     } else {
@@ -386,6 +394,21 @@ try {
         Write-Warning " Pengunggahan hasil scan gagal, berkas retry tersimpan dengan UUID: $scanUuid"
         Write-AgentLog "Pengiriman hasil scan GAGAL [$statusCode]: $($_.Exception.Message). Detail Server: $errorBody" -Level "ERROR"
     }
+}
+
+if ($uploadSuccess) {
+    # Hapus file cache retry karena data berhasil diterima server (gunakan [System.IO.File] agar kebal bug path 8.3)
+    if ([System.IO.File]::Exists($retryFile)) {
+        try { [System.IO.File]::Delete($retryFile) } catch {}
+    }
+    if ([System.IO.File]::Exists($legacyRetryFile)) {
+        try { [System.IO.File]::Delete($legacyRetryFile) } catch {}
+    }
+
+    Write-Host "`n [SUKSES]" -ForegroundColor Green
+    Write-Host " Server  : $($response.message)"
+    Write-Host " Komputer: $($response.computer)"
+    Write-AgentLog "Pengiriman hasil scan BERHASIL. Pesan Server: $($response.message) (Komputer: $($response.computer), UUID: $scanUuid)"
 }
 
 if ($actualScanMode -eq "manual" -and [Environment]::UserInteractive) {

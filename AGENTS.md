@@ -2,7 +2,7 @@
 
 ## Project
 
-Laravel 12 (PHP 8.2+, production on PHP 8.4 Alpine) IT asset & software license compliance system for Universitas Sembilanbelas November (USN) Kolaka (current release: v1.2.0). Blade + Tailwind CSS 4 + Alpine.js frontend (ApexCharts, Chart.js, FontAwesome 7 Free, Poppins font), REST API for remote agent scanners (PowerShell & Windows Batch), MySQL in production, SQLite for tests, Redis for queue/cache, and Laravel Horizon for queue worker orchestration.
+Laravel 12 (PHP 8.2+, production on PHP 8.4 Alpine) IT asset & software license compliance system for Universitas Sembilanbelas November (USN) Kolaka (current release: v1.2.1). Blade + Tailwind CSS 4 + Alpine.js frontend (ApexCharts, Chart.js, FontAwesome 7 Free, Poppins font), REST API for remote agent scanners (PowerShell & Windows Batch), MySQL in production, SQLite for tests, Redis for queue/cache, and Laravel Horizon for queue worker orchestration.
 
 ## Commands
 

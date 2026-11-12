@@ -149,6 +149,7 @@ class AgentDownloadTest extends TestCase
         $this->assertEquals('TEST_SECRET_KEY_123', $configData['registrationKey']);
         $this->assertEquals($lab->id, $configData['laboratoryId']);
         $this->assertEquals('Laboratorium Jaringan', $configData['laboratoryName']);
+        $this->assertEquals('1.2.1', $configData['agentVersion']);
 
         // Verify instruksi.txt content
         $instructions = $zip->getFromName('instruksi.txt');
@@ -188,5 +189,26 @@ class AgentDownloadTest extends TestCase
                 $this->assertStringNotContainsString('was unexpected at this time', $output, "{$filename} caused a CMD parsing syntax error.");
             }
         }
+    }
+
+    /** @test */
+    public function scanner_script_handles_short_names_safely_without_temp_normalization_crashes()
+    {
+        $scannerPath = base_path('script/agent/scanner.ps1');
+        $this->assertFileExists($scannerPath);
+        $content = file_get_contents($scannerPath);
+
+        // Version check
+        $this->assertStringContainsString('$AgentVersion = "1.2.1"', $content);
+
+        // Retry file must be isolated to PSScriptRoot to avoid Windows 8.3 short-name Temp crashes
+        $this->assertStringContainsString('$retryFile = "$PSScriptRoot\.usn-manifest-last-scan.json"', $content);
+
+        // Cleanup must use robust .NET File API instead of Remove-Item which suffers from PowerShell 8.3 path bug
+        $this->assertStringContainsString('[System.IO.File]::Delete($retryFile)', $content);
+        $this->assertStringNotContainsString('Remove-Item $retryFile', $content);
+
+        // File cleanup must be isolated after upload success flag, not within the transmission try block
+        $this->assertStringContainsString('if ($uploadSuccess)', $content);
     }
 }
