@@ -149,7 +149,7 @@ class AgentDownloadTest extends TestCase
         $this->assertEquals('TEST_SECRET_KEY_123', $configData['registrationKey']);
         $this->assertEquals($lab->id, $configData['laboratoryId']);
         $this->assertEquals('Laboratorium Jaringan', $configData['laboratoryName']);
-        $this->assertEquals('1.2.1', $configData['agentVersion']);
+        $this->assertEquals('1.2.3', $configData['agentVersion']);
 
         // Verify instruksi.txt content
         $instructions = $zip->getFromName('instruksi.txt');
@@ -199,7 +199,7 @@ class AgentDownloadTest extends TestCase
         $content = file_get_contents($scannerPath);
 
         // Version check
-        $this->assertStringContainsString('$AgentVersion = "1.2.1"', $content);
+        $this->assertStringContainsString('$AgentVersion = "1.2.3"', $content);
 
         // Retry file must be isolated to PSScriptRoot to avoid Windows 8.3 short-name Temp crashes
         $this->assertStringContainsString('$retryFile = "$PSScriptRoot\.usn-manifest-last-scan.json"', $content);
@@ -210,5 +210,10 @@ class AgentDownloadTest extends TestCase
 
         // File cleanup must be isolated after upload success flag, not within the transmission try block
         $this->assertStringContainsString('if ($uploadSuccess)', $content);
+
+        // Multi-tier MAC address detection fallbacks (CIM, .NET NetworkInterface, getmac.exe)
+        $this->assertStringContainsString('System.Net.NetworkInformation.NetworkInterface', $content);
+        $this->assertStringContainsString('getmac.exe', $content);
+        $this->assertStringContainsString('Win32_NetworkAdapter', $content);
     }
 }

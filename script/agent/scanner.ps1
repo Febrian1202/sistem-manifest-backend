@@ -3,7 +3,7 @@ param(
     [string]$ScanMode = ""
 )
 
-$AgentVersion = "1.2.1"
+$AgentVersion = "1.2.3"
 
 # ---------------------------------------------------------
 # Konfigurasi API via config.json
@@ -69,30 +69,132 @@ $hostname    = if ($rawHostname) { ([string]$rawHostname).Trim() } else { "UNKNO
 # Fallback Serial Number
 $serialNumber = if ($bios -and $bios.SerialNumber) { ([string]$bios.SerialNumber).Trim() } else { "Unknown" }
 
-# Adapter jaringan: prioritaskan adapter dengan IP aktif, lalu coba adapter fisik apa pun
-$net = Get-CimInstance Win32_NetworkAdapterConfiguration -Filter "IPEnabled = True" -ErrorAction SilentlyContinue | Select-Object -First 1
+# ---------------------------------------------------------
+# DETEKSI ADAPTER JARINGAN (MAC ADDRESS & IP) MULTI-TIER
+# ---------------------------------------------------------
+$macAddress = $null
+$net = $null
+
+# Tier 1: Win32_NetworkAdapterConfiguration dengan IP aktif DAN MACAddress valid terisi
+$net = Get-CimInstance Win32_NetworkAdapterConfiguration -ErrorAction SilentlyContinue |
+       Where-Object { $_.IPEnabled -and $_.MACAddress -and ($_.MACAddress -match '^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$') } |
+       Select-Object -First 1
+
+# Tier 2: Win32_NetworkAdapterConfiguration apa pun yang memiliki MACAddress valid
 if (-not $net) {
-    $net = Get-CimInstance Win32_NetworkAdapterConfiguration -ErrorAction SilentlyContinue | Where-Object { $_.MACAddress } | Select-Object -First 1
+    $net = Get-CimInstance Win32_NetworkAdapterConfiguration -ErrorAction SilentlyContinue |
+           Where-Object { $_.MACAddress -and ($_.MACAddress -match '^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$') } |
+           Select-Object -First 1
 }
 
-$macAddress = if ($net -and $net.MACAddress) { ([string]$net.MACAddress).Trim() } else { $null }
+if ($net -and $net.MACAddress) {
+    $macAddress = ([string]$net.MACAddress).Trim() -replace '-', ':'
+}
 
+# Tier 3: Win32_NetworkAdapter (Hardware adapter langsung, prioritaskan status Connected = 2)
+if (-not $macAddress) {
+    $hwAdapter = Get-CimInstance Win32_NetworkAdapter -ErrorAction SilentlyContinue |
+                 Where-Object { $_.MACAddress -and ($_.MACAddress -match '^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$') -and $_.NetConnectionStatus -eq 2 } |
+                 Select-Object -First 1
+    if (-not $hwAdapter) {
+        $hwAdapter = Get-CimInstance Win32_NetworkAdapter -ErrorAction SilentlyContinue |
+                     Where-Object { $_.MACAddress -and ($_.MACAddress -match '^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$') } |
+                     Select-Object -First 1
+    }
+    if ($hwAdapter -and $hwAdapter.MACAddress) {
+        $macAddress = ([string]$hwAdapter.MACAddress).Trim() -replace '-', ':'
+    }
+}
+
+# Tier 4: Native .NET NetworkInterface (Bekerja tanpa hak Administrator dan tanpa ketergantungan WMI/CIM)
 if (-not $macAddress) {
     try {
-        $netAdapter = Get-NetAdapter -Physical -ErrorAction SilentlyContinue | Where-Object { $_.MacAddress } | Select-Object -First 1
-        if (-not $netAdapter) {
-            $netAdapter = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.MacAddress } | Select-Object -First 1
+        $nics = [System.Net.NetworkInformation.NetworkInterface]::GetAllNetworkInterfaces() |
+                Where-Object {
+                    $_.NetworkInterfaceType -ne [System.Net.NetworkInformation.NetworkInterfaceType]::Loopback -and
+                    $_.NetworkInterfaceType -ne [System.Net.NetworkInformation.NetworkInterfaceType]::Tunnel -and
+                    $_.GetPhysicalAddress().ToString().Length -eq 12 -and
+                    $_.GetPhysicalAddress().ToString() -ne "000000000000"
+                }
+        $activeNic = $nics | Where-Object { $_.OperationalStatus -eq [System.Net.NetworkInformation.OperationalStatus]::Up } | Select-Object -First 1
+        if (-not $activeNic) {
+            $activeNic = $nics | Select-Object -First 1
         }
-        if ($netAdapter -and $netAdapter.MacAddress) {
-            $macAddress = ([string]$netAdapter.MacAddress).Trim()
+        if ($activeNic) {
+            $rawPhys = $activeNic.GetPhysicalAddress().ToString()
+            $macAddress = ($rawPhys -replace '(.{2})(?!$)', '$1:').ToUpper()
         }
     } catch {}
+}
+
+# Tier 5: Get-NetAdapter (khusus jika sesi berjalan dengan elevasi Admin)
+if (-not $macAddress) {
+    try {
+        $netAdapter = Get-NetAdapter -Physical -ErrorAction SilentlyContinue |
+                      Where-Object { $_.MacAddress -and ($_.MacAddress -match '^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$') } |
+                      Select-Object -First 1
+        if (-not $netAdapter) {
+            $netAdapter = Get-NetAdapter -ErrorAction SilentlyContinue |
+                          Where-Object { $_.MacAddress -and ($_.MacAddress -match '^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$') } |
+                          Select-Object -First 1
+        }
+        if ($netAdapter -and $netAdapter.MacAddress) {
+            $macAddress = ([string]$netAdapter.MacAddress).Trim() -replace '-', ':'
+        }
+    } catch {}
+}
+
+# Tier 6: Utilitas bawaan Windows getmac.exe
+if (-not $macAddress) {
+    try {
+        $getmacOut = getmac.exe /fo csv /nh 2>$null
+        foreach ($line in $getmacOut) {
+            if ($line -match '"([0-9A-Fa-f]{2}-[0-9A-Fa-f]{2}-[0-9A-Fa-f]{2}-[0-9A-Fa-f]{2}-[0-9A-Fa-f]{2}-[0-9A-Fa-f]{2})"') {
+                $candidate = $matches[1] -replace '-', ':'
+                if ($candidate -ne "00:00:00:00:00:00" -and $candidate -notmatch '^FF:FF:FF') {
+                    $macAddress = $candidate.ToUpper()
+                    break
+                }
+            }
+        }
+    } catch {}
+}
+
+# Tier 7: Parsing ipconfig /all
+if (-not $macAddress) {
+    try {
+        $ipconfigOut = ipconfig.exe /all 2>$null
+        foreach ($line in $ipconfigOut) {
+            if ($line -match '([0-9A-Fa-f]{2}-[0-9A-Fa-f]{2}-[0-9A-Fa-f]{2}-[0-9A-Fa-f]{2}-[0-9A-Fa-f]{2}-[0-9A-Fa-f]{2})') {
+                $candidate = $matches[1] -replace '-', ':'
+                if ($candidate -ne "00:00:00:00:00:00") {
+                    $macAddress = $candidate.ToUpper()
+                    break
+                }
+            }
+        }
+    } catch {}
+}
+
+# Normalisasi akhir MAC address ke format standar XX:XX:XX:XX:XX:XX (uppercase)
+if ($macAddress) {
+    $macAddress = $macAddress.Trim().ToUpper() -replace '-', ':'
 }
 
 # Fallback IPv4
 $ipv4 = $null
 if ($net -and $net.IPAddress) {
-    $ipv4 = ($net.IPAddress | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' }) | Select-Object -First 1
+    $ipv4 = ($net.IPAddress | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' -and $_ -ne '127.0.0.1' }) | Select-Object -First 1
+}
+if (-not $ipv4) {
+    try {
+        $ipObj = [System.Net.Dns]::GetHostAddresses([System.Net.Dns]::GetHostName()) |
+                 Where-Object { $_.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork -and $_.ToString() -ne '127.0.0.1' } |
+                 Select-Object -First 1
+        if ($ipObj) {
+            $ipv4 = $ipObj.ToString()
+        }
+    } catch {}
 }
 
 if (-not (Test-Path $tokenFile)) {
