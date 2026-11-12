@@ -7,6 +7,7 @@ use App\Models\LicenseInventory;
 use App\Models\SoftwareCatalog;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
 
@@ -14,7 +15,14 @@ class ActivityLogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Activity::with(['causer', 'subject'])->latest();
+        $query = Activity::with([
+            'causer' => function (MorphTo $morphTo) {
+                $morphTo->morphWith([
+                    User::class => ['roles'],
+                ]);
+            },
+            'subject',
+        ])->latest();
 
         // 1. Filter Search (Deskripsi)
         if ($request->filled('search')) {

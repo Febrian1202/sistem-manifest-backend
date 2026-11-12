@@ -177,4 +177,9 @@ class Computer extends Authenticatable
     {
         return $query->where('status', 'active');
     }
+
+    public function getNameAttribute(): ?string
+    {
+        return $this->hostname;
+    }
 }

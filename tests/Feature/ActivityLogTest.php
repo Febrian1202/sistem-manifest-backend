@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Computer;
 use App\Models\LicenseInventory;
 use App\Models\SoftwareCatalog;
 use App\Models\User;
@@ -29,6 +30,58 @@ class ActivityLogTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewHas('logs');
         $response->assertViewHas('users');
+    }
+
+    /** @test */
+    public function admin_can_view_activity_logs_when_causer_is_computer()
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
+
+        $computer = Computer::factory()->create(['hostname' => 'LAB-PC-01']);
+        activity()->causedBy($computer)->log('Computer scan completed');
+
+        $response = $this->actingAs($admin)->get('/activity-logs');
+        $response->assertStatus(200);
+        $response->assertSee('LAB-PC-01');
+        $response->assertSee('Komputer');
+    }
+
+    /** @test */
+    public function admin_can_view_activity_logs_with_various_causers_including_deleted_and_system()
+    {
+        $admin = User::factory()->create(['name' => 'Admin Boss']);
+        $admin->assignRole('admin');
+
+        $kepalaLab = User::factory()->create(['name' => 'Dr. Kepala Lab']);
+        $kepalaLab->assignRole('kepala_lab');
+
+        $computer = Computer::factory()->create(['hostname' => 'PC-LAB-02']);
+
+        // 1. User causer
+        activity()->causedBy($kepalaLab)->log('Approval submitted by kepala lab');
+
+        // 2. Computer causer
+        activity()->causedBy($computer)->log('Scan submitted by PC');
+
+        // 3. System causer (null)
+        activity()->log('Automatic maintenance run by system');
+
+        // 4. Deleted causer
+        $tempComputer = Computer::factory()->create(['hostname' => 'PC-TEMP']);
+        $tempComputerId = $tempComputer->id;
+        activity()->causedBy($tempComputer)->log('Scan by temporary PC');
+        $tempComputer->delete();
+
+        $response = $this->actingAs($admin)->get('/activity-logs');
+        $response->assertStatus(200);
+        $response->assertSee('Dr. Kepala Lab');
+        $response->assertSee('Kepala Lab');
+        $response->assertSee('PC-LAB-02');
+        $response->assertSee('Komputer');
+        $response->assertSee('Sistem');
+        $response->assertSee("Komputer #{$tempComputerId} (Dihapus)");
+        $response->assertSee('Terhapus');
     }
 
     /** @test */

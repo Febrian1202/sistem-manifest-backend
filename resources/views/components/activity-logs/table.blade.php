@@ -27,6 +27,44 @@
                         'deleted' => 'fa-trash-can text-red-500',
                         default => 'fa-circle-info text-slate-500',
                     };
+
+                    // Determine causer details safely
+                    $causer = $log->causer;
+                    $causerName = 'Sistem';
+                    $causerRole = null;
+                    $causerBadgeClass = 'bg-muted text-muted-foreground border-border';
+
+                    if ($causer instanceof \App\Models\User) {
+                        $causerName = $causer->name;
+                        $roleName = $causer->roles->first()?->name ?? ($causer->getRoleNames()->first() ?? null);
+                        $causerRole = match ($roleName) {
+                            'admin' => 'Admin',
+                            'kepala_lab' => 'Kepala Lab',
+                            'staff_lab' => 'Staff Lab',
+                            'pimpinan' => 'Pimpinan',
+                            default => ucfirst($roleName ?? 'User'),
+                        };
+                        $causerBadgeClass = match ($roleName) {
+                            'admin' => 'bg-primary/10 text-primary border-primary/20',
+                            'kepala_lab' => 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+                            'staff_lab' => 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20',
+                            'pimpinan' => 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+                            default => 'bg-muted text-muted-foreground border-border',
+                        };
+                    } elseif ($causer instanceof \App\Models\Computer) {
+                        $causerName = $causer->hostname ?? ('Komputer #' . $causer->id);
+                        $causerRole = 'Komputer';
+                        $causerBadgeClass = 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20';
+                    } elseif ($causer) {
+                        $causerName = $causer->name ?? $causer->hostname ?? ('ID: ' . $causer->getKey());
+                        $causerRole = class_basename($causer);
+                        $causerBadgeClass = 'bg-muted text-muted-foreground border-border';
+                    } elseif ($log->causer_id) {
+                        $causerTypeBasename = $log->causer_type ? class_basename($log->causer_type) : 'Entitas';
+                        $causerName = ($causerTypeBasename === 'Computer' ? 'Komputer' : $causerTypeBasename) . ' #' . $log->causer_id . ' (Dihapus)';
+                        $causerRole = 'Terhapus';
+                        $causerBadgeClass = 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20';
+                    }
                     
                     // Determine entity label
                     $subjectType = $log->subject_type ? basename(str_replace('\\', '/', $log->subject_type)) : 'Sistem';
@@ -40,6 +78,10 @@
                             $subjectName = $log->subject->catalog->normalized_name ?? 'PO: ' . $log->subject->purchase_order_number;
                         } elseif ($log->subject_type === \App\Models\SoftwareCatalog::class) {
                             $subjectName = $log->subject->normalized_name;
+                        } elseif ($log->subject_type === \App\Models\Laboratory::class) {
+                            $subjectName = $log->subject->name;
+                        } elseif ($log->subject_type === \App\Models\Faculty::class) {
+                            $subjectName = $log->subject->name;
                         } else {
                             $subjectName = 'ID: ' . $log->subject_id;
                         }
@@ -76,11 +118,11 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center gap-2">
                             <span class="font-medium text-foreground">
-                                {{ $log->causer ? $log->causer->name : 'Sistem' }}
+                                {{ $causerName }}
                             </span>
-                            @if($log->causer)
-                                <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold {{ $log->causer->hasRole('admin') ? 'bg-primary/10 text-primary border-primary/20' : 'bg-muted text-muted-foreground border-border' }}">
-                                    {{ ucfirst($log->causer->roles->first()?->name ?? 'User') }}
+                            @if($causerRole)
+                                <span class="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold {{ $causerBadgeClass }}">
+                                    {{ $causerRole }}
                                 </span>
                             @endif
                         </div>
